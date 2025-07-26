@@ -33,7 +33,7 @@
 ### Opción B: Ejecutar localmente
 ```bash
 # 1. Clonar repositorio
-git clone https://github.com/tu-usuario/bucaraflora-onnx.git
+git clone https://github.com/Brastelizcar/bucaraflora-onnx.git
 cd bucaraflora-onnx
 
 # 2. Crear entorno virtual

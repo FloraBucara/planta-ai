@@ -1,46 +1,23 @@
-# requirements.txt - Optimizado para Streamlit Cloud con ONNX Runtime
-# Compatible con Python 3.13
+# requirements.txt - Compatible con Python 3.13.5 Streamlit Cloud
+# Actualizado: 26 julio 2025
 
 # ==================== CORE STREAMLIT ====================
-streamlit==1.32.0
+streamlit>=1.39.0
 
-# ==================== ONNX RUNTIME (Reemplaza TensorFlow) ====================
-onnxruntime==1.17.1
-# Nota: ONNX Runtime es 100x más rápido y 10x más pequeño que TensorFlow
+# ==================== ONNX RUNTIME (Compatible con Python 3.13) ====================
+onnxruntime>=1.22.1
+# Nota: ONNX Runtime 1.22.1 es compatible con Python 3.13
 
 # ==================== PROCESAMIENTO DE IMÁGENES ====================
-pillow==10.2.0
-opencv-python-headless==4.9.0.80
+pillow>=10.4.0
+opencv-python-headless>=4.10.0
 # Nota: opencv-python-headless es requerido para Streamlit Cloud
 
 # ==================== COMPUTACIÓN CIENTÍFICA ====================
-numpy==1.24.3
-pandas==2.0.3
+numpy>=1.26.0
+pandas>=2.2.0
 
 # ==================== FIREBASE (OPCIONAL) ====================
 # Descomenta si necesitas Firebase en Streamlit Cloud
-# firebase-admin==6.4.0
-# google-cloud-firestore==2.14.0
-
-# ==================== API LIGERA (OPCIONAL) ====================
-# Descomenta si necesitas la API en Streamlit Cloud  
-# flask==3.0.0
-# requests==2.31.0
-
-# ==================== DEPENDENCIAS REMOVIDAS ====================
-# tensorflow==2.15.0          # ❌ Removido - Reemplazado por ONNX Runtime
-# tf2onnx==1.16.1             # ❌ Removido - Solo necesario para conversión
-# opencv-python==4.8.1.78     # ❌ Removido - Reemplazado por headless
-# schedule==1.2.0              # ❌ Removido - No funciona en Streamlit Cloud
-# pyngrok==6.0.0               # ❌ Removido - No funciona en Streamlit Cloud
-# python-dotenv==1.0.0         # ❌ Removido - Usar st.secrets en Streamlit Cloud
-# scikit-learn==1.3.0          # ❌ Removido - No necesario para ONNX
-# matplotlib==3.7.2            # ❌ Removido - No necesario para esta app
-# seaborn==0.12.2              # ❌ Removido - No necesario para esta app
-# flask-cors==4.0.0            # ❌ Removido - No necesario en Streamlit Cloud
-
-# ==================== NOTAS IMPORTANTES ====================
-# - Total de dependencias: 4 (vs 17 anteriores)
-# - Tamaño total estimado: ~50MB (vs ~500MB con TensorFlow)
-# - Tiempo de instalación: ~2 minutos (vs ~10 minutos con TensorFlow)
-# - Compatibilidad Python 3.13: ✅ 100%
+# firebase-admin>=6.5.0
+# google-cloud-firestore>=2.19.0

@@ -1,0 +1,73 @@
+# ==================== PYTHON ====================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ==================== VIRTUAL ENVIRONMENTS ====================
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# ==================== STREAMLIT SECRETS ====================
+.streamlit/secrets.toml
+secrets.toml
+
+# ==================== FIREBASE CREDENTIALS ====================
+*firebase*admin*.json
+*service*account*.json
+*credentials*.json
+
+# ==================== MODELO BACKUPS ====================
+model/*tensorflow*backup*
+*tensorflow*backup*
+model/*.h5.backup
+model/*.pb.backup
+
+# ==================== LOGS Y TEMPORALES ====================
+logs/
+*.log
+.DS_Store
+Thumbs.db
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ==================== IDE ====================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ==================== ARCHIVOS GRANDES ====================
+# Descomentar si tienes problemas de tamaño en git
+# *.h5
+# *.onnx
+
+# ==================== OTROS ====================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

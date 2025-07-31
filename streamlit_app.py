@@ -438,7 +438,7 @@ def main():
             # Mostrar imagen centrada
             col1, col2, col3 = st.columns([1, 2, 1])
             with col2:
-                st.image(image, caption="Tu planta", use_column_width=True)
+                st.image(image, caption="Tu planta", use_container_width=True)
             
             # Botón de análisis
             col1, col2, col3 = st.columns([1, 2, 1])

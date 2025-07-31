@@ -1,5 +1,5 @@
-# streamlit_app.py - VERSIÓN OPTIMIZADA CON ONNX RUNTIME
-# Migrado desde TensorFlow para máxima compatibilidad Python 3.13
+# streamlit_app.py - VERSIÓN CON INFORMACIÓN DE FIREBASE
+# Actualizado para mostrar información rica desde Firestore
 
 import streamlit as st
 import sys
@@ -41,21 +41,20 @@ st.markdown("""
     }
     
     .prediction-card {
-        background: #f8f9fa;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         padding: 1.5rem;
-        border-radius: 10px;
-        border-left: 4px solid #28a745;
+        border-radius: 12px;
+        border-left: 5px solid #28a745;
         margin: 1rem 0;
-        color: #333333;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
     
-    .species-card {
-        background: #f8f9fa;
+    .info-section {
+        background: #ffffff;
         padding: 1rem;
         border-radius: 8px;
-        border: 1px solid #dee2e6;
+        border: 1px solid #e9ecef;
         margin: 0.5rem 0;
-        text-align: center;
     }
     
     .confidence-bar {
@@ -79,6 +78,14 @@ st.markdown("""
         border-radius: 12px;
         font-size: 0.8rem;
         font-weight: bold;
+    }
+    
+    .firebase-info {
+        background: #e8f5e8;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #28a745;
+        margin: 1rem 0;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -132,6 +139,51 @@ def load_species_list():
     except Exception as e:
         st.error(f"❌ Error cargando especies: {e}")
         return []
+
+# ==================== NUEVA FUNCIÓN: INFORMACIÓN DE FIREBASE ====================
+
+@st.cache_data(ttl=300)  # Cache por 5 minutos
+# ==================== FIREBASE ARREGLADO PARA STREAMLIT ====================
+
+def get_plant_info_from_firebase(species_name):
+    """Obtiene información rica de la planta desde Firebase - VERSIÓN ARREGLADA"""
+    try:
+        # Importar la nueva función optimizada para Streamlit
+        from utils.firebase_streamlit import get_plant_info_complete
+        
+        # Obtener información usando la función optimizada
+        plant_info = get_plant_info_complete(species_name)
+        
+        return plant_info
+        
+    except ImportError:
+        st.warning("⚠️ Firebase Streamlit no está configurado")
+        return {
+            "found": False,
+            "nombre_comun": "Especie identificada",
+            "nombre_cientifico": species_name,
+            "descripcion": "Esta especie está en nuestra base de datos de 335 plantas colombianas.",
+            "familia": "",
+            "origen": "",
+            "fuente": "",
+            "imagenes": [],
+            "taxonomia": {},
+            "fuente_datos": "Sin conexión Firebase"
+        }
+    except Exception as e:
+        st.error(f"❌ Error obteniendo info de Firebase: {e}")
+        return {
+            "found": False,
+            "nombre_comun": "Error al cargar información",
+            "nombre_cientifico": species_name,
+            "descripcion": f"Error conectando con la base de datos: {str(e)}",
+            "familia": "",
+            "origen": "",
+            "fuente": "",
+            "imagenes": [],
+            "taxonomia": {},
+            "fuente_datos": "Error"
+        }
 
 # ==================== FUNCIONES DE PROCESAMIENTO ====================
 
@@ -195,46 +247,82 @@ def format_species_name(species_name):
         parts = formatted.split(' ')
         if len(parts) >= 2:
             genus = parts[0]
-            species = parts[1]
+            species_epithet = parts[1]
             
-            # Formato itálico para binomial
-            return f"*{genus} {species}*"
+            # Si hay más partes (autoridad, etc.), incluirlas
+            if len(parts) > 2:
+                authority = ' '.join(parts[2:])
+                return f"*{genus} {species_epithet}* {authority}"
+            else:
+                # Solo género y especie
+                return f"*{genus} {species_epithet}*"
         
         return formatted
     except:
         return species_name
 
-def get_plant_info_basic(species_name):
-    """Información básica de plantas comunes (expandible)"""
+def display_plant_information(plant_info):
+    """Muestra información rica de la planta"""
     
-    # Base de datos básica de plantas
-    plant_db = {
-        "Agave_americana_L": {
-            "common_name": "Agave Americano",
-            "description": "Planta suculenta perenne de gran tamaño, originaria de México y sur de Estados Unidos. Caracterizada por sus hojas carnosas y espinosas."
-        },
-        "Aloe_maculata_All": {
-            "common_name": "Aloe Moteado",
-            "description": "Suculenta medicinal con hojas carnosas moteadas y flores tubulares de color naranja-rojo. Nativa de Sudáfrica."
-        },
-        "Mangifera_indica_L": {
-            "common_name": "Mango",
-            "description": "Árbol frutal tropical perenne, originario del sur de Asia. Produce frutos dulces y es ampliamente cultivado en regiones tropicales."
-        },
-        "Cocos_nucifera_L": {
-            "common_name": "Cocotero",
-            "description": "Palmera tropical que produce cocos. Es muy común en costas tropicales y subtropicales de todo el mundo."
-        },
-        "Carica_papaya_L": {
-            "common_name": "Papaya",
-            "description": "Árbol frutal tropical de crecimiento rápido. Produce frutos grandes, dulces y ricos en vitaminas."
-        }
-    }
+    # Título principal con nombre común
+    st.markdown(f"### 🌿 {plant_info['nombre_comun']}")
     
-    return plant_db.get(species_name, {
-        "common_name": "Especie identificada",
-        "description": "Esta especie está en nuestra base de datos de 335 plantas colombianas. Para más información detallada, consulta recursos botánicos especializados."
-    })
+    # Nombre científico
+    scientific_name = format_species_name(plant_info['nombre_cientifico'])
+    st.markdown(f"**Nombre científico:** {scientific_name}")
+    
+    # Información taxonómica
+    if plant_info['familia']:
+        st.markdown(f"**Familia:** {plant_info['familia']}")
+    
+    # Descripción
+    if plant_info['descripcion']:
+        st.markdown(f"**Descripción:** {plant_info['descripcion']}")
+    
+    # Información adicional en secciones expandibles
+    if plant_info['found']:
+        # Taxonomía completa
+        taxonomia = plant_info.get('taxonomia', {})
+        if taxonomia and any(taxonomia.values()):
+            with st.expander("🔬 Clasificación taxonómica"):
+                cols = st.columns(2)
+                
+                with cols[0]:
+                    if taxonomia.get('reino'):
+                        st.write(f"**Reino:** {taxonomia['reino']}")
+                    if taxonomia.get('filo'):
+                        st.write(f"**Filo:** {taxonomia['filo']}")
+                    if taxonomia.get('clase'):
+                        st.write(f"**Clase:** {taxonomia['clase']}")
+                    if taxonomia.get('orden'):
+                        st.write(f"**Orden:** {taxonomia['orden']}")
+                
+                with cols[1]:
+                    if taxonomia.get('familia'):
+                        st.write(f"**Familia:** {taxonomia['familia']}")
+                    if taxonomia.get('genero'):
+                        st.write(f"**Género:** {taxonomia['genero']}")
+                    if taxonomia.get('especie'):
+                        st.write(f"**Especie:** {taxonomia['especie']}")
+        
+        # Información adicional
+        if plant_info.get('origen') or plant_info.get('fuente'):
+            with st.expander("📋 Información adicional"):
+                if plant_info.get('origen'):
+                    st.write(f"**Fecha de observación:** {plant_info['origen']}")
+                if plant_info.get('fuente'):
+                    st.write(f"**Fuente:** {plant_info['fuente']}")
+    
+    # Badge de fuente de datos
+    fuente_color = "#28a745" if plant_info['found'] else "#6c757d"
+    st.markdown(f"""
+    <div style="text-align: right; margin-top: 1rem;">
+        <span style="background: {fuente_color}; color: white; padding: 0.25rem 0.5rem; 
+                     border-radius: 12px; font-size: 0.75rem;">
+            📊 {plant_info['fuente_datos']}
+        </span>
+    </div>
+    """, unsafe_allow_html=True)
 
 # ==================== INTERFAZ PRINCIPAL ====================
 
@@ -270,15 +358,15 @@ def main():
     """Función principal de la aplicación"""
     
     # Header principal
-    st.markdown('<h1 class="main-header">🌱 BucaraFlora - IA Optimizada</h1>', 
+    st.markdown('<h1 class="main-header">🌱 BucaraFlora - IA con Firebase</h1>', 
                 unsafe_allow_html=True)
     
     st.markdown("""
     <div style="text-align: center; margin-bottom: 2rem;">
         <p style="font-size: 1.1rem; color: #666; margin-bottom: 1rem;">
-            <strong>Identificador de plantas con IA ultra-rápida</strong>
+            <strong>Identificador de plantas con información rica desde Firebase</strong>
         </p>
-        <span class="performance-badge">🚀 Powered by ONNX Runtime - 100x más rápido</span>
+        <span class="performance-badge">🔥 Powered by ONNX Runtime + Firebase Firestore</span>
     </div>
     """, unsafe_allow_html=True)
     
@@ -300,8 +388,26 @@ def main():
     # Mostrar estado del sistema
     st.success(f"✅ Sistema listo: Modelo ONNX cargado con {len(species_list)} especies")
     
-    # Información del modelo en sidebar
+    # Test de Firebase en sidebar
     with st.sidebar:
+        st.markdown("### 🔥 Estado Firebase")
+        try:
+            from utils.firebase_streamlit import initialize_firebase
+        
+        # Verificar conexión usando nuestra función optimizada
+            db = initialize_firebase()
+        
+            if db:
+                st.markdown("🟢 **Conectado**")
+                st.markdown("Proyecto: `bucaraflora-f0161`")
+                st.markdown("Colección: `planta`")
+            else:
+                st.markdown("🔴 **Error de conexión**")
+            
+        except Exception as e:
+            st.markdown("🟡 **Error en verificación**")
+            st.caption(f"Error: {str(e)[:50]}...")
+        
         st.markdown("### 🤖 Información del Modelo")
         st.markdown("- **Motor:** ONNX Runtime")
         st.markdown("- **Especies:** 335")
@@ -309,12 +415,6 @@ def main():
         st.markdown("- **Velocidad:** 100x+ más rápido")
         st.markdown("- **Tamaño:** 55% más pequeño")
         st.markdown("- **Python:** 3.13 compatible ✅")
-        
-        st.markdown("### 📊 Ventajas ONNX")
-        st.markdown("- ⚡ Inferencia ultra-rápida")
-        st.markdown("- 💾 Menor uso de memoria")
-        st.markdown("- 🌐 Compatible con Streamlit Cloud")
-        st.markdown("- 🔧 Optimizado para deployment")
     
     # Área principal de upload
     st.markdown("### 📸 Sube una foto de tu planta")
@@ -365,12 +465,12 @@ def main():
                                 
                                 st.markdown('<div class="prediction-card">', unsafe_allow_html=True)
                                 
-                                # Información de la especie
-                                plant_info = get_plant_info_basic(best_prediction['species'])
+                                # ===== NUEVA FUNCIONALIDAD: INFORMACIÓN DE FIREBASE =====
+                                with st.spinner("🔥 Obteniendo información desde Firebase..."):
+                                    plant_info = get_plant_info_from_firebase(best_prediction['species'])
                                 
-                                st.markdown(f"### 🌿 {plant_info['common_name']}")
-                                st.markdown(f"**Nombre científico:** {format_species_name(best_prediction['species'])}")
-                                st.markdown(f"**Descripción:** {plant_info['description']}")
+                                # Mostrar información rica de la planta
+                                display_plant_information(plant_info)
                                 
                                 # Barra de confianza visual
                                 confidence_pct = best_prediction['percentage']
@@ -390,24 +490,29 @@ def main():
                                     st.markdown("### 🤔 Otras posibilidades:")
                                     
                                     for i, pred in enumerate(predictions[1:], 2):
-                                        alt_info = get_plant_info_basic(pred['species'])
+                                        # Obtener información de Firebase para alternativas
+                                        alt_info = get_plant_info_from_firebase(pred['species'])
                                         
-                                        with st.expander(f"{i}. {alt_info['common_name']} - {pred['percentage']}%"):
-                                            st.markdown(f"**Nombre científico:** {format_species_name(pred['species'])}")
+                                        with st.expander(f"{i}. {alt_info['nombre_comun']} - {pred['percentage']}%"):
+                                            st.markdown(f"**Nombre científico:** {format_species_name(alt_info['nombre_cientifico'])}")
                                             st.markdown(f"**Confianza:** {pred['percentage']}%")
-                                            st.markdown(f"**Descripción:** {alt_info['description']}")
+                                            if alt_info['familia']:
+                                                st.markdown(f"**Familia:** {alt_info['familia']}")
+                                            st.markdown(f"**Descripción:** {alt_info['descripcion'][:200]}...")
                                 
                                 # Mensaje de éxito
-                                st.success("🎉 ¡Identificación completada!")
+                                st.success("🎉 ¡Identificación completada con información de Firebase!")
                                 st.balloons()
                                 
                                 # Información técnica
                                 with st.expander("📊 Información técnica"):
                                     st.markdown(f"- **Tiempo de inferencia:** {inference_time*1000:.2f}ms")
                                     st.markdown(f"- **Motor de IA:** ONNX Runtime")
+                                    st.markdown(f"- **Base de datos:** Firebase Firestore")
                                     st.markdown(f"- **Modelo:** 335 especies colombianas")
                                     st.markdown(f"- **Arquitectura:** MobileNetV2 optimizada")
                                     st.markdown(f"- **Index de clase:** {best_prediction['index']}")
+                                    st.markdown(f"- **Información encontrada:** {'✅ Sí' if plant_info['found'] else '❌ No'}")
                                 
                                 # Botón para nueva consulta
                                 if st.button("🔄 Identificar otra planta", use_container_width=True):
@@ -426,7 +531,7 @@ def main():
     st.markdown("""
     <div style="text-align: center; color: #666; font-size: 0.9rem;">
         🌱 BucaraFlora - Identificador de Plantas con IA<br>
-        Optimizado con ONNX Runtime para máximo rendimiento
+        🔥 Optimizado con ONNX Runtime + Firebase Firestore
     </div>
     """, unsafe_allow_html=True)
 

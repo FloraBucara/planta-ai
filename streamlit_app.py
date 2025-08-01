@@ -246,16 +246,21 @@ def inicializar_estado():
 
 def limpiar_sesion():
     """Limpia la sesión actual completamente"""
+    # Guardar mensaje si existe
+    mensaje_temp = st.session_state.get('mensaje_inicio', None)
+    
+    # Limpiar todo
     st.session_state.session_id = None
     st.session_state.imagen_actual = None
     st.session_state.especies_descartadas = set()
     st.session_state.intento_actual = 1
     st.session_state.resultado_actual = None
     st.session_state.mostrar_top_especies = False
+    
+    # Restaurar mensaje
+    st.session_state.mensaje_inicio = mensaje_temp
+    
     st.cache_data.clear()
-
-# Inicializar estado
-inicializar_estado()
 
 # ==================== FUNCIONES AUXILIARES MEJORADAS ====================
 
@@ -424,6 +429,13 @@ def hacer_prediccion_con_info(imagen, especies_excluir=None):
 
 def pantalla_upload_imagen():
     """Pantalla inicial para subir imagen"""
+    # Mostrar mensajes si existen
+    if st.session_state.get('mensaje_inicio') == "no_identificada":
+        st.warning("😔 Lo sentimos, no pudimos identificar tu planta anterior.")
+        st.info("💡 **Sugerencia:** Intenta con otra foto desde un ángulo diferente, asegurándote de que se vean claramente las hojas o flores.")
+        # Limpiar el mensaje después de mostrarlo
+        st.session_state.mensaje_inicio = None
+        
     st.markdown("### 📸 Sube una foto de tu planta")
     
     # Área de carga
@@ -622,13 +634,9 @@ def pantalla_top_especies():
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button("❌ No es ninguna de estas", type="secondary", use_container_width=True):
-            # Mostrar mensaje de disculpa
-            st.warning("😔 Lo sentimos, no pudimos identificar tu planta.")
-            st.info("💡 **Sugerencia:** Intenta con otra foto desde un ángulo diferente, asegurándote de que se vean claramente las hojas o flores.")
-            
-            # Esperar un momento para que lea el mensaje
-            time.sleep(3)
-            
+            # Establecer mensaje para mostrar en inicio
+            st.session_state.mensaje_inicio = "no_identificada"
+        
             # Limpiar y volver al inicio
             limpiar_sesion()
             st.rerun()

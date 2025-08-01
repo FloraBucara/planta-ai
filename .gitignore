@@ -31,7 +31,7 @@ ENV/
 
 # ==================== STREAMLIT SECRETS ====================
 .streamlit/secrets.toml
-secrets.toml
+.streamlit/
 
 # ==================== FIREBASE CREDENTIALS ====================
 *firebase*admin*.json

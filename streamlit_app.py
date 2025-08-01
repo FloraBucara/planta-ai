@@ -1,60 +1,128 @@
-# streamlit_app.py - VERSIÓN CON INFORMACIÓN DE FIREBASE
-# Actualizado para mostrar información rica desde Firestore
-
 import streamlit as st
 import sys
 from pathlib import Path
 from PIL import Image
 import numpy as np
 from datetime import datetime
-import json
+import requests
+import threading
 import time
+import subprocess
+import os
+import re
 
-# ==================== CONFIGURACIÓN DE LA PÁGINA ====================
+# ==================== CONFIGURACIÓN DE LA PÁGINA (DEBE SER PRIMERO) ====================
+# Agregar directorio padre al path ANTES de importar configuración
+sys.path.append(str(Path(__file__).parent))
+
+from config import STREAMLIT_CONFIG, MESSAGES, RETRAINING_CONFIG
+
 st.set_page_config(
-    page_title="🌱 BucaraFlora - ONNX Runtime",
-    page_icon="🌱",
-    layout="centered",
-    initial_sidebar_state="collapsed"
+    page_title=STREAMLIT_CONFIG["page_title"],
+    page_icon=STREAMLIT_CONFIG["page_icon"],
+    layout=STREAMLIT_CONFIG["layout"],
+    initial_sidebar_state=STREAMLIT_CONFIG["initial_sidebar_state"]
 )
 
-# ==================== CONFIGURACIÓN SIMPLIFICADA ====================
-CONFIG = {
-    "onnx_model_path": "model/plant_classifier.onnx",
-    "species_path": "model/species_list.json",
-    "target_size": (224, 224),
-    "max_file_size_mb": 10,
-    "top_predictions": 5
-}
+# ==================== IMPORTS DEL MODELO (DESPUÉS DE set_page_config) ====================
+try:
+    from model.prediction import session_manager, verificar_sistema_prediccion
+    from utils.firebase_config import obtener_info_planta_basica, firestore_manager
+except ImportError as e:
+    st.error(f"❌ Error importando módulos: {e}")
+    st.stop()
 
 # ==================== CSS PERSONALIZADO ====================
+
 st.markdown("""
 <style>
     .main-header {
         text-align: center;
         padding: 1rem 0;
-        color: #2E8B57;
+        background: linear-gradient(90deg, #2E8B57, #98FB98);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
         font-size: 2.5rem;
         font-weight: bold;
         margin-bottom: 1rem;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
     }
     
     .prediction-card {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        background: #f8f9fa;
         padding: 1.5rem;
-        border-radius: 12px;
-        border-left: 5px solid #28a745;
+        border-radius: 10px;
+        border-left: 4px solid #28a745;
         margin: 1rem 0;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
     
-    .info-section {
-        background: #ffffff;
+    .info-card {
+        background: #e8f5e9;
         padding: 1rem;
         border-radius: 8px;
-        border: 1px solid #e9ecef;
         margin: 0.5rem 0;
+    }
+    
+    .species-card {
+        background: #f0f8ff;
+        padding: 1rem;
+        border-radius: 8px;
+        border: 2px solid #e0e0e0;
+        margin: 0.5rem 0;
+        text-align: center;
+        transition: all 0.3s;
+    }
+    
+    .species-card:hover {
+        border-color: #28a745;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .debug-info {
+        background: #fff3cd;
+        color: #856404;
+        padding: 0.75rem;
+        border-radius: 5px;
+        border: 1px solid #ffeaa7;
+        margin: 0.5rem 0;
+        font-size: 0.9em;
+    }
+    
+    .error-message {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 1rem;
+        border-radius: 5px;
+        border: 1px solid #f5c6cb;
+        margin: 1rem 0;
+    }
+    
+    .success-message {
+        background: #d4edda;
+        color: #155724;
+        padding: 1rem;
+        border-radius: 5px;
+        border: 1px solid #c3e6cb;
+        margin: 1rem 0;
+    }
+    
+    .firestore-status {
+        padding: 0.5rem;
+        border-radius: 5px;
+        margin: 0.5rem 0;
+        font-size: 0.9rem;
+    }
+    
+    .firestore-connected {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+    }
+    
+    .firestore-disconnected {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
     }
     
     .confidence-bar {
@@ -70,470 +138,559 @@ st.markdown("""
         height: 100%;
         transition: width 0.3s ease;
     }
-    
-    .performance-badge {
-        background: #17a2b8;
-        color: white;
-        padding: 0.25rem 0.5rem;
-        border-radius: 12px;
-        font-size: 0.8rem;
-        font-weight: bold;
-    }
-    
-    .firebase-info {
-        background: #e8f5e8;
-        padding: 1rem;
-        border-radius: 8px;
-        border-left: 4px solid #28a745;
-        margin: 1rem 0;
-    }
 </style>
 """, unsafe_allow_html=True)
 
-# ==================== FUNCIONES DE CARGA DEL MODELO ====================
+# ==================== FUNCIONES DE INICIALIZACIÓN ====================
 
 @st.cache_resource
-def load_onnx_model():
-    """Carga el modelo ONNX - Ultra rápido y eficiente"""
+def inicializar_firestore_app():
+    """Inicializa Firestore una sola vez usando cache"""
     try:
-        import onnxruntime as ort
+        print("🔥 Inicializando Firestore...")
         
-        model_path = CONFIG["onnx_model_path"]
-        
-        if not Path(model_path).exists():
-            st.error(f"❌ Modelo ONNX no encontrado: {model_path}")
-            st.info("💡 Asegúrate de ejecutar step2_convert_model.py primero")
-            return None
-        
-        # Configurar sesión ONNX con optimizaciones
-        session_options = ort.SessionOptions()
-        session_options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
-        
-        session = ort.InferenceSession(model_path, session_options)
-        
-        return session
-        
-    except ImportError:
-        st.error("❌ ONNX Runtime no está instalado")
-        st.info("💡 Instala con: pip install onnxruntime")
-        return None
-    except Exception as e:
-        st.error(f"❌ Error cargando modelo ONNX: {e}")
-        return None
-
-@st.cache_data
-def load_species_list():
-    """Carga la lista de especies"""
-    try:
-        species_path = CONFIG["species_path"]
-        
-        if not Path(species_path).exists():
-            st.error(f"❌ Lista de especies no encontrada: {species_path}")
-            return []
-        
-        with open(species_path, 'r', encoding='utf-8') as f:
-            species_list = json.load(f)
-        
-        return species_list
-        
-    except Exception as e:
-        st.error(f"❌ Error cargando especies: {e}")
-        return []
-
-# ==================== NUEVA FUNCIÓN: INFORMACIÓN DE FIREBASE ====================
-
-@st.cache_data(ttl=300)  # Cache por 5 minutos
-# ==================== FIREBASE ARREGLADO PARA STREAMLIT ====================
-
-def get_plant_info_from_firebase(species_name):
-    """Obtiene información rica de la planta desde Firebase - VERSIÓN ARREGLADA"""
-    try:
-        # Importar la nueva función optimizada para Streamlit
-        from utils.firebase_streamlit import get_plant_info_complete
-        
-        # Obtener información usando la función optimizada
-        plant_info = get_plant_info_complete(species_name)
-        
-        return plant_info
-        
-    except ImportError:
-        st.warning("⚠️ Firebase Streamlit no está configurado")
-        return {
-            "found": False,
-            "nombre_comun": "Especie identificada",
-            "nombre_cientifico": species_name,
-            "descripcion": "Esta especie está en nuestra base de datos de 335 plantas colombianas.",
-            "familia": "",
-            "origen": "",
-            "fuente": "",
-            "imagenes": [],
-            "taxonomia": {},
-            "fuente_datos": "Sin conexión Firebase"
-        }
-    except Exception as e:
-        st.error(f"❌ Error obteniendo info de Firebase: {e}")
-        return {
-            "found": False,
-            "nombre_comun": "Error al cargar información",
-            "nombre_cientifico": species_name,
-            "descripcion": f"Error conectando con la base de datos: {str(e)}",
-            "familia": "",
-            "origen": "",
-            "fuente": "",
-            "imagenes": [],
-            "taxonomia": {},
-            "fuente_datos": "Error"
-        }
-
-# ==================== FUNCIONES DE PROCESAMIENTO ====================
-
-def preprocess_image(image):
-    """Procesa la imagen para el modelo ONNX"""
-    try:
-        # Redimensionar manteniendo aspecto
-        img = image.resize(CONFIG["target_size"], Image.Resampling.LANCZOS)
-        
-        # Convertir a array numpy y normalizar
-        img_array = np.array(img, dtype=np.float32) / 255.0
-        
-        # Agregar dimensión batch
-        img_array = np.expand_dims(img_array, axis=0)
-        
-        return img_array
-        
-    except Exception as e:
-        st.error(f"❌ Error procesando imagen: {e}")
-        return None
-
-def predict_with_onnx(session, image_array, species_list, top_k=5):
-    """Realiza predicción ultra-rápida con ONNX Runtime"""
-    try:
-        # Obtener nombres de entrada y salida
-        input_name = session.get_inputs()[0].name
-        output_name = session.get_outputs()[0].name
-        
-        # Hacer predicción
-        start_time = time.time()
-        predictions = session.run([output_name], {input_name: image_array})[0][0]
-        inference_time = time.time() - start_time
-        
-        # Obtener top-k índices
-        top_indices = np.argsort(predictions)[::-1][:top_k]
-        
-        # Crear lista de resultados
-        results = []
-        for idx in top_indices:
-            if idx < len(species_list):  # Verificar índice válido
-                results.append({
-                    "species": species_list[idx],
-                    "confidence": float(predictions[idx]),
-                    "percentage": int(predictions[idx] * 100),
-                    "index": int(idx)
-                })
-        
-        return results, inference_time
-        
-    except Exception as e:
-        st.error(f"❌ Error en predicción ONNX: {e}")
-        return [], 0
-
-def format_species_name(species_name):
-    """Formatea nombre científico para mostrar"""
-    try:
-        # Reemplazar guiones bajos con espacios
-        formatted = species_name.replace('_', ' ')
-        
-        # Extraer género y especie
-        parts = formatted.split(' ')
-        if len(parts) >= 2:
-            genus = parts[0]
-            species_epithet = parts[1]
+        # Intentar usar secrets (funciona en local y cloud)
+        if "firebase" in st.secrets:
+            import firebase_admin
+            from firebase_admin import credentials, firestore
             
-            # Si hay más partes (autoridad, etc.), incluirlas
-            if len(parts) > 2:
-                authority = ' '.join(parts[2:])
-                return f"*{genus} {species_epithet}* {authority}"
-            else:
-                # Solo género y especie
-                return f"*{genus} {species_epithet}*"
+            # Verificar si ya está inicializado
+            if not firebase_admin._apps:
+                # Convertir secrets a diccionario
+                firebase_creds = dict(st.secrets["firebase"])
+                cred = credentials.Certificate(firebase_creds)
+                firebase_admin.initialize_app(cred)
+            
+            firestore_manager.db = firestore.client()
+            firestore_manager.initialized = True
+            print("✅ Firestore inicializado desde secrets")
+            return True
+        else:
+            print("❌ No se encontraron secrets de Firebase")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Excepción inicializando Firestore: {e}")
+        return False
+    
+def iniciar_api_background():
+    """Inicia la API con Ngrok en background"""
+    try:
+        project_dir = Path(__file__).parent
+        os.chdir(project_dir)
         
-        return formatted
+        print("🚀 Iniciando API con Ngrok en background...")
+        subprocess.Popen([sys.executable, "api_server.py"], cwd=project_dir)
+        time.sleep(5)
+        print("✅ API iniciada en background")
+        
+    except Exception as e:
+        print(f"❌ Error iniciando API: {e}")
+
+def verificar_y_iniciar_api():
+    """Verifica si la API está corriendo, si no la inicia"""
+    try:
+        response = requests.get("http://localhost:5000/", timeout=3)
+        if response.status_code == 200:
+            print("✅ API ya está corriendo")
+            return True
     except:
-        return species_name
-
-def display_plant_information(plant_info):
-    """Muestra información rica de la planta"""
+        pass
     
-    # Título principal con nombre común
-    st.markdown(f"### 🌿 {plant_info['nombre_comun']}")
-    
-    # Nombre científico
-    scientific_name = format_species_name(plant_info['nombre_cientifico'])
-    st.markdown(f"**Nombre científico:** {scientific_name}")
-    
-    # Información taxonómica
-    if plant_info['familia']:
-        st.markdown(f"**Familia:** {plant_info['familia']}")
-    
-    # Descripción
-    if plant_info['descripcion']:
-        st.markdown(f"**Descripción:** {plant_info['descripcion']}")
-    
-    # Información adicional en secciones expandibles
-    if plant_info['found']:
-        # Taxonomía completa
-        taxonomia = plant_info.get('taxonomia', {})
-        if taxonomia and any(taxonomia.values()):
-            with st.expander("🔬 Clasificación taxonómica"):
-                cols = st.columns(2)
-                
-                with cols[0]:
-                    if taxonomia.get('reino'):
-                        st.write(f"**Reino:** {taxonomia['reino']}")
-                    if taxonomia.get('filo'):
-                        st.write(f"**Filo:** {taxonomia['filo']}")
-                    if taxonomia.get('clase'):
-                        st.write(f"**Clase:** {taxonomia['clase']}")
-                    if taxonomia.get('orden'):
-                        st.write(f"**Orden:** {taxonomia['orden']}")
-                
-                with cols[1]:
-                    if taxonomia.get('familia'):
-                        st.write(f"**Familia:** {taxonomia['familia']}")
-                    if taxonomia.get('genero'):
-                        st.write(f"**Género:** {taxonomia['genero']}")
-                    if taxonomia.get('especie'):
-                        st.write(f"**Especie:** {taxonomia['especie']}")
+    # Solo intentar iniciar API en desarrollo local
+    if "firebase" not in st.secrets:  # Si NO estamos en Streamlit Cloud
+        print("🔄 API no detectada, iniciando...")
+        thread = threading.Thread(target=iniciar_api_background, daemon=True)
+        thread.start()
         
-        # Información adicional
-        if plant_info.get('origen') or plant_info.get('fuente'):
-            with st.expander("📋 Información adicional"):
-                if plant_info.get('origen'):
-                    st.write(f"**Fecha de observación:** {plant_info['origen']}")
-                if plant_info.get('fuente'):
-                    st.write(f"**Fuente:** {plant_info['fuente']}")
+        for i in range(30):
+            try:
+                response = requests.get("http://localhost:5000/", timeout=2)
+                if response.status_code == 200:
+                    print("✅ API lista y funcionando")
+                    return True
+            except:
+                pass
+            time.sleep(1)
     
-    # Badge de fuente de datos
-    fuente_color = "#28a745" if plant_info['found'] else "#6c757d"
-    st.markdown(f"""
-    <div style="text-align: right; margin-top: 1rem;">
-        <span style="background: {fuente_color}; color: white; padding: 0.25rem 0.5rem; 
-                     border-radius: 12px; font-size: 0.75rem;">
-            📊 {plant_info['fuente_datos']}
-        </span>
-    </div>
-    """, unsafe_allow_html=True)
+    print("⚠️ API no disponible (normal en Streamlit Cloud)")
+    return False
 
-# ==================== INTERFAZ PRINCIPAL ====================
+# ==================== INICIALIZACIÓN DE ESTADO ====================
 
-def show_performance_info(inference_time):
-    """Muestra información de rendimiento"""
-    col1, col2, col3 = st.columns(3)
+def inicializar_estado():
+    """Inicializa todos los estados necesarios"""
+    if 'firestore_initialized' not in st.session_state:
+        st.session_state.firestore_initialized = inicializar_firestore_app()
     
+    if 'api_initialized' not in st.session_state:
+        st.session_state.api_initialized = verificar_y_iniciar_api()
+    
+    if 'session_id' not in st.session_state:
+        st.session_state.session_id = None
+    if 'imagen_actual' not in st.session_state:
+        st.session_state.imagen_actual = None
+    if 'especies_descartadas' not in st.session_state:
+        st.session_state.especies_descartadas = set()
+    if 'intento_actual' not in st.session_state:
+        st.session_state.intento_actual = 1
+    if 'resultado_actual' not in st.session_state:
+        st.session_state.resultado_actual = None
+    if 'mostrar_top_especies' not in st.session_state:
+        st.session_state.mostrar_top_especies = False
+    if 'max_intentos' not in st.session_state:
+        st.session_state.max_intentos = RETRAINING_CONFIG["max_attempts_per_prediction"]
+
+def limpiar_sesion():
+    """Limpia la sesión actual completamente"""
+    st.session_state.session_id = None
+    st.session_state.imagen_actual = None
+    st.session_state.especies_descartadas = set()
+    st.session_state.intento_actual = 1
+    st.session_state.resultado_actual = None
+    st.session_state.mostrar_top_especies = False
+    st.cache_data.clear()
+
+# Inicializar estado
+inicializar_estado()
+
+# ==================== FUNCIONES AUXILIARES MEJORADAS ====================
+
+def mostrar_header():
+    """Muestra el header principal de la aplicación"""
+    st.markdown('<h1 class="main-header">🌱 BucaraFlora - Identificador de Plantas IA</h1>', unsafe_allow_html=True)
+    st.markdown("**Sube una foto de tu planta y descubre qué especie es**")
+    
+    # Mostrar estado de servicios
+    col1, col2 = st.columns(2)
     with col1:
-        st.markdown(f"""
-        <div class="performance-badge">
-            ⚡ {inference_time*1000:.1f}ms
-        </div>
-        """, unsafe_allow_html=True)
-        st.caption("Tiempo de inferencia")
+        if st.session_state.get('api_initialized'):
+            st.markdown('<div class="firestore-connected">✅ API Activa</div>', unsafe_allow_html=True)
+        else:
+            st.markdown('<div class="firestore-disconnected">⚠️ API Local No Disponible</div>', unsafe_allow_html=True)
     
     with col2:
-        st.markdown(f"""
-        <div class="performance-badge">
-            🚀 ONNX Runtime
-        </div>
-        """, unsafe_allow_html=True)
-        st.caption("Motor de IA")
-    
-    with col3:
-        st.markdown(f"""
-        <div class="performance-badge">
-            🌿 335 especies
-        </div>
-        """, unsafe_allow_html=True)
-        st.caption("Base de datos")
+        if st.session_state.get('firestore_initialized'):
+            st.markdown('<div class="firestore-connected">✅ Base de Datos Conectada</div>', unsafe_allow_html=True)
+        else:
+            st.markdown('<div class="firestore-disconnected">❌ Base de Datos Desconectada</div>', unsafe_allow_html=True)
 
-def main():
-    """Función principal de la aplicación"""
-    
-    # Header principal
-    st.markdown('<h1 class="main-header">🌱 BucaraFlora - IA con Firebase</h1>', 
-                unsafe_allow_html=True)
-    
-    st.markdown("""
-    <div style="text-align: center; margin-bottom: 2rem;">
-        <p style="font-size: 1.1rem; color: #666; margin-bottom: 1rem;">
-            <strong>Identificador de plantas con información rica desde Firebase</strong>
-        </p>
-        <span class="performance-badge">🔥 Powered by ONNX Runtime + Firebase Firestore</span>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Cargar modelo y especies
-    with st.spinner("🔄 Cargando modelo optimizado..."):
-        session = load_onnx_model()
-        species_list = load_species_list()
-    
-    # Verificar que todo esté cargado
-    if session is None:
-        st.error("❌ No se pudo cargar el modelo ONNX")
-        st.info("💡 Ejecuta step2_convert_model.py para generar el modelo ONNX")
-        return
-    
-    if not species_list:
-        st.error("❌ No se pudo cargar la lista de especies")
-        return
-    
-    # Mostrar estado del sistema
-    st.success(f"✅ Sistema listo: Modelo ONNX cargado con {len(species_list)} especies")
-    
-    # Test de Firebase en sidebar
-    with st.sidebar:
-        st.markdown("### 🔥 Estado Firebase")
-        try:
-            from utils.firebase_streamlit import initialize_firebase
+def buscar_info_planta_firestore(nombre_cientifico):
+    """
+    Busca información de la planta en Firestore con múltiples formatos
+    """
+    try:
+        print(f"🔍 Buscando en Firestore: {nombre_cientifico}")
         
-        # Verificar conexión usando nuestra función optimizada
-            db = initialize_firebase()
+        # Usar la función básica mejorada
+        info = obtener_info_planta_basica(nombre_cientifico)
         
-            if db:
-                st.markdown("🟢 **Conectado**")
-                st.markdown("Proyecto: `bucaraflora-f0161`")
-                st.markdown("Colección: `planta`")
-            else:
-                st.markdown("🔴 **Error de conexión**")
+        # Verificar si encontramos datos reales
+        if info.get('fuente_datos') == 'firestore':
+            print(f"✅ Datos encontrados en Firestore para: {nombre_cientifico}")
+            return {
+                "exito": True,
+                "datos": info,
+                "fuente": "firestore"
+            }
+        else:
+            print(f"⚠️ No se encontraron datos en Firestore para: {nombre_cientifico}")
+            return {
+                "exito": False,
+                "datos": info,
+                "fuente": info.get('fuente_datos', 'no_encontrado')
+            }
             
-        except Exception as e:
-            st.markdown("🟡 **Error en verificación**")
-            st.caption(f"Error: {str(e)[:50]}...")
-        
-        st.markdown("### 🤖 Información del Modelo")
-        st.markdown("- **Motor:** ONNX Runtime")
-        st.markdown("- **Especies:** 335")
-        st.markdown("- **Precisión:** Idéntica a TensorFlow")
-        st.markdown("- **Velocidad:** 100x+ más rápido")
-        st.markdown("- **Tamaño:** 55% más pequeño")
-        st.markdown("- **Python:** 3.13 compatible ✅")
+    except Exception as e:
+        print(f"❌ Error buscando en Firestore: {e}")
+        return {
+            "exito": False,
+            "datos": {
+                "nombre_cientifico": nombre_cientifico,
+                "nombre_comun": "Error de conexión",
+                "descripcion": f"No se pudo conectar con la base de datos: {str(e)}",
+                "fuente_datos": "error"
+            },
+            "fuente": "error"
+        }
+
+def mostrar_info_planta_completa(info_planta):
+    """
+    Muestra la información completa de la planta de forma visualmente atractiva
+    """
+    datos = info_planta.get('datos', {})
+    fuente = info_planta.get('fuente', 'desconocido')
     
-    # Área principal de upload
+    # Indicador de fuente de datos
+    if fuente == 'firestore':
+        st.success("✅ Información verificada de la base de datos")
+    elif fuente == 'no_encontrado':
+        st.warning("⚠️ Especie no encontrada en la base de datos")
+    else:
+        st.error("❌ Error al obtener información de la base de datos")
+    
+    # Contenedor principal
+    with st.container():
+        col1, col2 = st.columns([2, 1])
+        
+        with col1:
+            # Nombre común y científico
+            st.markdown(f"### 🌿 {datos.get('nombre_comun', 'Nombre no disponible')}")
+            st.markdown(f"**Nombre científico:** *{datos.get('nombre_cientifico', 'N/A')}*")
+            
+            # Descripción
+            descripcion = datos.get('descripcion', '')
+            if descripcion and fuente == 'firestore':
+                st.markdown("#### 📝 Descripción")
+                st.markdown(f'<div class="info-card">{descripcion}</div>', unsafe_allow_html=True)
+            
+            # Información adicional
+            if datos.get('fecha_observacion'):
+                st.markdown(f"**📅 Fecha de observación:** {datos.get('fecha_observacion')}")
+            
+            if datos.get('fuente'):
+                st.markdown(f"**📚 Fuente:** {datos.get('fuente')}")
+        
+        with col2:
+            # Imagen de referencia
+            imagen_url = datos.get('imagen_referencia')
+            if imagen_url and fuente == 'firestore':
+                try:
+                    st.image(imagen_url, caption="Imagen de referencia", use_container_width=True)
+                except:
+                    st.info("📷 Imagen no disponible")
+            else:
+                st.info("📷 Sin imagen de referencia")
+    
+    # Información taxonómica
+    if datos.get('taxonomia') and fuente == 'firestore':
+        with st.expander("🧬 Ver Clasificación Taxonómica"):
+            taxonomia = datos.get('taxonomia', {})
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown("**Clasificación Superior:**")
+                st.write(f"• **Reino:** {taxonomia.get('reino', 'N/A')}")
+                st.write(f"• **Filo:** {taxonomia.get('filo', 'N/A')}")
+                st.write(f"• **Clase:** {taxonomia.get('clase', 'N/A')}")
+            
+            with col2:
+                st.markdown("**Clasificación Inferior:**")
+                st.write(f"• **Orden:** {taxonomia.get('orden', 'N/A')}")
+                st.write(f"• **Familia:** {taxonomia.get('familia', 'N/A')}")
+                st.write(f"• **Género:** {taxonomia.get('genero', 'N/A')}")
+                st.write(f"• **Especie:** {taxonomia.get('especie', 'N/A')}")
+
+def hacer_prediccion_con_info(imagen, especies_excluir=None):
+    """
+    Hace predicción y obtiene información de Firestore
+    """
+    try:
+        # Hacer predicción con el modelo
+        resultado = session_manager.predictor.predecir_planta(imagen, especies_excluir)
+        
+        if resultado.get("exito"):
+            especie_predicha = resultado["especie_predicha"]
+            
+            # Buscar información en Firestore
+            info_planta = buscar_info_planta_firestore(especie_predicha)
+            
+            # Combinar resultados
+            resultado_completo = {
+                "exito": True,
+                "especie_predicha": especie_predicha,
+                "confianza": resultado["confianza"],
+                "info_planta": info_planta,
+                "top_predicciones": resultado.get("top_predicciones", []),
+                "timestamp": datetime.now().isoformat()
+            }
+            
+            return resultado_completo
+        else:
+            return resultado
+            
+    except Exception as e:
+        return {
+            "exito": False,
+            "error": str(e),
+            "mensaje": "Error en la predicción"
+        }
+
+# ==================== PANTALLAS PRINCIPALES ====================
+
+def pantalla_upload_imagen():
+    """Pantalla inicial para subir imagen"""
     st.markdown("### 📸 Sube una foto de tu planta")
     
+    # Área de carga
     uploaded_file = st.file_uploader(
         "Selecciona una imagen",
-        type=['jpg', 'jpeg', 'png'],
-        help=f"Formatos: JPG, JPEG, PNG. Máximo {CONFIG['max_file_size_mb']}MB."
+        type=STREAMLIT_CONFIG["allowed_extensions"],
+        help="Formatos soportados: JPG, JPEG, PNG. Máximo 10MB."
     )
     
     if uploaded_file is not None:
         # Validar tamaño
-        if uploaded_file.size > CONFIG['max_file_size_mb'] * 1024 * 1024:
-            st.error(f"❌ Archivo muy grande. Máximo {CONFIG['max_file_size_mb']}MB.")
+        if uploaded_file.size > STREAMLIT_CONFIG["max_file_size"] * 1024 * 1024:
+            st.error(f"❌ Archivo muy grande. Máximo {STREAMLIT_CONFIG['max_file_size']}MB.")
             return
         
         try:
             # Cargar y mostrar imagen
-            image = Image.open(uploaded_file).convert('RGB')
+            imagen = Image.open(uploaded_file)
             
-            # Mostrar imagen centrada
+            # Mostrar imagen con columnas para centrarla
             col1, col2, col3 = st.columns([1, 2, 1])
             with col2:
-                st.image(image, caption="Tu planta", use_container_width=True)
+                st.image(imagen, caption="Tu planta", use_container_width=True)
             
             # Botón de análisis
             col1, col2, col3 = st.columns([1, 2, 1])
             with col2:
-                if st.button("🔍 Identificar con IA", type="primary", use_container_width=True):
-                    
-                    with st.spinner("🧠 Analizando con IA ultra-rápida..."):
-                        # Procesar imagen
-                        processed_image = preprocess_image(image)
+                if st.button("🔍 Identificar Planta", type="primary", use_container_width=True):
+                    with st.spinner("🧠 Analizando tu planta..."):
+                        # Limpiar estado anterior
+                        limpiar_sesion()
                         
-                        if processed_image is not None:
-                            # Hacer predicción
-                            predictions, inference_time = predict_with_onnx(
-                                session, processed_image, species_list, 
-                                top_k=CONFIG['top_predictions']
-                            )
-                            
-                            if predictions:
-                                # Mostrar información de rendimiento
-                                show_performance_info(inference_time)
-                                
-                                # Resultado principal
-                                best_prediction = predictions[0]
-                                
-                                st.markdown('<div class="prediction-card">', unsafe_allow_html=True)
-                                
-                                # ===== NUEVA FUNCIONALIDAD: INFORMACIÓN DE FIREBASE =====
-                                with st.spinner("🔥 Obteniendo información desde Firebase..."):
-                                    plant_info = get_plant_info_from_firebase(best_prediction['species'])
-                                
-                                # Mostrar información rica de la planta
-                                display_plant_information(plant_info)
-                                
-                                # Barra de confianza visual
-                                confidence_pct = best_prediction['percentage']
-                                st.markdown(f"""
-                                <div class="confidence-bar">
-                                    <div class="confidence-fill" style="width: {confidence_pct}%;"></div>
-                                </div>
-                                <p style="text-align: center; font-weight: bold; margin: 0.5rem 0;">
-                                    Confianza: {confidence_pct}%
-                                </p>
-                                """, unsafe_allow_html=True)
-                                
-                                st.markdown('</div>', unsafe_allow_html=True)
-                                
-                                # Mostrar alternativas si hay más predicciones
-                                if len(predictions) > 1:
-                                    st.markdown("### 🤔 Otras posibilidades:")
-                                    
-                                    for i, pred in enumerate(predictions[1:], 2):
-                                        # Obtener información de Firebase para alternativas
-                                        alt_info = get_plant_info_from_firebase(pred['species'])
-                                        
-                                        with st.expander(f"{i}. {alt_info['nombre_comun']} - {pred['percentage']}%"):
-                                            st.markdown(f"**Nombre científico:** {format_species_name(alt_info['nombre_cientifico'])}")
-                                            st.markdown(f"**Confianza:** {pred['percentage']}%")
-                                            if alt_info['familia']:
-                                                st.markdown(f"**Familia:** {alt_info['familia']}")
-                                            st.markdown(f"**Descripción:** {alt_info['descripcion'][:200]}...")
-                                
-                                # Mensaje de éxito
-                                st.success("🎉 ¡Identificación completada con información de Firebase!")
-                                st.balloons()
-                                
-                                # Información técnica
-                                with st.expander("📊 Información técnica"):
-                                    st.markdown(f"- **Tiempo de inferencia:** {inference_time*1000:.2f}ms")
-                                    st.markdown(f"- **Motor de IA:** ONNX Runtime")
-                                    st.markdown(f"- **Base de datos:** Firebase Firestore")
-                                    st.markdown(f"- **Modelo:** 335 especies colombianas")
-                                    st.markdown(f"- **Arquitectura:** MobileNetV2 optimizada")
-                                    st.markdown(f"- **Index de clase:** {best_prediction['index']}")
-                                    st.markdown(f"- **Información encontrada:** {'✅ Sí' if plant_info['found'] else '❌ No'}")
-                                
-                                # Botón para nueva consulta
-                                if st.button("🔄 Identificar otra planta", use_container_width=True):
-                                    st.rerun()
-                                
-                            else:
-                                st.error("❌ No se pudo realizar la predicción")
+                        # Establecer nueva sesión
+                        st.session_state.session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+                        st.session_state.imagen_actual = imagen
+                        st.session_state.intento_actual = 1
+                        st.session_state.especies_descartadas = set()
+                        
+                        # Hacer predicción con información
+                        resultado = hacer_prediccion_con_info(imagen, None)
+                        
+                        if resultado.get("exito"):
+                            st.session_state.resultado_actual = resultado
+                            st.rerun()
                         else:
-                            st.error("❌ Error procesando la imagen")
+                            st.error(f"❌ {resultado.get('mensaje', 'Error en la predicción')}")
                             
         except Exception as e:
             st.error(f"❌ Error cargando imagen: {e}")
+
+def pantalla_prediccion_feedback():
+    """Pantalla de predicción con botones de feedback"""
+    resultado = st.session_state.resultado_actual
     
-    # Footer
-    st.markdown("---")
-    st.markdown("""
-    <div style="text-align: center; color: #666; font-size: 0.9rem;">
-        🌱 BucaraFlora - Identificador de Plantas con IA<br>
-        🔥 Optimizado con ONNX Runtime + Firebase Firestore
+    # Mostrar imagen del usuario
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.image(st.session_state.imagen_actual, caption="Tu planta", use_container_width=True)
+    
+    # Card de predicción
+    st.markdown('<div class="prediction-card">', unsafe_allow_html=True)
+    
+    # Mostrar información de la planta
+    info_planta = resultado.get("info_planta", {})
+    mostrar_info_planta_completa(info_planta)
+    
+    # Barra de confianza
+    confianza = resultado["confianza"]
+    porcentaje = int(confianza * 100)
+    
+    st.markdown(f"""
+    <div class="confidence-bar">
+        <div class="confidence-fill" style="width: {porcentaje}%;"></div>
     </div>
+    <p style="text-align: center; margin: 0.5rem 0; font-weight: bold;">
+        Confianza de la predicción: {porcentaje}%
+    </p>
     """, unsafe_allow_html=True)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Botones de feedback
+    st.markdown("---")
+    st.markdown("### ¿Es correcta esta identificación?")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        if st.button("✅ ¡Sí, es correcta!", type="primary", use_container_width=True):
+            with st.spinner("💾 Guardando tu confirmación..."):
+                # Aquí puedes agregar lógica para guardar en Firestore
+                st.success(MESSAGES["prediction_success"])
+                st.success(MESSAGES["image_saved"])
+                st.balloons()
+                
+                # Botón para nueva identificación
+                if st.button("🔄 Identificar otra planta", use_container_width=True):
+                    limpiar_sesion()
+                    st.rerun()
+    
+    with col2:
+        if st.button("❌ No, es incorrecta", type="secondary", use_container_width=True):
+            # Procesar feedback negativo
+            especie_rechazada = resultado["especie_predicha"]
+            st.session_state.especies_descartadas.add(especie_rechazada)
+            st.session_state.intento_actual += 1
+            
+            # Mostrar directamente las top 5 especies
+            st.session_state.mostrar_top_especies = True
+            st.rerun()
+
+def pantalla_top_especies():
+    """Pantalla de selección manual de las top 5 especies"""
+    st.markdown("### 🤔 ¿Tal vez sea una de estas?")
+    st.info("Selecciona la especie correcta de las siguientes opciones:")
+    
+    # Obtener top 5 especies
+    with st.spinner("🔍 Buscando especies similares..."):
+        especies_excluir = list(st.session_state.especies_descartadas)
+        top_especies = session_manager.predictor.obtener_top_especies(
+            st.session_state.imagen_actual,
+            cantidad=5,  # Solo top 5
+            especies_excluir=especies_excluir
+        )
+    
+    if not top_especies:
+        st.error("❌ Error obteniendo especies similares")
+        return
+    
+    # Mostrar imagen original
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.image(st.session_state.imagen_actual, caption="Tu planta", use_container_width=True)
+    
+    st.markdown("---")
+    
+    # Mostrar las 5 especies en un layout mejorado
+    for i, especie_data in enumerate(top_especies):
+        # Buscar información de la especie
+        info_planta = buscar_info_planta_firestore(especie_data["especie"])
+        datos = info_planta.get('datos', {})
+        
+        # Card para cada especie
+        st.markdown(f'<div class="species-card">', unsafe_allow_html=True)
+        
+        col1, col2, col3 = st.columns([1, 3, 1])
+        
+        with col1:
+            # Número de opción
+            st.markdown(f"### {i+1}")
+        
+        with col2:
+            # Info de la especie
+            st.markdown(f"**{datos.get('nombre_comun', 'N/A')}**")
+            st.markdown(f"*{especie_data['especie']}*")
+            
+            # Barra de confianza mini
+            porcentaje = int(especie_data["confianza"] * 100)
+            st.markdown(f"""
+            <div class="confidence-bar" style="height: 10px;">
+                <div class="confidence-fill" style="width: {porcentaje}%;"></div>
+            </div>
+            <p style="text-align: center; font-size: 0.9em; margin: 0;">
+                Confianza: {porcentaje}%
+            </p>
+            """, unsafe_allow_html=True)
+        
+        with col3:
+            # Botón de selección
+            if st.button(
+                "✅ Es esta", 
+                key=f"select_{i}",
+                use_container_width=True,
+                type="primary" if i == 0 else "secondary"
+            ):
+                with st.spinner("💾 Guardando tu selección..."):
+                    st.success(f"🎉 ¡Gracias! Has identificado tu planta como **{datos.get('nombre_comun', especie_data['especie'])}**")
+                    st.success(MESSAGES["image_saved"])
+                    st.balloons()
+                    
+                    # Agregar botón para nueva identificación
+                    if st.button("🔄 Identificar otra planta", use_container_width=True):
+                        limpiar_sesion()
+                        st.rerun()
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Opción "No es ninguna de estas"
+    st.markdown("---")
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if st.button("❌ No es ninguna de estas", type="secondary", use_container_width=True):
+            st.warning("😔 Lo sentimos, no pudimos identificar tu planta.")
+            st.info("💡 **Sugerencia:** Intenta con otra foto desde un ángulo diferente, asegurándote de que se vean claramente las hojas o flores.")
+            
+            if st.button("📸 Intentar con otra foto", type="primary", use_container_width=True):
+                limpiar_sesion()
+                st.rerun()
+
+def pantalla_error_sistema():
+    """Pantalla cuando el sistema no está disponible"""
+    st.markdown('<div class="error-message">', unsafe_allow_html=True)
+    st.markdown("### ❌ Sistema No Disponible")
+    st.markdown("El modelo de identificación no está cargado o entrenado.")
+    st.markdown("**Posibles soluciones:**")
+    st.markdown("- Entrenar el modelo inicial: `python model/train_model.py`")
+    st.markdown("- Verificar que existe el archivo del modelo")
+    st.markdown("- Contactar al administrador del sistema")
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    if st.button("🔄 Verificar sistema nuevamente"):
+        st.rerun()
+
+# ==================== FUNCIÓN PRINCIPAL ====================
+
+def main():
+    """Función principal de la aplicación"""
+    # Mostrar header
+    mostrar_header()
+    
+    # Verificar sistema
+    estado_sistema = verificar_sistema_prediccion()
+    
+    if not estado_sistema["disponible"]:
+        pantalla_error_sistema()
+        return
+    
+    # Determinar qué pantalla mostrar
+    if st.session_state.mostrar_top_especies:
+        pantalla_top_especies()
+    elif st.session_state.resultado_actual:
+        pantalla_prediccion_feedback()
+    else:
+        pantalla_upload_imagen()
+    
+    # Sidebar con información
+    with st.sidebar:
+        st.markdown("### ℹ️ Información del Sistema")
+        st.markdown(f"🌿 **Especies:** {estado_sistema.get('especies', 'N/A')}")
+        st.markdown(f"⏱️ **Actualización:** {datetime.now().strftime('%H:%M:%S')}")
+        
+        # Estado de servicios
+        st.markdown("---")
+        st.markdown("### 🔌 Estado de Servicios")
+        
+        if st.session_state.get('firestore_initialized'):
+            st.success("✅ Base de Datos: Conectada")
+        else:
+            st.error("❌ Base de Datos: Desconectada")
+        
+        if st.session_state.get('api_initialized'):
+            st.success("✅ API Local: Funcionando")
+        else:
+            st.warning("⚠️ API Local: No disponible")
+        
+        # Botón de reset
+        st.markdown("---")
+        if st.button("🔄 Nueva Consulta", use_container_width=True):
+            limpiar_sesion()
+            st.rerun()
+        
+        # Debug info
+        with st.expander("🔧 Debug Info"):
+            st.write(f"**Session ID:** {st.session_state.session_id}")
+            st.write(f"**Intento:** {st.session_state.intento_actual}")
+            st.write(f"**Descartadas:** {len(st.session_state.especies_descartadas)}")
+            if st.session_state.resultado_actual:
+                st.write(f"**Especie actual:** {st.session_state.resultado_actual.get('especie_predicha')}")
+
+# ==================== EJECUCIÓN ====================
 
 if __name__ == "__main__":
     main()

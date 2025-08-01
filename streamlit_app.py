@@ -10,6 +10,7 @@ import time
 import subprocess
 import os
 import re
+import time
 
 # ==================== CONFIGURACIÓN DE LA PÁGINA (DEBE SER PRIMERO) ====================
 # Agregar directorio padre al path ANTES de importar configuración
@@ -240,6 +241,8 @@ def inicializar_estado():
         st.session_state.mostrar_top_especies = False
     if 'max_intentos' not in st.session_state:
         st.session_state.max_intentos = RETRAINING_CONFIG["max_attempts_per_prediction"]
+    if 'mensaje_inicio' not in st.session_state:
+        st.session_state.mensaje_inicio = None
 
 def limpiar_sesion():
     """Limpia la sesión actual completamente"""
@@ -511,15 +514,16 @@ def pantalla_prediccion_feedback():
     with col1:
         if st.button("✅ ¡Sí, es correcta!", type="primary", use_container_width=True):
             with st.spinner("💾 Guardando tu confirmación..."):
-                # Aquí puedes agregar lógica para guardar en Firestore
                 st.success(MESSAGES["prediction_success"])
                 st.success(MESSAGES["image_saved"])
                 st.balloons()
-                
-                # Botón para nueva identificación
-                if st.button("🔄 Identificar otra planta", use_container_width=True):
-                    limpiar_sesion()
-                    st.rerun()
+            
+                # Esperar para que vea el mensaje
+                time.sleep(2)
+            
+                # Limpiar y volver al inicio automáticamente
+                limpiar_sesion()
+                st.rerun()
     
     with col2:
         if st.button("❌ No, es incorrecta", type="secondary", use_container_width=True):

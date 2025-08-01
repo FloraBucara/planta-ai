@@ -553,9 +553,12 @@ def pantalla_top_especies():
     # Mostrar imagen original
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        st.image(st.session_state.imagen_actual, caption="Tu planta", use_container_width=True)
+        st.image(st.session_state.imagen_actual, caption="Tu planta", use_column_width=True)
     
     st.markdown("---")
+    
+    # Variable para controlar si se seleccionó algo
+    seleccionado = False
     
     # Mostrar las 5 especies en un layout mejorado
     for i, especie_data in enumerate(top_especies):
@@ -601,10 +604,12 @@ def pantalla_top_especies():
                     st.success(MESSAGES["image_saved"])
                     st.balloons()
                     
-                    # Agregar botón para nueva identificación
-                    if st.button("🔄 Identificar otra planta", use_container_width=True):
-                        limpiar_sesion()
-                        st.rerun()
+                    # Esperar un momento para que el usuario vea el mensaje
+                    time.sleep(2)
+                    
+                    # Limpiar y volver al inicio
+                    limpiar_sesion()
+                    st.rerun()
         
         st.markdown('</div>', unsafe_allow_html=True)
     
@@ -613,12 +618,16 @@ def pantalla_top_especies():
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button("❌ No es ninguna de estas", type="secondary", use_container_width=True):
+            # Mostrar mensaje de disculpa
             st.warning("😔 Lo sentimos, no pudimos identificar tu planta.")
             st.info("💡 **Sugerencia:** Intenta con otra foto desde un ángulo diferente, asegurándote de que se vean claramente las hojas o flores.")
             
-            if st.button("📸 Intentar con otra foto", type="primary", use_container_width=True):
-                limpiar_sesion()
-                st.rerun()
+            # Esperar un momento para que lea el mensaje
+            time.sleep(3)
+            
+            # Limpiar y volver al inicio
+            limpiar_sesion()
+            st.rerun()
 
 def pantalla_error_sistema():
     """Pantalla cuando el sistema no está disponible"""

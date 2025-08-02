@@ -11,6 +11,7 @@ import subprocess
 import os
 import re
 import time
+from utils.api_client import enviar_feedback, servidor_disponible, obtener_estadisticas
 
 # ==================== CONFIGURACIÓN DE LA PÁGINA (DEBE SER PRIMERO) ====================
 # Agregar directorio padre al path ANTES de importar configuración
@@ -538,14 +539,38 @@ def pantalla_prediccion_feedback():
     with col1:
         if st.button("✅ ¡Sí, es correcta!", type="primary", use_container_width=True):
             with st.spinner("💾 Guardando tu confirmación..."):
-                st.success(MESSAGES["prediction_success"])
-                st.success(MESSAGES["image_saved"])
+                # Intentar enviar al servidor
+                if servidor_disponible():
+                    respuesta = enviar_feedback(
+                        imagen_pil=st.session_state.imagen_actual,
+                        session_id=st.session_state.session_id,
+                        especie_predicha=resultado["especie_predicha"],
+                        confianza=resultado["confianza"],
+                        feedback_tipo="correcto",
+                        especie_correcta=resultado["especie_predicha"]
+                   )
+                
+                    if respuesta.get("exito"):
+                        st.success(MESSAGES["prediction_success"])
+                        st.success("✅ Imagen guardada en el servidor")
+                    
+                        # Mostrar info de reentrenamiento si está cerca
+                        if respuesta.get("reentrenamiento", {}).get("progreso", 0) > 80:
+                            st.info(f"📊 Progreso para reentrenamiento: {respuesta['reentrenamiento']['progreso']}%")
+                    else:
+                        st.warning("⚠️ No se pudo guardar en el servidor, pero tu feedback fue registrado")
+                else:
+                    st.warning("⚠️ Servidor no disponible, feedback guardado localmente")
+            
                 st.balloons()
             
                 # Esperar para que vea el mensaje
                 time.sleep(2)
             
-                # Limpiar y volver al inicio automáticamente
+                # Establecer mensaje de éxito
+                st.session_state.mensaje_inicio = "identificada_correcta"
+            
+                # Limpiar y volver al inicio
                 limpiar_sesion()
                 st.rerun()
     
@@ -621,6 +646,7 @@ def pantalla_top_especies():
         
         with col3:
             # Botón de selección
+            
             if st.button(
                 "✅ Es esta", 
                 key=f"select_{i}",
@@ -628,18 +654,33 @@ def pantalla_top_especies():
                 type="primary" if i == 0 else "secondary"
             ):
                 with st.spinner("💾 Guardando tu selección..."):
-                    st.success(f"🎉 ¡Gracias! Has identificado tu planta como **{datos.get('nombre_comun', especie_data['especie'])}**")
-                    st.success(MESSAGES["image_saved"])
+                    # Intentar enviar al servidor
+                    if servidor_disponible():
+                        respuesta = enviar_feedback(
+                            imagen_pil=st.session_state.imagen_actual,
+                            session_id=st.session_state.session_id,
+                            especie_predicha=st.session_state.resultado_actual["especie_predicha"],
+                            confianza=st.session_state.resultado_actual["confianza"],
+                            feedback_tipo="corregido",
+                            especie_correcta=especie_data["especie"]
+                        )
+            
+                        if respuesta.get("exito"):
+                            st.success(f"🎉 ¡Gracias! Has identificado tu planta como **{datos.get('nombre_comun', especie_data['especie'])}**")
+                            st.success("✅ Imagen guardada para mejorar el modelo")
+                        else:
+                            st.warning("⚠️ Feedback registrado (servidor no disponible)")
+                    else:
+                        st.success(f"🎉 ¡Gracias! Has identificado tu planta como **{datos.get('nombre_comun', especie_data['especie'])}**")
+        
                     st.balloons()
-                    
-                    # Esperar un momento para que el usuario vea el mensaje
-                    time.sleep(2)
-                    
+        
+                    # Guardar info de la planta identificada
+                    st.session_state.mensaje_inicio = f"identificada_top5:{datos.get('nombre_comun', especie_data['especie'])}"
+        
                     # Limpiar y volver al inicio
                     limpiar_sesion()
                     st.rerun()
-        
-        st.markdown('</div>', unsafe_allow_html=True)
     
     # Opción "No es ninguna de estas"
     st.markdown("---")
@@ -706,7 +747,28 @@ def main():
             st.success("✅ Base de Datos: Conectada")
         else:
             st.error("❌ Base de Datos: Desconectada")
+        # En el sidebar, después del estado de Firebase
+        if servidor_disponible():
+            st.success("✅ Servidor Local: Conectado")
+    
+            # Mostrar estadísticas si están disponibles
+            stats = obtener_estadisticas()
+            if stats:
+                st.markdown("📊 **Estadísticas:**")
+                st.write(f"• Feedback total: {stats['feedback_total']}")
+                st.write(f"• Imágenes guardadas: {stats['imagenes_guardadas']}")
         
+                # Estado de reentrenamiento
+                estado = stats.get('reentrenamiento', {})
+                if estado.get('necesita_reentrenar'):
+                    st.warning("🔄 ¡Listo para reentrenar!")
+                else:
+                    progreso = estado.get('total_imagenes', 0)
+                    st.progress(progreso / 50)
+                    st.caption(f"Progreso: {progreso}/50 imágenes")
+        else:
+            st.error("❌ Servidor Local: Desconectado")
+    
         # Botón de reset
         st.markdown("---")
         if st.button("🔄 Nueva Consulta", use_container_width=True):

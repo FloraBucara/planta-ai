@@ -33,6 +33,7 @@ except ImportError as e:
     st.error(f"❌ Error importando módulos: {e}")
     st.stop()
 
+
 # ==================== CSS PERSONALIZADO ====================
 
 st.markdown("""
@@ -221,47 +222,58 @@ def verificar_y_iniciar_api():
 
 def inicializar_estado():
     """Inicializa todos los estados necesarios"""
-    if 'firestore_initialized' not in st.session_state:
+    # Lista de estados con sus valores por defecto
+    estados_default = {
+        'firestore_initialized': False,
+        'api_initialized': False,
+        'session_id': None,
+        'imagen_actual': None,
+        'especies_descartadas': set(),
+        'intento_actual': 1,
+        'resultado_actual': None,
+        'mostrar_top_especies': False,
+        'max_intentos': 3,
+        'mensaje_inicio': None
+    }
+    
+    # Inicializar cada estado si no existe
+    for key, default_value in estados_default.items():
+        if key not in st.session_state:
+            st.session_state[key] = default_value
+    
+    # Ahora sí, intentar inicializar servicios
+    if not st.session_state.firestore_initialized:
         st.session_state.firestore_initialized = inicializar_firestore_app()
     
-    if 'api_initialized' not in st.session_state:
+    if not st.session_state.api_initialized:
         st.session_state.api_initialized = verificar_y_iniciar_api()
-    
-    if 'session_id' not in st.session_state:
-        st.session_state.session_id = None
-    if 'imagen_actual' not in st.session_state:
-        st.session_state.imagen_actual = None
-    if 'especies_descartadas' not in st.session_state:
-        st.session_state.especies_descartadas = set()
-    if 'intento_actual' not in st.session_state:
-        st.session_state.intento_actual = 1
-    if 'resultado_actual' not in st.session_state:
-        st.session_state.resultado_actual = None
-    if 'mostrar_top_especies' not in st.session_state:
-        st.session_state.mostrar_top_especies = False
-    if 'max_intentos' not in st.session_state:
-        st.session_state.max_intentos = RETRAINING_CONFIG["max_attempts_per_prediction"]
-    if 'mensaje_inicio' not in st.session_state:
-        st.session_state.mensaje_inicio = None
 
 def limpiar_sesion():
     """Limpia la sesión actual completamente"""
     # Guardar mensaje si existe
     mensaje_temp = st.session_state.get('mensaje_inicio', None)
     
-    # Limpiar todo
-    st.session_state.session_id = None
-    st.session_state.imagen_actual = None
-    st.session_state.especies_descartadas = set()
-    st.session_state.intento_actual = 1
-    st.session_state.resultado_actual = None
-    st.session_state.mostrar_top_especies = False
+    # Limpiar todo de forma segura
+    for key in ['session_id', 'imagen_actual', 'especies_descartadas', 
+                'intento_actual', 'resultado_actual', 'mostrar_top_especies']:
+        if key in st.session_state:
+            if key == 'especies_descartadas':
+                st.session_state[key] = set()
+            elif key == 'intento_actual':
+                st.session_state[key] = 1
+            else:
+                st.session_state[key] = None
     
     # Restaurar mensaje
     st.session_state.mensaje_inicio = mensaje_temp
     
-    st.cache_data.clear()
+    # Limpiar caché
+    try:
+        st.cache_data.clear()
+    except:
+        pass
 
+inicializar_estado()
 # ==================== FUNCIONES AUXILIARES MEJORADAS ====================
 
 def mostrar_header():
@@ -659,6 +671,9 @@ def pantalla_error_sistema():
 
 def main():
     """Función principal de la aplicación"""
+    # SIEMPRE inicializar estado primero
+    inicializar_estado()
+    
     # Mostrar header
     mostrar_header()
     
@@ -669,10 +684,10 @@ def main():
         pantalla_error_sistema()
         return
     
-    # Determinar qué pantalla mostrar
-    if st.session_state.mostrar_top_especies:
+    # Determinar qué pantalla mostrar con verificaciones seguras
+    if st.session_state.get('mostrar_top_especies', False):
         pantalla_top_especies()
-    elif st.session_state.resultado_actual:
+    elif st.session_state.get('resultado_actual'):
         pantalla_prediccion_feedback()
     else:
         pantalla_upload_imagen()
@@ -687,15 +702,10 @@ def main():
         st.markdown("---")
         st.markdown("### 🔌 Estado de Servicios")
         
-        if st.session_state.get('firestore_initialized'):
+        if st.session_state.get('firestore_initialized', False):
             st.success("✅ Base de Datos: Conectada")
         else:
             st.error("❌ Base de Datos: Desconectada")
-        
-        if st.session_state.get('api_initialized'):
-            st.success("✅ API Local: Funcionando")
-        else:
-            st.warning("⚠️ API Local: No disponible")
         
         # Botón de reset
         st.markdown("---")
@@ -705,10 +715,10 @@ def main():
         
         # Debug info
         with st.expander("🔧 Debug Info"):
-            st.write(f"**Session ID:** {st.session_state.session_id}")
-            st.write(f"**Intento:** {st.session_state.intento_actual}")
-            st.write(f"**Descartadas:** {len(st.session_state.especies_descartadas)}")
-            if st.session_state.resultado_actual:
+            st.write(f"**Session ID:** {st.session_state.get('session_id', 'None')}")
+            st.write(f"**Intento:** {st.session_state.get('intento_actual', 0)}")
+            st.write(f"**Descartadas:** {len(st.session_state.get('especies_descartadas', set()))}")
+            if st.session_state.get('resultado_actual'):
                 st.write(f"**Especie actual:** {st.session_state.resultado_actual.get('especie_predicha')}")
 
 # ==================== EJECUCIÓN ====================

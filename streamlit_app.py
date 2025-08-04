@@ -396,22 +396,32 @@ def mostrar_info_planta_completa(info_planta):
                 st.write(f"• **Familia:** {taxonomia.get('familia', 'N/A')}")
                 st.write(f"• **Género:** {taxonomia.get('genero', 'N/A')}")
                 st.write(f"• **Especie:** {taxonomia.get('especie', 'N/A')}")
+                
 def mostrar_imagen_referencia(nombre_cientifico):
     """Muestra la primera imagen de la especie desde el servidor"""
     try:
         from utils.api_client import SERVER_URL
         import requests
         
-        if not SERVER_URL or SERVER_URL == "https://c10e4f02e0f2.ngrok-free.app":
+        # DEBUG: Mostrar qué URL está usando
+        st.write(f"🔧 DEBUG - SERVER_URL: {SERVER_URL}")
+        
+        if not SERVER_URL or SERVER_URL == "http://localhost:8000":
             st.info("📷 Servidor de imágenes no disponible")
             return
         
         # Probar la primera imagen con el formato: NombreCientifico_01.jpg
         imagen_url = f"{SERVER_URL}/api/image/{nombre_cientifico}/{nombre_cientifico}_01.jpg"
         
+        # DEBUG: Mostrar URL completa
+        st.write(f"🔧 DEBUG - Imagen URL: {imagen_url}")
+        
         try:
             # Verificar que la imagen existe
             response = requests.head(imagen_url, timeout=5)
+            
+            # DEBUG: Mostrar código de respuesta
+            st.write(f"🔧 DEBUG - Response code: {response.status_code}")
             
             if response.status_code == 200:
                 st.image(
@@ -422,12 +432,11 @@ def mostrar_imagen_referencia(nombre_cientifico):
             else:
                 st.info("📷 Imagen de referencia no disponible")
                 
-        except requests.RequestException:
-            st.info("📷 Error cargando imagen de referencia")
+        except requests.RequestException as e:
+            st.error(f"📷 Error cargando imagen: {e}")
             
     except Exception as e:
-        st.info("📷 Sin imagen de referencia")
-        print(f"Error: {e}")
+        st.error(f"📷 Error general: {e}")
         
 def hacer_prediccion_con_info(imagen, especies_excluir=None):
     """

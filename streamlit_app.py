@@ -373,19 +373,13 @@ def mostrar_info_planta_completa(info_planta):
                 st.markdown(f"**📚 Fuente:** {datos.get('fuente')}")
         
         with col2:
-            # Imagen de referencia
-            imagen_url = datos.get('imagen_referencia')
-            if imagen_url and fuente == 'firestore':
-                try:
-                    st.image(imagen_url, caption="Imagen de referencia", use_container_width=True)
-                except:
-                    st.info("📷 Imagen no disponible")
-            else:
-                st.info("📷 Sin imagen de referencia")
+            # NUEVA FUNCIÓN: Imagen desde servidor
+            mostrar_imagen_referencia(datos.get('nombre_cientifico', ''))
     
-    # Información taxonómica
+    # Información taxonómica (sin cambios)
     if datos.get('taxonomia') and fuente == 'firestore':
         with st.expander("🧬 Ver Clasificación Taxonómica"):
+            # ... resto del código sin cambios
             taxonomia = datos.get('taxonomia', {})
             
             col1, col2 = st.columns(2)
@@ -402,7 +396,33 @@ def mostrar_info_planta_completa(info_planta):
                 st.write(f"• **Familia:** {taxonomia.get('familia', 'N/A')}")
                 st.write(f"• **Género:** {taxonomia.get('genero', 'N/A')}")
                 st.write(f"• **Especie:** {taxonomia.get('especie', 'N/A')}")
-
+def mostrar_imagen_referencia(nombre_cientifico):
+    """Muestra imagen de referencia desde el servidor"""
+    try:
+        from utils.api_client import SERVER_URL
+        
+        if not SERVER_URL or SERVER_URL == "http://localhost:8000":
+            st.info("📷 Servidor de imágenes no disponible")
+            return
+        
+        # Obtener lista de imágenes de la especie
+        import requests
+        response = requests.get(f"{SERVER_URL}/api/image/{nombre_cientifico}/referencia.jpg", timeout=10)
+        
+        if response.status_code == 200:
+            st.image(
+                f"{SERVER_URL}/api/image/{nombre_cientifico}/referencia.jpg",
+                caption="Imagen de referencia",
+                use_container_width=True
+            )
+        else:
+            # Si no hay imagen específica, mostrar primera disponible
+            st.info("📷 Imagen de referencia no disponible")
+            
+    except Exception as e:
+        st.info("📷 Sin imagen de referencia")
+        print(f"Error cargando imagen: {e}")
+        
 def hacer_prediccion_con_info(imagen, especies_excluir=None):
     """
     Hace predicción y obtiene información de Firestore

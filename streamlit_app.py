@@ -402,7 +402,7 @@ def mostrar_imagen_referencia(nombre_cientifico):
         from utils.api_client import SERVER_URL
         import requests
         
-        if not SERVER_URL or SERVER_URL == "http://localhost:8000":
+        if not SERVER_URL or SERVER_URL == "https://c10e4f02e0f2.ngrok-free.app":
             st.info("📷 Servidor de imágenes no disponible")
             return
         

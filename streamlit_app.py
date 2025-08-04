@@ -401,16 +401,20 @@ def mostrar_imagen_referencia(nombre_cientifico):
     """Muestra la primera imagen disponible de la especie desde el servidor"""
     try:
         from utils.api_client import SERVER_URL
+        import urllib.parse
         
         if not SERVER_URL or SERVER_URL == "http://localhost:8000":
             st.info("📷 Servidor de imágenes no disponible")
             return
         
-        # Usar nuevo endpoint que busca automáticamente la primera imagen
-        imagen_url = f"{SERVER_URL}/api/image-referencia/{nombre_cientifico}"
+        # CODIFICAR LA URL CORRECTAMENTE
+        especie_encoded = urllib.parse.quote(nombre_cientifico)
+        imagen_url = f"{SERVER_URL}/api/image-referencia/{especie_encoded}"
         
-        # DEBUG: Mostrar URL
-        st.write(f"🔧 DEBUG - Probando: {imagen_url}")
+        # DEBUG: Mostrar URLs
+        st.write(f"🔧 DEBUG - Nombre original: {nombre_cientifico}")
+        st.write(f"🔧 DEBUG - Nombre codificado: {especie_encoded}")
+        st.write(f"🔧 DEBUG - URL final: {imagen_url}")
         
         # Mostrar imagen directamente
         try:

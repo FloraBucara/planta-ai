@@ -397,31 +397,37 @@ def mostrar_info_planta_completa(info_planta):
                 st.write(f"• **Género:** {taxonomia.get('genero', 'N/A')}")
                 st.write(f"• **Especie:** {taxonomia.get('especie', 'N/A')}")
 def mostrar_imagen_referencia(nombre_cientifico):
-    """Muestra imagen de referencia desde el servidor"""
+    """Muestra la primera imagen de la especie desde el servidor"""
     try:
         from utils.api_client import SERVER_URL
+        import requests
         
         if not SERVER_URL or SERVER_URL == "http://localhost:8000":
             st.info("📷 Servidor de imágenes no disponible")
             return
         
-        # Obtener lista de imágenes de la especie
-        import requests
-        response = requests.get(f"{SERVER_URL}/api/image/{nombre_cientifico}/referencia.jpg", timeout=10)
+        # Probar la primera imagen con el formato: NombreCientifico_01.jpg
+        imagen_url = f"{SERVER_URL}/api/image/{nombre_cientifico}/{nombre_cientifico}_01.jpg"
         
-        if response.status_code == 200:
-            st.image(
-                f"{SERVER_URL}/api/image/{nombre_cientifico}/referencia.jpg",
-                caption="Imagen de referencia",
-                use_container_width=True
-            )
-        else:
-            # Si no hay imagen específica, mostrar primera disponible
-            st.info("📷 Imagen de referencia no disponible")
+        try:
+            # Verificar que la imagen existe
+            response = requests.head(imagen_url, timeout=5)
+            
+            if response.status_code == 200:
+                st.image(
+                    imagen_url,
+                    caption="Imagen de referencia",
+                    use_container_width=True
+                )
+            else:
+                st.info("📷 Imagen de referencia no disponible")
+                
+        except requests.RequestException:
+            st.info("📷 Error cargando imagen de referencia")
             
     except Exception as e:
         st.info("📷 Sin imagen de referencia")
-        print(f"Error cargando imagen: {e}")
+        print(f"Error: {e}")
         
 def hacer_prediccion_con_info(imagen, especies_excluir=None):
     """

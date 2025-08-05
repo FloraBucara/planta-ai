@@ -662,10 +662,9 @@ def pantalla_top_especies():
                 Confianza: {porcentaje}%
             </p>
             """, unsafe_allow_html=True)
-        
+            
         with col3:
             # Botón de selección
-            
             if st.button(
                 "✅ Es esta", 
                 key=f"select_{i}",
@@ -673,33 +672,36 @@ def pantalla_top_especies():
                 type="primary" if i == 0 else "secondary"
             ):
                 with st.spinner("💾 Guardando tu selección..."):
-                    # Intentar enviar al servidor
-                    if servidor_disponible():
-                        respuesta = enviar_feedback(
-                            imagen_pil=st.session_state.imagen_actual,
-                            session_id=st.session_state.session_id,
-                            especie_predicha=st.session_state.resultado_actual["especie_predicha"],
-                            confianza=st.session_state.resultado_actual["confianza"],
-                            feedback_tipo="corregido",
-                            especie_correcta=especie_data["especie"]
-                        )
-            
-                        if respuesta.get("exito"):
-                            st.success(f"🎉 ¡Gracias! Has identificado tu planta como **{datos.get('nombre_comun', especie_data['especie'])}**")
-                            st.success("✅ Imagen guardada para mejorar el modelo")
-                        else:
-                            st.warning("⚠️ Feedback registrado (servidor no disponible)")
-                    else:
+                    # Enviar feedback de corrección
+                    respuesta = enviar_feedback(
+                        imagen_pil=st.session_state.imagen_actual,
+                        session_id=st.session_state.session_id,
+                        especie_predicha=st.session_state.resultado_actual["especie_predicha"],
+                        confianza=st.session_state.resultado_actual["confianza"],
+                        feedback_tipo="corregido",
+                        especie_correcta=especie_data["especie"]  # La especie que seleccionó
+                    )
+
+                    if respuesta.get("success"):
                         st.success(f"🎉 ¡Gracias! Has identificado tu planta como **{datos.get('nombre_comun', especie_data['especie'])}**")
-        
+                        st.success("✅ Imagen guardada para mejorar el modelo")
+                
+                        # Mostrar progreso
+                        if respuesta.get("progreso"):
+                            st.info(f"📊 Progreso para reentrenamiento: {respuesta['progreso']}%")
+                    
+                        if respuesta.get("necesita_reentrenamiento"):
+                            st.warning("🚀 ¡Suficientes imágenes para reentrenamiento!")
+                    else:
+                        st.warning(f"⚠️ {respuesta.get('mensaje', 'Error guardando feedback')}")
+
                     st.balloons()
-        
-                    # Guardar info de la planta identificada
-                    st.session_state.mensaje_inicio = f"identificada_top5:{datos.get('nombre_comun', especie_data['especie'])}"
-        
+                    time.sleep(2)
+
                     # Limpiar y volver al inicio
                     limpiar_sesion()
                     st.rerun()
+        
     
     # Opción "No es ninguna de estas"
     st.markdown("---")

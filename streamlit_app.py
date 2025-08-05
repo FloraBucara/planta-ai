@@ -403,7 +403,7 @@ def mostrar_imagen_referencia(nombre_cientifico):
         from utils.api_client import SERVER_URL
         from urllib.parse import quote
         
-        if not SERVER_URL or SERVER_URL == "http://localhost:8000":
+        if not SERVER_URL:
             st.info("📷 Servidor de imágenes no disponible")
             return
         

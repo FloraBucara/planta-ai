@@ -563,36 +563,31 @@ def pantalla_prediccion_feedback():
     with col1:
         if st.button("✅ ¡Sí, es correcta!", type="primary", use_container_width=True):
             with st.spinner("💾 Guardando tu confirmación..."):
-                # Intentar enviar al servidor
-                if servidor_disponible():
-                    respuesta = enviar_feedback(
-                        imagen_pil=st.session_state.imagen_actual,
-                        session_id=st.session_state.session_id,
-                        especie_predicha=resultado["especie_predicha"],
-                        confianza=resultado["confianza"],
-                        feedback_tipo="correcto",
-                        especie_correcta=resultado["especie_predicha"]
-                   )
+                # Enviar feedback positivo
+                respuesta = enviar_feedback(
+                    imagen_pil=st.session_state.imagen_actual,
+                    session_id=st.session_state.session_id,
+                    especie_predicha=resultado["especie_predicha"],
+                    confianza=resultado["confianza"],
+                    feedback_tipo="correcto",
+                    especie_correcta=resultado["especie_predicha"]  # Misma especie
+                )
+            
+                if respuesta.get("success"):
+                    st.success("🎉 ¡Gracias por confirmar!")
+                    st.success("✅ Imagen guardada para mejorar el modelo")
                 
-                    if respuesta.get("exito"):
-                        st.success(MESSAGES["prediction_success"])
-                        st.success("✅ Imagen guardada en el servidor")
+                    # Mostrar progreso de reentrenamiento
+                    if respuesta.get("progreso"):
+                        st.info(f"📊 Progreso para reentrenamiento: {respuesta['progreso']}%")
                     
-                        # Mostrar info de reentrenamiento si está cerca
-                        if respuesta.get("reentrenamiento", {}).get("progreso", 0) > 80:
-                            st.info(f"📊 Progreso para reentrenamiento: {respuesta['reentrenamiento']['progreso']}%")
-                    else:
-                        st.warning("⚠️ No se pudo guardar en el servidor, pero tu feedback fue registrado")
+                    if respuesta.get("necesita_reentrenamiento"):
+                        st.warning("🚀 ¡Suficientes imágenes para reentrenamiento!")
                 else:
-                    st.warning("⚠️ Servidor no disponible, feedback guardado localmente")
+                    st.warning(f"⚠️ {respuesta.get('mensaje', 'Error guardando feedback')}")
             
                 st.balloons()
-            
-                # Esperar para que vea el mensaje
                 time.sleep(2)
-            
-                # Establecer mensaje de éxito
-                st.session_state.mensaje_inicio = "identificada_correcta"
             
                 # Limpiar y volver al inicio
                 limpiar_sesion()

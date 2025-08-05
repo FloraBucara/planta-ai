@@ -30,7 +30,7 @@ def enviar_feedback(imagen_pil, session_id, especie_predicha, confianza,
         session_id: ID de la sesión
         especie_predicha: Especie que predijo el modelo
         confianza: Confianza de la predicción
-        feedback_tipo: 'correcto', 'corregido', 'no_identificado'
+        feedback_tipo: 'correcto', 'corregido'
         especie_correcta: Especie correcta según el usuario
     
     Returns:
@@ -63,20 +63,30 @@ def enviar_feedback(imagen_pil, session_id, especie_predicha, confianza,
             return response.json()
         else:
             return {
-                "exito": False,
+                "success": False,
                 "mensaje": f"Error del servidor: {response.status_code}"
             }
             
     except requests.exceptions.ConnectionError:
         return {
-            "exito": False,
+            "success": False,
             "mensaje": "No se pudo conectar con el servidor"
         }
     except Exception as e:
         return {
-            "exito": False,
+            "success": False,
             "mensaje": f"Error: {str(e)}"
         }
+
+def obtener_estadisticas():
+    """Obtiene estadísticas del servidor"""
+    try:
+        response = requests.get(f"{SERVER_URL}/api/feedback/estadisticas", timeout=5)
+        if response.status_code == 200:
+            return response.json()
+        return None
+    except:
+        return None
 
 def obtener_estadisticas():
     """Obtiene estadísticas del servidor"""

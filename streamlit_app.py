@@ -426,6 +426,41 @@ def mostrar_imagen_referencia(nombre_cientifico):
             
     except Exception as e:
         st.info("📷 Error cargando imagen de referencia")
+        
+def hacer_prediccion_con_info(imagen, especies_excluir=None):
+    """
+    Hace predicción y obtiene información de Firestore
+    """
+    try:
+        # Hacer predicción con el modelo
+        resultado = session_manager.predictor.predecir_planta(imagen, especies_excluir)
+        
+        if resultado.get("exito"):
+            especie_predicha = resultado["especie_predicha"]
+            
+            # Buscar información en Firestore
+            info_planta = buscar_info_planta_firestore(especie_predicha)
+            
+            # Combinar resultados
+            resultado_completo = {
+                "exito": True,
+                "especie_predicha": especie_predicha,
+                "confianza": resultado["confianza"],
+                "info_planta": info_planta,
+                "top_predicciones": resultado.get("top_predicciones", []),
+                "timestamp": datetime.now().isoformat()
+            }
+            
+            return resultado_completo
+        else:
+            return resultado
+            
+    except Exception as e:
+        return {
+            "exito": False,
+            "error": str(e),
+            "mensaje": "Error en la predicción"
+        }
 
 # ==================== PANTALLAS PRINCIPALES ====================
 

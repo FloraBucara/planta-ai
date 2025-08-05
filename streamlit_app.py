@@ -401,20 +401,18 @@ def mostrar_imagen_referencia(nombre_cientifico):
     """Muestra la primera imagen disponible de la especie desde el servidor"""
     try:
         from utils.api_client import SERVER_URL
-        import urllib.parse
+        from urllib.parse import quote
         
         if not SERVER_URL or SERVER_URL == "http://localhost:8000":
             st.info("📷 Servidor de imágenes no disponible")
             return
         
-        # CODIFICAR LA URL CORRECTAMENTE
-        especie_encoded = urllib.parse.quote(nombre_cientifico)
-        imagen_url = f"{SERVER_URL}/api/image-referencia/{especie_encoded}"
+        # CONVERTIR A FORMATO DE CARPETA ANTES DE ENVIAR
+        nombre_carpeta = nombre_cientifico.replace(' ', '_')
         
-        # DEBUG: Mostrar URLs
-        st.write(f"🔧 DEBUG - Nombre original: {nombre_cientifico}")
-        st.write(f"🔧 DEBUG - Nombre codificado: {especie_encoded}")
-        st.write(f"🔧 DEBUG - URL final: {imagen_url}")
+        # Codificar URL (ahora ya sin espacios)
+        especie_encoded = quote(nombre_carpeta)
+        imagen_url = f"{SERVER_URL}/api/image-referencia/{especie_encoded}"
         
         # Mostrar imagen directamente
         try:
@@ -424,45 +422,10 @@ def mostrar_imagen_referencia(nombre_cientifico):
                 use_container_width=True
             )
         except Exception as e:
-            st.info(f"📷 No hay imagen disponible para esta especie")
+            st.info("📷 No hay imagen disponible para esta especie")
             
     except Exception as e:
-        st.info(f"📷 Error general: {e}")
-        
-def hacer_prediccion_con_info(imagen, especies_excluir=None):
-    """
-    Hace predicción y obtiene información de Firestore
-    """
-    try:
-        # Hacer predicción con el modelo
-        resultado = session_manager.predictor.predecir_planta(imagen, especies_excluir)
-        
-        if resultado.get("exito"):
-            especie_predicha = resultado["especie_predicha"]
-            
-            # Buscar información en Firestore
-            info_planta = buscar_info_planta_firestore(especie_predicha)
-            
-            # Combinar resultados
-            resultado_completo = {
-                "exito": True,
-                "especie_predicha": especie_predicha,
-                "confianza": resultado["confianza"],
-                "info_planta": info_planta,
-                "top_predicciones": resultado.get("top_predicciones", []),
-                "timestamp": datetime.now().isoformat()
-            }
-            
-            return resultado_completo
-        else:
-            return resultado
-            
-    except Exception as e:
-        return {
-            "exito": False,
-            "error": str(e),
-            "mensaje": "Error en la predicción"
-        }
+        st.info("📷 Error cargando imagen de referencia")
 
 # ==================== PANTALLAS PRINCIPALES ====================
 

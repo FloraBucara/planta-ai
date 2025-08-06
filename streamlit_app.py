@@ -633,25 +633,30 @@ def pantalla_top_especies():
     seleccionado = False
     
     # Mostrar las 5 especies en un layout mejorado
+
     for i, especie_data in enumerate(top_especies):
         # Buscar información de la especie
         info_planta = buscar_info_planta_firestore(especie_data["especie"])
         datos = info_planta.get('datos', {})
-        
+
         # Card para cada especie
         st.markdown(f'<div class="species-card">', unsafe_allow_html=True)
-        
-        col1, col2, col3 = st.columns([1, 3, 1])
-        
+
+        col1, col2, col3, col4 = st.columns([1, 2, 2, 1])
+
         with col1:
             # Número de opción
             st.markdown(f"### {i+1}")
-        
+
         with col2:
+            # NUEVA: Imagen de referencia
+            mostrar_imagen_referencia(especie_data["especie"])
+
+        with col3:
             # Info de la especie
             st.markdown(f"**{datos.get('nombre_comun', 'N/A')}**")
             st.markdown(f"*{especie_data['especie']}*")
-            
+    
             # Barra de confianza mini
             porcentaje = int(especie_data["confianza"] * 100)
             st.markdown(f"""
@@ -662,8 +667,8 @@ def pantalla_top_especies():
                 Confianza: {porcentaje}%
             </p>
             """, unsafe_allow_html=True)
-            
-        with col3:
+
+        with col4:
             # Botón de selección
             if st.button(
                 "✅ Es esta", 
@@ -679,17 +684,17 @@ def pantalla_top_especies():
                         especie_predicha=st.session_state.resultado_actual["especie_predicha"],
                         confianza=st.session_state.resultado_actual["confianza"],
                         feedback_tipo="corregido",
-                        especie_correcta=especie_data["especie"]  # La especie que seleccionó
+                        especie_correcta=especie_data["especie"]
                     )
 
                     if respuesta.get("success"):
                         st.success(f"🎉 ¡Gracias! Has identificado tu planta como **{datos.get('nombre_comun', especie_data['especie'])}**")
                         st.success("✅ Imagen guardada para mejorar el modelo")
-                
+            
                         # Mostrar progreso
                         if respuesta.get("progreso"):
                             st.info(f"📊 Progreso para reentrenamiento: {respuesta['progreso']}%")
-                    
+                
                         if respuesta.get("necesita_reentrenamiento"):
                             st.warning("🚀 ¡Suficientes imágenes para reentrenamiento!")
                     else:
@@ -701,10 +706,13 @@ def pantalla_top_especies():
                     # Limpiar y volver al inicio
                     limpiar_sesion()
                     st.rerun()
-        
     
-    # Opción "No es ninguna de estas"
+        # Cerrar el div de la card
+        st.markdown('</div>', unsafe_allow_html=True)
+
+     # Opción "No es ninguna de estas"
     st.markdown("---")
+    
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button("❌ No es ninguna de estas", type="secondary", use_container_width=True):

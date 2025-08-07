@@ -625,7 +625,7 @@ def pantalla_top_especies():
     # Mostrar imagen original
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        st.image(st.session_state.imagen_actual, caption="Tu planta", use_column_width=True)
+        st.image(st.session_state.imagen_actual, caption="Tu planta", use_container_width=True)
     
     st.markdown("---")
     
@@ -649,7 +649,7 @@ def pantalla_top_especies():
             st.markdown(f"### {i+1}")
 
         with col2:
-            # NUEVA: Imagen de referencia
+            # Imagen de referencia
             mostrar_imagen_referencia(especie_data["especie"])
 
         with col3:
@@ -669,13 +669,18 @@ def pantalla_top_especies():
             """, unsafe_allow_html=True)
 
         with col4:
-            # Botón de selección
+            # Botón que cambia de color cuando se presiona
+            boton_presionado = st.session_state.get(f'boton_presionado_{i}', False)
+        
             if st.button(
                 "✅ Es esta", 
                 key=f"select_{i}",
                 use_container_width=True,
-                type="primary" if i == 0 else "secondary"
+                type="primary" if boton_presionado else "secondary"  # Verde si presionado, gris si no
             ):
+                # Marcar este botón como presionado
+                st.session_state[f'boton_presionado_{i}'] = True
+            
                 with st.spinner("💾 Guardando tu selección..."):
                     # Enviar feedback de corrección
                     respuesta = enviar_feedback(
@@ -703,7 +708,11 @@ def pantalla_top_especies():
                     st.balloons()
                     time.sleep(2)
 
-                    # Limpiar y volver al inicio
+                    # Limpiar estados de botones y volver al inicio
+                    for j in range(5):  # Limpiar todos los botones
+                        if f'boton_presionado_{j}' in st.session_state:
+                            del st.session_state[f'boton_presionado_{j}']
+                
                     limpiar_sesion()
                     st.rerun()
     

@@ -282,19 +282,11 @@ def mostrar_header():
     st.markdown('<h1 class="main-header">🌱 BucaraFlora - Identificador de Plantas IA</h1>', unsafe_allow_html=True)
     st.markdown("**Sube una foto de tu planta y descubre qué especie es**")
     
-    # Mostrar estado de servicios
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.session_state.get('api_initialized'):
-            st.markdown('<div class="firestore-connected">✅ API Activa</div>', unsafe_allow_html=True)
-        else:
-            st.markdown('<div class="firestore-disconnected">⚠️ API Local No Disponible</div>', unsafe_allow_html=True)
-    
-    with col2:
-        if st.session_state.get('firestore_initialized'):
-            st.markdown('<div class="firestore-connected">✅ Base de Datos Conectada</div>', unsafe_allow_html=True)
-        else:
-            st.markdown('<div class="firestore-disconnected">❌ Base de Datos Desconectada</div>', unsafe_allow_html=True)
+    # Mostrar solo el estado de la base de datos (quitar API)
+    if st.session_state.get('firestore_initialized'):
+        st.success("✅ Sistema conectado y listo")
+    else:
+        st.warning("⚠️ Algunas funciones pueden estar limitadas")
 
 def buscar_info_planta_firestore(nombre_cientifico):
     """
@@ -781,31 +773,19 @@ def main():
         st.markdown("---")
         st.markdown("### 🔌 Estado de Servicios")
         
+        # Estado del sistema (simplificado)
         if st.session_state.get('firestore_initialized', False):
-            st.success("✅ Base de Datos: Conectada")
-        else:
-            st.error("❌ Base de Datos: Desconectada")
-        # En el sidebar, después del estado de Firebase
-        if servidor_disponible():
-            st.success("✅ Servidor Local: Conectado")
+            st.success("✅ Sistema: Completamente funcional")
     
-            # Mostrar estadísticas si están disponibles
-            stats = obtener_estadisticas()
-            if stats:
-                st.markdown("📊 **Estadísticas:**")
-                st.write(f"• Feedback total: {stats['feedback_total']}")
-                st.write(f"• Imágenes guardadas: {stats['imagenes_guardadas']}")
-        
-                # Estado de reentrenamiento
-                estado = stats.get('reentrenamiento', {})
-                if estado.get('necesita_reentrenar'):
-                    st.warning("🔄 ¡Listo para reentrenar!")
-                else:
-                    progreso = estado.get('total_imagenes', 0)
-                    st.progress(progreso / 50)
-                    st.caption(f"Progreso: {progreso}/50 imágenes")
+            # Mostrar estadísticas solo si el servidor está disponible
+            if servidor_disponible():
+                stats = obtener_estadisticas()
+                if stats:
+                    st.markdown("📊 **Estadísticas del sistema:**")
+                    st.write(f"• Feedback total: {stats.get('feedback_total', 0)}")
+                    st.write(f"• Imágenes procesadas: {stats.get('imagenes_guardadas', 0)}")
         else:
-            st.error("❌ Servidor Local: Desconectado")
+            st.info("ℹ️ Sistema funcionando en modo básico")
     
         # Botón de reset
         st.markdown("---")

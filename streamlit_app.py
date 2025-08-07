@@ -28,7 +28,7 @@ st.set_page_config(
 
 # ==================== IMPORTS DEL MODELO (DESPUÉS DE set_page_config) ====================
 try:
-    from model.prediction import session_manager, verificar_sistema_prediccion
+    from utils.session_manager import session_manager, verificar_sistema_prediccion
     from utils.firebase_config import obtener_info_planta_basica, firestore_manager
 except ImportError as e:
     st.error(f"❌ Error importando módulos: {e}")

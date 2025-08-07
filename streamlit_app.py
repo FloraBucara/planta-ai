@@ -359,14 +359,6 @@ def mostrar_info_planta_completa(info_planta):
     datos = info_planta.get('datos', {})
     fuente = info_planta.get('fuente', 'desconocido')
     
-    # Indicador de fuente de datos
-    #if fuente == 'firestore':
-    #    st.success("✅ Información verificada de la base de datos")
-    #elif fuente == 'no_encontrado':
-    #    st.warning("⚠️ Especie no encontrada en la base de datos")
-    #else:
-    #    st.error("❌ Error al obtener información de la base de datos")
-    
     # Contenedor principal
     with st.container():
         col1, col2 = st.columns([2, 1])

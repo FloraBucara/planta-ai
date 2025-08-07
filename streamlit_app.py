@@ -808,7 +808,7 @@ def pantalla_top_especies():
                     
                     # Información detallada
                     if info_planta.get('fuente') == 'firestore':
-                        st.success("✅ Información verificada de la base de datos")
+                        st.markdown("✅ Información verificada de la base de datos")
                     else:
                         st.info("ℹ️ Información básica disponible")
                     

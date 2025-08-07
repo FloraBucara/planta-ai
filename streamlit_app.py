@@ -828,10 +828,7 @@ def pantalla_top_especies():
                                 st.write(f"• **Familia:** {taxonomia.get('familia', 'N/A')}")
                                 st.write(f"• **Género:** {taxonomia.get('genero', 'N/A')}")
                     
-                    # Información adicional
-                    if datos.get('fecha_observacion'):
-                        st.markdown(f"**📅 Fecha de observación:** {datos['fecha_observacion']}")
-                    
+                    # Información adicional                   
                     if datos.get('fuente'):
                         st.markdown(f"**📚 Fuente:** {datos['fuente']}")
                     

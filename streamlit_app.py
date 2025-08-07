@@ -496,6 +496,7 @@ def pantalla_upload_imagen():
     tab1, tab2 = st.tabs(["📁 Subir Archivo", "📷 Tomar Foto"])
     
     imagen_procesada = None
+    fuente_imagen = None
     
     with tab1:
         st.markdown("#### Selecciona una imagen desde tu dispositivo")
@@ -503,7 +504,7 @@ def pantalla_upload_imagen():
             "Selecciona una imagen",
             type=STREAMLIT_CONFIG["allowed_extensions"],
             help="Formatos soportados: JPG, JPEG, PNG. Máximo 10MB.",
-            key="file_upload"
+            key="upload_file_tab1"  # ← KEY ÚNICO
         )
         
         if uploaded_file is not None:
@@ -514,6 +515,7 @@ def pantalla_upload_imagen():
             
             try:
                 imagen_procesada = Image.open(uploaded_file)
+                fuente_imagen = "archivo"
             except Exception as e:
                 st.error(f"❌ Error cargando imagen: {e}")
                 return
@@ -524,13 +526,14 @@ def pantalla_upload_imagen():
         
         camera_image = st.camera_input(
             "Toma una foto de tu planta",
-            key="camera_input",
+            key="camera_input_tab2",  # ← KEY ÚNICO
             help="Asegúrate de que la planta esté bien iluminada y enfocada"
         )
         
         if camera_image is not None:
             try:
                 imagen_procesada = Image.open(camera_image)
+                fuente_imagen = "cámara"
             except Exception as e:
                 st.error(f"❌ Error procesando foto: {e}")
                 return
@@ -540,12 +543,24 @@ def pantalla_upload_imagen():
         # Mostrar imagen con columnas para centrarla
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
-            st.image(imagen_procesada, caption="Tu planta", use_container_width=True)
+            st.image(
+                imagen_procesada, 
+                caption=f"Tu planta (desde {fuente_imagen})", 
+                use_container_width=True
+            )
         
-        # Botón de análisis
+        # Botón de análisis con key único basado en timestamp
+        import time
+        button_key = f"analyze_button_{int(time.time())}"
+        
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
-            if st.button("🔍 Identificar Planta", type="primary", use_container_width=True):
+            if st.button(
+                "🔍 Identificar Planta", 
+                type="primary", 
+                use_container_width=True,
+                key=button_key  # ← KEY ÚNICO CON TIMESTAMP
+            ):
                 with st.spinner("🧠 Analizando tu planta..."):
                     # Limpiar estado anterior
                     limpiar_sesion()

@@ -241,7 +241,7 @@ def verificar_y_iniciar_api():
                 pass
             time.sleep(1)
     
-    print("⚠️ API no disponible (normal en Streamlit Cloud)")
+    print("ℹ️ Servidor de imágenes local no activo")
     return False
 
 # ==================== INICIALIZACIÓN DE ESTADO ====================

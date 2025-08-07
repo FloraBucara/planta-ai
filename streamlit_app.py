@@ -373,11 +373,7 @@ def mostrar_info_planta_completa(info_planta):
             if descripcion and fuente == 'firestore':
                 st.markdown("#### 📝 Descripción")
                 st.markdown(f'<div class="info-card">{descripcion}</div>', unsafe_allow_html=True)
-            
-            # Información adicional
-            if datos.get('fecha_observacion'):
-                st.markdown(f"**📅 Fecha de observación:** {datos.get('fecha_observacion')}")
-            
+                        
             if datos.get('fuente'):
                 st.markdown(f"**📚 Fuente:** {datos.get('fuente')}")
         
@@ -413,7 +409,6 @@ def mostrar_imagen_referencia(nombre_cientifico):
         from urllib.parse import quote
         
         if not SERVER_URL:
-            st.info("📷 Servidor de imágenes no disponible")
             return
         
         # CONVERTIR A FORMATO DE CARPETA ANTES DE ENVIAR
@@ -431,10 +426,10 @@ def mostrar_imagen_referencia(nombre_cientifico):
                 use_container_width=True
             )
         except Exception as e:
-            st.info("📷 No hay imagen disponible para esta especie")
+            pass
             
     except Exception as e:
-        st.info("📷 Error cargando imagen de referencia")
+        pass
         
 def mostrar_imagen_referencia_sin_barra(nombre_cientifico):
     """Muestra imagen de referencia SIN la barra superior molesta"""

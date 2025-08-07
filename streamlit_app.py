@@ -656,7 +656,7 @@ def pantalla_prediccion_feedback():
         st.image(st.session_state.imagen_actual, caption="Tu planta", use_container_width=True)
     
     # Card de predicción
-    st.markdown('<div class="prediction-card">', unsafe_allow_html=True)
+    st.markdown('<div>', unsafe_allow_html=True)
     
     # Mostrar información de la planta
     info_planta = resultado.get("info_planta", {})

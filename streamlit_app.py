@@ -141,6 +141,31 @@ st.markdown("""
         height: 100%;
         transition: width 0.3s ease;
     }
+    
+    .camera-info {
+        background: #e3f2fd;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #2196f3;
+        margin: 1rem 0;
+    }
+    
+    .upload-info {
+        background: #f3e5f5;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #9c27b0;
+        margin: 1rem 0;
+    }
+    
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 2rem;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        padding: 1rem 2rem;
+        border-radius: 8px 8px 0 0;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -457,7 +482,7 @@ def hacer_prediccion_con_info(imagen, especies_excluir=None):
 # ==================== PANTALLAS PRINCIPALES ====================
 
 def pantalla_upload_imagen():
-    """Pantalla inicial para subir imagen"""
+    """Pantalla inicial para subir imagen o tomar foto"""
     # Mostrar mensajes si existen
     if st.session_state.get('mensaje_inicio') == "no_identificada":
         st.warning("😔 Lo sentimos, no pudimos identificar tu planta anterior.")
@@ -465,55 +490,83 @@ def pantalla_upload_imagen():
         # Limpiar el mensaje después de mostrarlo
         st.session_state.mensaje_inicio = None
         
-    st.markdown("### 📸 Sube una foto de tu planta")
+    st.markdown("### 📸 Sube una foto o toma una imagen de tu planta")
     
-    # Área de carga
-    uploaded_file = st.file_uploader(
-        "Selecciona una imagen",
-        type=STREAMLIT_CONFIG["allowed_extensions"],
-        help="Formatos soportados: JPG, JPEG, PNG. Máximo 10MB."
-    )
+    # Crear tabs para las dos opciones
+    tab1, tab2 = st.tabs(["📁 Subir Archivo", "📷 Tomar Foto"])
     
-    if uploaded_file is not None:
-        # Validar tamaño
-        if uploaded_file.size > STREAMLIT_CONFIG["max_file_size"] * 1024 * 1024:
-            st.error(f"❌ Archivo muy grande. Máximo {STREAMLIT_CONFIG['max_file_size']}MB.")
-            return
+    imagen_procesada = None
+    
+    with tab1:
+        st.markdown("#### Selecciona una imagen desde tu dispositivo")
+        uploaded_file = st.file_uploader(
+            "Selecciona una imagen",
+            type=STREAMLIT_CONFIG["allowed_extensions"],
+            help="Formatos soportados: JPG, JPEG, PNG. Máximo 10MB.",
+            key="file_upload"
+        )
         
-        try:
-            # Cargar y mostrar imagen
-            imagen = Image.open(uploaded_file)
+        if uploaded_file is not None:
+            # Validar tamaño
+            if uploaded_file.size > STREAMLIT_CONFIG["max_file_size"] * 1024 * 1024:
+                st.error(f"❌ Archivo muy grande. Máximo {STREAMLIT_CONFIG['max_file_size']}MB.")
+                return
             
-            # Mostrar imagen con columnas para centrarla
-            col1, col2, col3 = st.columns([1, 2, 1])
-            with col2:
-                st.image(imagen, caption="Tu planta", use_container_width=True)
-            
-            # Botón de análisis
-            col1, col2, col3 = st.columns([1, 2, 1])
-            with col2:
-                if st.button("🔍 Identificar Planta", type="primary", use_container_width=True):
-                    with st.spinner("🧠 Analizando tu planta..."):
-                        # Limpiar estado anterior
-                        limpiar_sesion()
-                        
-                        # Establecer nueva sesión
-                        st.session_state.session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
-                        st.session_state.imagen_actual = imagen
-                        st.session_state.intento_actual = 1
-                        st.session_state.especies_descartadas = set()
-                        
-                        # Hacer predicción con información
-                        resultado = hacer_prediccion_con_info(imagen, None)
-                        
-                        if resultado.get("exito"):
-                            st.session_state.resultado_actual = resultado
-                            st.rerun()
-                        else:
-                            st.error(f"❌ {resultado.get('mensaje', 'Error en la predicción')}")
-                            
-        except Exception as e:
-            st.error(f"❌ Error cargando imagen: {e}")
+            try:
+                imagen_procesada = Image.open(uploaded_file)
+            except Exception as e:
+                st.error(f"❌ Error cargando imagen: {e}")
+                return
+    
+    with tab2:
+        st.markdown("#### Usa la cámara de tu dispositivo")
+        st.info("📱 **En móviles:** Esto abrirá la cámara directamente")
+        
+        camera_image = st.camera_input(
+            "Toma una foto de tu planta",
+            key="camera_input",
+            help="Asegúrate de que la planta esté bien iluminada y enfocada"
+        )
+        
+        if camera_image is not None:
+            try:
+                imagen_procesada = Image.open(camera_image)
+            except Exception as e:
+                st.error(f"❌ Error procesando foto: {e}")
+                return
+    
+    # Si hay una imagen (de cualquier fuente), mostrarla y procesarla
+    if imagen_procesada is not None:
+        # Mostrar imagen con columnas para centrarla
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            st.image(imagen_procesada, caption="Tu planta", use_container_width=True)
+        
+        # Botón de análisis
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            if st.button("🔍 Identificar Planta", type="primary", use_container_width=True):
+                with st.spinner("🧠 Analizando tu planta..."):
+                    # Limpiar estado anterior
+                    limpiar_sesion()
+                    
+                    # Crear nueva sesión
+                    sesion = session_manager.iniciar_nueva_sesion(imagen_procesada)
+                    
+                    # Establecer en session_state
+                    st.session_state.session_id = sesion.session_id
+                    st.session_state.imagen_actual = imagen_procesada
+                    st.session_state.intento_actual = 1
+                    st.session_state.especies_descartadas = set()
+                    
+                    # Hacer predicción
+                    resultado = session_manager.procesar_intento_prediccion(sesion, imagen_procesada, None)
+                    
+                    if resultado.get("exito"):
+                        st.session_state.resultado_actual = resultado
+                        st.rerun()
+                    else:
+                        st.error(f"❌ {resultado.get('mensaje', 'Error en la predicción')}")
 
 def pantalla_prediccion_feedback():
     """Pantalla de predicción con botones de feedback"""

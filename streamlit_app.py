@@ -444,6 +444,38 @@ def mostrar_imagen_referencia(nombre_cientifico):
     except Exception as e:
         st.info("📷 Error cargando imagen de referencia")
         
+def mostrar_imagen_referencia_sin_barra(nombre_cientifico):
+    """Muestra imagen de referencia SIN la barra superior molesta"""
+    try:
+        from utils.api_client import SERVER_URL
+        from urllib.parse import quote
+        
+        if not SERVER_URL:
+            return
+        
+        # CONVERTIR A FORMATO DE CARPETA
+        nombre_carpeta = nombre_cientifico.replace(' ', '_')
+        especie_encoded = quote(nombre_carpeta)
+        imagen_url = f"{SERVER_URL}/api/image-referencia/{especie_encoded}"
+        
+        # Mostrar imagen SIN caption para evitar barra
+        try:
+            st.image(
+                imagen_url,
+                use_container_width=True
+            )
+            # Caption manual sin barra
+            st.markdown(
+                '<p style="text-align: center; color: gray; font-size: 0.8em; margin-top: 0.5rem;">Imagen de referencia</p>',
+                unsafe_allow_html=True
+            )
+        except:
+            pass
+            
+    except:
+        pass
+       
+        
 def hacer_prediccion_con_info(imagen, especies_excluir=None):
     """
     Hace predicción y obtiene información de Firestore
@@ -481,90 +513,114 @@ def hacer_prediccion_con_info(imagen, especies_excluir=None):
 
 # ==================== PANTALLAS PRINCIPALES ====================
 
-def pantalla_upload_imagen():
-    """Pantalla inicial para subir imagen o tomar foto"""
+def pantalla_seleccion_metodo():
+    """Pantalla para seleccionar método de entrada"""
     # Mostrar mensajes si existen
     if st.session_state.get('mensaje_inicio') == "no_identificada":
         st.warning("😔 Lo sentimos, no pudimos identificar tu planta anterior.")
         st.info("💡 **Sugerencia:** Intenta con otra foto desde un ángulo diferente, asegurándote de que se vean claramente las hojas o flores.")
         # Limpiar el mensaje después de mostrarlo
         st.session_state.mensaje_inicio = None
-        
-    st.markdown("### 📸 Sube una foto o toma una imagen de tu planta")
     
-    # Crear tabs para las dos opciones
-    tab1, tab2 = st.tabs(["📁 Subir Archivo", "📷 Tomar Foto"])
+    st.markdown("### 📸 ¿Cómo quieres agregar tu planta?")
     
-    imagen_procesada = None
-    fuente_imagen = None
+    # Botones verticales
+    col1, col2, col3 = st.columns([1, 2, 1])
     
-    with tab1:
-        st.markdown("#### Selecciona una imagen desde tu dispositivo")
-        uploaded_file = st.file_uploader(
-            "Selecciona una imagen",
-            type=STREAMLIT_CONFIG["allowed_extensions"],
-            help="Formatos soportados: JPG, JPEG, PNG. Máximo 10MB.",
-            key="upload_file_tab1"
-        )
+    with col2:
+        # Botón 1: Subir archivo
+        if st.button(
+            "📁 Subir imagen desde mi dispositivo",
+            use_container_width=True,
+            type="primary",
+            key="btn_upload"
+        ):
+            st.session_state.metodo_seleccionado = "archivo"
+            st.rerun()
         
-        if uploaded_file is not None:
-            # Validar tamaño
-            if uploaded_file.size > STREAMLIT_CONFIG["max_file_size"] * 1024 * 1024:
-                st.error(f"❌ Archivo muy grande. Máximo {STREAMLIT_CONFIG['max_file_size']}MB.")
-                return
-            
-            try:
-                imagen_procesada = Image.open(uploaded_file)
-                fuente_imagen = "archivo"
-            except Exception as e:
-                st.error(f"❌ Error cargando imagen: {e}")
-                return
-    
-    with tab2:
-        st.markdown("#### Usa la cámara de tu dispositivo")
-        st.info("📱 **En móviles:** Esto abrirá la cámara directamente")
+        st.markdown("<br>", unsafe_allow_html=True)  # Espacio
         
-        camera_image = st.camera_input(
-            "Toma una foto de tu planta",
-            key="camera_input_tab2",
-            help="Asegúrate de que la planta esté bien iluminada y enfocada"
-        )
-        
-        if camera_image is not None:
-            try:
-                imagen_procesada = Image.open(camera_image)
-                fuente_imagen = "cámara"
-            except Exception as e:
-                st.error(f"❌ Error procesando foto: {e}")
-                return
-    
-    # Si hay una imagen (de cualquier fuente), mostrarla y procesarla
-    if imagen_procesada is not None:
-        # Guardar imagen en session state
-        st.session_state.temp_imagen = imagen_procesada
-        st.session_state.temp_fuente = fuente_imagen
-        
-        # Mostrar imagen con columnas para centrarla
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            st.image(
-                imagen_procesada, 
-                caption=f"Tu planta (desde {fuente_imagen})", 
-                use_container_width=True
-            )
-        
-        # Botón de análisis con key fijo
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            if st.button(
-                "🔍 Identificar Planta", 
-                type="primary", 
-                use_container_width=True,
-                key="btn_identificar_planta"  # ← KEY FIJO
-            ):
-                # Procesar la imagen guardada en session state
-                procesar_identificacion()
+        # Botón 2: Tomar foto
+        if st.button(
+            "📷 Tomar foto con la cámara",
+            use_container_width=True,
+            type="primary",
+            key="btn_camera"
+        ):
+            st.session_state.metodo_seleccionado = "camara"
+            st.rerun()
 
+def pantalla_upload_archivo():
+    """Pantalla específica para subir archivo"""
+    st.markdown("### 📁 Subir imagen desde tu dispositivo")
+    
+    uploaded_file = st.file_uploader(
+        "Selecciona una imagen",
+        type=STREAMLIT_CONFIG["allowed_extensions"],
+        help="Formatos soportados: JPG, JPEG, PNG. Máximo 10MB.",
+        key="file_uploader"
+    )
+    
+    if uploaded_file is not None:
+        # Validar tamaño
+        if uploaded_file.size > STREAMLIT_CONFIG["max_file_size"] * 1024 * 1024:
+            st.error(f"❌ Archivo muy grande. Máximo {STREAMLIT_CONFIG['max_file_size']}MB.")
+            return
+        
+        try:
+            imagen = Image.open(uploaded_file)
+            mostrar_imagen_y_procesar(imagen, "archivo")
+        except Exception as e:
+            st.error(f"❌ Error cargando imagen: {e}")
+    
+    # Botón para regresar
+    if st.button("← Regresar a selección de método", key="back_from_upload"):
+        st.session_state.metodo_seleccionado = None
+        st.rerun()
+
+def pantalla_tomar_foto():
+    """Pantalla específica para tomar foto"""
+    st.markdown("### 📷 Tomar foto con la cámara")
+    st.info("📱 **En móviles:** Esto abrirá la cámara directamente")
+    
+    camera_image = st.camera_input(
+        "Toma una foto de tu planta",
+        key="camera_input",
+        help="Asegúrate de que la planta esté bien iluminada y enfocada"
+    )
+    
+    if camera_image is not None:
+        try:
+            imagen = Image.open(camera_image)
+            mostrar_imagen_y_procesar(imagen, "cámara")
+        except Exception as e:
+            st.error(f"❌ Error procesando foto: {e}")
+    
+    # Botón para regresar
+    if st.button("← Regresar a selección de método", key="back_from_camera"):
+        st.session_state.metodo_seleccionado = None
+        st.rerun()
+
+def mostrar_imagen_y_procesar(imagen, fuente):
+    """Muestra imagen y botón para procesar"""
+    # Mostrar imagen centrada
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.image(imagen, caption=f"Tu planta (desde {fuente})", use_container_width=True)
+    
+    # Botón de análisis
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if st.button(
+            "🔍 Identificar Planta",
+            type="primary",
+            use_container_width=True,
+            key="btn_analyze"
+        ):
+            # Guardar imagen y procesar
+            st.session_state.temp_imagen = imagen
+            procesar_identificacion()
+            
 def procesar_identificacion():
     """Función separada para procesar la identificación"""
     if 'temp_imagen' not in st.session_state:
@@ -686,7 +742,7 @@ def pantalla_prediccion_feedback():
             st.rerun()
 
 def pantalla_top_especies():
-    """Pantalla de selección manual de las top 5 especies"""
+    """Pantalla de selección manual de las top 5 especies - VERSIÓN EXPANDIBLE"""
     st.markdown("### 🤔 ¿Tal vez sea una de estas?")
     st.info("Selecciona la especie correcta de las siguientes opciones:")
     
@@ -695,7 +751,7 @@ def pantalla_top_especies():
         especies_excluir = list(st.session_state.especies_descartadas)
         top_especies = session_manager.predictor.obtener_top_especies(
             st.session_state.imagen_actual,
-            cantidad=5,  # Solo top 5
+            cantidad=5,
             especies_excluir=especies_excluir
         )
     
@@ -710,105 +766,144 @@ def pantalla_top_especies():
     
     st.markdown("---")
     
-    # Variable para controlar si se seleccionó algo
-    seleccionado = False
-    
-    # Mostrar las 5 especies en un layout mejorado
-
+    # Mostrar las 5 especies con información expandible
     for i, especie_data in enumerate(top_especies):
         # Buscar información de la especie
         info_planta = buscar_info_planta_firestore(especie_data["especie"])
         datos = info_planta.get('datos', {})
-
-        # Card para cada especie
-        st.markdown(f'<div class="species-card">', unsafe_allow_html=True)
-
-        col1, col2, col3, col4 = st.columns([1, 2, 2, 1])
-
-        with col1:
-            # Número de opción
-            st.markdown(f"### {i+1}")
-
-        with col2:
-            # Imagen de referencia
-            mostrar_imagen_referencia(especie_data["especie"])
-
-        with col3:
-            # Info de la especie
-            st.markdown(f"**{datos.get('nombre_comun', 'N/A')}**")
-            st.markdown(f"*{especie_data['especie']}*")
-    
-            # Barra de confianza mini
-            porcentaje = int(especie_data["confianza"] * 100)
-            st.markdown(f"""
-            <div class="confidence-bar" style="height: 10px;">
-                <div class="confidence-fill" style="width: {porcentaje}%;"></div>
-            </div>
-            <p style="text-align: center; font-size: 0.9em; margin: 0;">
-                Confianza: {porcentaje}%
-            </p>
-            """, unsafe_allow_html=True)
-
-        with col4:
-            # Botón que cambia de color cuando se presiona
-            boton_presionado = st.session_state.get(f'boton_presionado_{i}', False)
         
-            if st.button(
-                "✅ Es esta", 
-                key=f"select_{i}",
-                use_container_width=True,
-                type="primary" if boton_presionado else "secondary"  # Verde si presionado, gris si no
-            ):
-                # Marcar este botón como presionado
-                st.session_state[f'boton_presionado_{i}'] = True
+        # Container para cada especie (SIN BARRA SUPERIOR)
+        with st.container():
+            col1, col2, col3 = st.columns([1, 2, 3])
             
-                with st.spinner("💾 Guardando tu selección..."):
-                    # Enviar feedback de corrección
-                    respuesta = enviar_feedback(
-                        imagen_pil=st.session_state.imagen_actual,
-                        session_id=st.session_state.session_id,
-                        especie_predicha=st.session_state.resultado_actual["especie_predicha"],
-                        confianza=st.session_state.resultado_actual["confianza"],
-                        feedback_tipo="corregido",
-                        especie_correcta=especie_data["especie"]
-                    )
-
-                    if respuesta.get("success"):
-                        st.success(f"🎉 ¡Gracias! Has identificado tu planta como **{datos.get('nombre_comun', especie_data['especie'])}**")
-                        st.success("✅ Imagen guardada para mejorar el modelo")
+            with col1:
+                # Número de opción
+                st.markdown(f"### {i+1}")
             
-                        # Mostrar progreso
-                        if respuesta.get("progreso"):
-                            st.info(f"📊 Progreso para reentrenamiento: {respuesta['progreso']}%")
+            with col2:
+                # Imagen de referencia (SIN BARRA SUPERIOR)
+                mostrar_imagen_referencia_sin_barra(especie_data["especie"])
+            
+            with col3:
+                # Información básica
+                st.markdown(f"**{datos.get('nombre_comun', 'Nombre no disponible')}**")
+                st.markdown(f"*{especie_data['especie']}*")
                 
-                        if respuesta.get("necesita_reentrenamiento"):
-                            st.warning("🚀 ¡Suficientes imágenes para reentrenamiento!")
-                    else:
-                        st.warning(f"⚠️ {respuesta.get('mensaje', 'Error guardando feedback')}")
-
-                    st.balloons()
-                    time.sleep(2)
-
-                    # Limpiar estados de botones y volver al inicio
-                    for j in range(5):  # Limpiar todos los botones
-                        if f'boton_presionado_{j}' in st.session_state:
-                            del st.session_state[f'boton_presionado_{j}']
+                # Barra de confianza
+                porcentaje = int(especie_data["confianza"] * 100)
+                st.markdown(f"""
+                <div class="confidence-bar" style="height: 10px; background: #e9ecef; border-radius: 5px; margin: 0.5rem 0; overflow: hidden;">
+                    <div style="background: linear-gradient(90deg, #28a745, #20c997); height: 100%; width: {porcentaje}%; transition: width 0.3s ease;"></div>
+                </div>
+                <p style="text-align: center; font-size: 0.9em; margin: 0;">
+                    Confianza: {porcentaje}%
+                </p>
+                """, unsafe_allow_html=True)
                 
-                    limpiar_sesion()
+                # Botón expandir/contraer información
+                expand_key = f"expand_{i}"
+                if st.button(
+                    "▼ Ver información completa" if not st.session_state.get(expand_key, False) else "▲ Ocultar información",
+                    key=f"toggle_{i}",
+                    type="secondary"
+                ):
+                    st.session_state[expand_key] = not st.session_state.get(expand_key, False)
                     st.rerun()
-    
-        # Cerrar el div de la card
-        st.markdown('</div>', unsafe_allow_html=True)
+                
+                # Mostrar información expandida si está activada
+                if st.session_state.get(expand_key, False):
+                    st.markdown("---")
+                    
+                    # Información detallada
+                    if info_planta.get('fuente') == 'firestore':
+                        st.success("✅ Información verificada de la base de datos")
+                    else:
+                        st.info("ℹ️ Información básica disponible")
+                    
+                    # Descripción
+                    if datos.get('descripcion'):
+                        st.markdown("**📝 Descripción:**")
+                        st.write(datos['descripcion'])
+                    
+                    # Taxonomía
+                    if datos.get('taxonomia') and info_planta.get('fuente') == 'firestore':
+                        taxonomia = datos['taxonomia']
+                        if taxonomia:
+                            st.markdown("**🧬 Clasificación Taxonómica:**")
+                            col_tax1, col_tax2 = st.columns(2)
+                            
+                            with col_tax1:
+                                st.write(f"• **Reino:** {taxonomia.get('reino', 'N/A')}")
+                                st.write(f"• **Filo:** {taxonomia.get('filo', 'N/A')}")
+                                st.write(f"• **Clase:** {taxonomia.get('clase', 'N/A')}")
+                            
+                            with col_tax2:
+                                st.write(f"• **Orden:** {taxonomia.get('orden', 'N/A')}")
+                                st.write(f"• **Familia:** {taxonomia.get('familia', 'N/A')}")
+                                st.write(f"• **Género:** {taxonomia.get('genero', 'N/A')}")
+                    
+                    # Información adicional
+                    if datos.get('fecha_observacion'):
+                        st.markdown(f"**📅 Fecha de observación:** {datos['fecha_observacion']}")
+                    
+                    if datos.get('fuente'):
+                        st.markdown(f"**📚 Fuente:** {datos['fuente']}")
+                    
+                    st.markdown("---")
+                    
+                    # BOTÓN "ES ESTA" AL FINAL DE LA INFORMACIÓN EXPANDIDA
+                    if st.button(
+                        "✅ ¡Es esta planta!",
+                        key=f"select_final_{i}",
+                        type="primary",
+                        use_container_width=True
+                    ):
+                        with st.spinner("💾 Guardando tu selección..."):
+                            # Enviar feedback de corrección
+                            respuesta = enviar_feedback(
+                                imagen_pil=st.session_state.imagen_actual,
+                                session_id=st.session_state.session_id,
+                                especie_predicha=st.session_state.resultado_actual["especie_predicha"],
+                                confianza=st.session_state.resultado_actual["confianza"],
+                                feedback_tipo="corregido",
+                                especie_correcta=especie_data["especie"]
+                            )
 
-     # Opción "No es ninguna de estas"
-    st.markdown("---")
+                            if respuesta.get("success"):
+                                st.success(f"🎉 ¡Gracias! Has identificado tu planta como **{datos.get('nombre_comun', especie_data['especie'])}**")
+                                st.success("✅ Imagen guardada para mejorar el modelo")
+                        
+                                # Mostrar progreso
+                                if respuesta.get("progreso"):
+                                    st.info(f"📊 Progreso para reentrenamiento: {respuesta['progreso']}%")
+                        
+                                if respuesta.get("necesita_reentrenamiento"):
+                                    st.warning("🚀 ¡Suficientes imágenes para reentrenamiento!")
+                            else:
+                                st.warning(f"⚠️ {respuesta.get('mensaje', 'Error guardando feedback')}")
+
+                            st.balloons()
+                            time.sleep(2)
+
+                            # Limpiar estados de botones y volver al inicio
+                            for j in range(5):
+                                for state_key in [f'expand_{j}', f'boton_presionado_{j}']:
+                                    if state_key in st.session_state:
+                                        del st.session_state[state_key]
+                            
+                            limpiar_sesion()
+                            st.rerun()
+        
+        # Separador entre especies
+        st.markdown("---")
     
+    # Opción "No es ninguna de estas"
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button("❌ No es ninguna de estas", type="secondary", use_container_width=True):
             # Establecer mensaje para mostrar en inicio
             st.session_state.mensaje_inicio = "no_identificada"
-        
+            
             # Limpiar y volver al inicio
             limpiar_sesion()
             st.rerun()
@@ -849,8 +944,12 @@ def main():
         pantalla_top_especies()
     elif st.session_state.get('resultado_actual'):
         pantalla_prediccion_feedback()
+    elif st.session_state.get('metodo_seleccionado') == "archivo":
+        pantalla_upload_archivo()
+    elif st.session_state.get('metodo_seleccionado') == "camara":
+        pantalla_tomar_foto()
     else:
-        pantalla_upload_imagen()
+        pantalla_seleccion_metodo()
     
     # Sidebar con información
     with st.sidebar:

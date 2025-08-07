@@ -588,7 +588,7 @@ def procesar_identificacion():
             st.session_state.especies_descartadas = set()
             
             # Hacer predicción
-            resultado = session_manager.procesar_intento_prediccion(sesion, imagen, None)
+            resultado = hacer_prediccion_con_info(imagen, None)
             
             if resultado.get("exito"):
                 st.session_state.resultado_actual = resultado

@@ -359,28 +359,27 @@ def mostrar_info_planta_completa(info_planta):
     datos = info_planta.get('datos', {})
     fuente = info_planta.get('fuente', 'desconocido')
     
-    # Contenedor principal
-    
+    # SIN contenedor que genera barra gris
     col1, col2 = st.columns([2, 1])
-        
+    
     with col1:
         # Nombre común y científico
         st.markdown(f"### 🌿 {datos.get('nombre_comun', 'Nombre no disponible')}")
         st.markdown(f"**Nombre científico:** *{datos.get('nombre_cientifico', 'N/A')}*")
-            
+        
         # Descripción
         descripcion = datos.get('descripcion', '')
         if descripcion and fuente == 'firestore':
             st.markdown("#### 📝 Descripción")
             st.markdown(f'<div class="info-card">{descripcion}</div>', unsafe_allow_html=True)
-                        
+                    
         if datos.get('fuente'):
             st.markdown(f"**📚 Fuente:** {datos.get('fuente')}")
-        
+    
     with col2:
         # NUEVA FUNCIÓN: Imagen desde servidor
         mostrar_imagen_referencia(datos.get('nombre_cientifico', ''))
-    
+
     # Información taxonómica (sin cambios)
     if datos.get('taxonomia') and fuente == 'firestore':
         with st.expander("🧬 Ver Clasificación Taxonómica"):

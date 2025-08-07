@@ -504,7 +504,7 @@ def pantalla_upload_imagen():
             "Selecciona una imagen",
             type=STREAMLIT_CONFIG["allowed_extensions"],
             help="Formatos soportados: JPG, JPEG, PNG. Máximo 10MB.",
-            key="upload_file_tab1"  # ← KEY ÚNICO
+            key="upload_file_tab1"
         )
         
         if uploaded_file is not None:
@@ -526,7 +526,7 @@ def pantalla_upload_imagen():
         
         camera_image = st.camera_input(
             "Toma una foto de tu planta",
-            key="camera_input_tab2",  # ← KEY ÚNICO
+            key="camera_input_tab2",
             help="Asegúrate de que la planta esté bien iluminada y enfocada"
         )
         
@@ -540,6 +540,10 @@ def pantalla_upload_imagen():
     
     # Si hay una imagen (de cualquier fuente), mostrarla y procesarla
     if imagen_procesada is not None:
+        # Guardar imagen en session state
+        st.session_state.temp_imagen = imagen_procesada
+        st.session_state.temp_fuente = fuente_imagen
+        
         # Mostrar imagen con columnas para centrarla
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
@@ -549,39 +553,56 @@ def pantalla_upload_imagen():
                 use_container_width=True
             )
         
-        # Botón de análisis con key único basado en timestamp
-        import time
-        button_key = f"analyze_button_{int(time.time())}"
-        
+        # Botón de análisis con key fijo
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
             if st.button(
                 "🔍 Identificar Planta", 
                 type="primary", 
                 use_container_width=True,
-                key=button_key  # ← KEY ÚNICO CON TIMESTAMP
+                key="btn_identificar_planta"  # ← KEY FIJO
             ):
-                with st.spinner("🧠 Analizando tu planta..."):
-                    # Limpiar estado anterior
-                    limpiar_sesion()
-                    
-                    # Crear nueva sesión
-                    sesion = session_manager.iniciar_nueva_sesion(imagen_procesada)
-                    
-                    # Establecer en session_state
-                    st.session_state.session_id = sesion.session_id
-                    st.session_state.imagen_actual = imagen_procesada
-                    st.session_state.intento_actual = 1
-                    st.session_state.especies_descartadas = set()
-                    
-                    # Hacer predicción
-                    resultado = session_manager.procesar_intento_prediccion(sesion, imagen_procesada, None)
-                    
-                    if resultado.get("exito"):
-                        st.session_state.resultado_actual = resultado
-                        st.rerun()
-                    else:
-                        st.error(f"❌ {resultado.get('mensaje', 'Error en la predicción')}")
+                # Procesar la imagen guardada en session state
+                procesar_identificacion()
+
+def procesar_identificacion():
+    """Función separada para procesar la identificación"""
+    if 'temp_imagen' not in st.session_state:
+        st.error("❌ No hay imagen para procesar")
+        return
+    
+    imagen = st.session_state.temp_imagen
+    
+    with st.spinner("🧠 Analizando tu planta..."):
+        try:
+            # Limpiar estado anterior
+            limpiar_sesion()
+            
+            # Crear nueva sesión
+            sesion = session_manager.iniciar_nueva_sesion(imagen)
+            
+            # Establecer en session_state
+            st.session_state.session_id = sesion.session_id
+            st.session_state.imagen_actual = imagen
+            st.session_state.intento_actual = 1
+            st.session_state.especies_descartadas = set()
+            
+            # Hacer predicción
+            resultado = session_manager.procesar_intento_prediccion(sesion, imagen, None)
+            
+            if resultado.get("exito"):
+                st.session_state.resultado_actual = resultado
+                # Limpiar imagen temporal
+                if 'temp_imagen' in st.session_state:
+                    del st.session_state.temp_imagen
+                if 'temp_fuente' in st.session_state:
+                    del st.session_state.temp_fuente
+                st.rerun()
+            else:
+                st.error(f"❌ {resultado.get('mensaje', 'Error en la predicción')}")
+                
+        except Exception as e:
+            st.error(f"❌ Error en la predicción: {e}")
 
 def pantalla_prediccion_feedback():
     """Pantalla de predicción con botones de feedback"""

@@ -1,9 +1,9 @@
 import streamlit as st
 import time
 from datetime import datetime
-from ui.components import mostrar_info_planta_completa
-from utils.api_client import enviar_feedback, servidor_disponible, obtener_estadisticas
+from utils.api_client import enviar_feedback, servidor_disponible, obtener_estadisticas, SERVER_URL
 from ui.screens.upload import limpiar_sesion
+from urllib.parse import quote
 
 def pantalla_prediccion_feedback():
     """Pantalla de predicción con diseño tipo card moderno"""
@@ -21,19 +21,39 @@ def pantalla_prediccion_feedback():
             overflow: hidden;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             margin: 1rem 0;
+            border: 1px solid #e0e0e0;
         ">
         """, unsafe_allow_html=True)
         
-        # PARTE SUPERIOR: Imagen de la planta
-        st.image(
-            st.session_state.imagen_actual, 
-            use_container_width=True
-        )
+        # PARTE SUPERIOR: Imagen de referencia del servidor
+        nombre_cientifico = datos.get('nombre_cientifico', resultado.get("especie_predicha", ''))
+        if nombre_cientifico and SERVER_URL:
+            nombre_carpeta = nombre_cientifico.replace(' ', '_')
+            especie_encoded = quote(nombre_carpeta)
+            imagen_url = f"{SERVER_URL}/api/image-referencia/{especie_encoded}"
+            
+            try:
+                st.image(
+                    imagen_url,
+                    use_container_width=True
+                )
+            except:
+                # Si falla, mostrar la imagen del usuario como fallback
+                st.image(
+                    st.session_state.imagen_actual,
+                    use_container_width=True
+                )
+        else:
+            # Fallback a imagen del usuario
+            st.image(
+                st.session_state.imagen_actual,
+                use_container_width=True
+            )
         
-        # PARTE INFERIOR: Información con fondo verde suave
+        # PARTE INFERIOR: Información con fondo blanco limpio
         st.markdown("""
         <div style="
-            background: linear-gradient(to bottom, #e8f5e9, #c8e6c9);
+            background: white;
             padding: 2rem;
             margin-top: -4px;
         ">
@@ -46,7 +66,7 @@ def pantalla_prediccion_feedback():
             <h2 style="color: #2e7d32; margin: 0;">
                 🌿 {datos.get('nombre_comun', 'Nombre no disponible')}
             </h2>
-            <p style="color: #558b2f; font-style: italic; font-size: 1.1rem;">
+            <p style="color: #666; font-style: italic; font-size: 1.1rem;">
                 {datos.get('nombre_cientifico', 'N/A')}
             </p>
             """, unsafe_allow_html=True)
@@ -92,7 +112,7 @@ def pantalla_prediccion_feedback():
             st.markdown("---")
             st.markdown(f"""
             <div style="
-                background: white;
+                background: #f8f9fa;
                 padding: 1rem;
                 border-radius: 10px;
                 margin: 1rem 0;
@@ -109,7 +129,7 @@ def pantalla_prediccion_feedback():
             taxonomia = datos.get('taxonomia', {})
             st.markdown(f"""
             <div style="
-                background: white;
+                background: #f8f9fa;
                 padding: 1rem;
                 border-radius: 10px;
                 margin: 1rem 0;
@@ -128,6 +148,10 @@ def pantalla_prediccion_feedback():
         
         # Cerrar divs
         st.markdown("</div></div>", unsafe_allow_html=True)
+    
+    # Mostrar la imagen del usuario en una sección aparte más pequeña
+    with st.expander("Ver tu foto original"):
+        st.image(st.session_state.imagen_actual, caption="Foto que subiste", use_container_width=True)
     
     # Botones de feedback con nuevo estilo
     st.markdown("<br>", unsafe_allow_html=True)

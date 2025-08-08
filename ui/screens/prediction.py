@@ -110,10 +110,6 @@ def pantalla_prediccion_feedback():
             """, unsafe_allow_html=True)
         
         with col2:
-            # Indicador de confianza circular
-            confianza = resultado["confianza"]
-            porcentaje = int(confianza * 100)
-            color = "#4caf50" if porcentaje > 70 else "#ff9800" if porcentaje > 40 else "#f44336"
             
             st.markdown(f"""
             <div style="text-align: center;">

@@ -13,6 +13,7 @@ import re
 import time
 from utils.api_client import enviar_feedback, servidor_disponible, obtener_estadisticas
 from ui.styles import aplicar_estilos
+from ui.components import mostrar_header
 
 # ==================== CONFIGURACIÓN DE LA PÁGINA (DEBE SER PRIMERO) ====================
 # Agregar directorio padre al path ANTES de importar configuración
@@ -167,17 +168,6 @@ def limpiar_sesion():
 
 inicializar_estado()
 # ==================== FUNCIONES AUXILIARES MEJORADAS ====================
-
-def mostrar_header():
-    """Muestra el header principal de la aplicación"""
-    st.markdown('<h1 class="main-header">🌱 BucaraFlora - Identificador de Plantas IA</h1>', unsafe_allow_html=True)
-    st.markdown("**Sube una foto de tu planta y descubre qué especie es**")
-    
-    # Mostrar solo el estado de la base de datos (quitar API)
-    if st.session_state.get('firestore_initialized'):
-        st.success("✅ Sistema conectado y listo")
-    else:
-        st.warning("⚠️ Algunas funciones pueden estar limitadas")
 
 def buscar_info_planta_firestore(nombre_cientifico):
     """

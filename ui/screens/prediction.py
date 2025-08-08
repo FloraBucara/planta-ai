@@ -62,13 +62,51 @@ def pantalla_prediccion_feedback():
         # Nombre de la planta
         col1, col2 = st.columns([3, 1])
         with col1:
+            # Nombre de la planta (centrado)
             st.markdown(f"""
-            <h2 style="color: #2e7d32; margin: 0;">
-                🌿 {datos.get('nombre_comun', 'Nombre no disponible')}
-            </h2>
-            <p style="color: #666; font-style: italic; font-size: 1.1rem;">
-                {datos.get('nombre_cientifico', 'N/A')}
-            </p>
+            <div style="text-align: center; margin-bottom: 1rem;">
+                <h2 style="color: #2e7d32; margin: 0;">
+                    🌿 {datos.get('nombre_comun', 'Nombre no disponible')}
+                </h2>
+                <p style="color: #666; font-style: italic; font-size: 1.1rem; margin: 0.5rem 0;">
+                    {datos.get('nombre_cientifico', 'N/A')}
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+
+            # Indicador de confianza (centrado)
+            confianza = resultado["confianza"]
+            porcentaje = int(confianza * 100)
+            color = "#4caf50" if porcentaje > 70 else "#ff9800" if porcentaje > 40 else "#f44336"
+
+            st.markdown(f"""
+            <div style="text-align: center; margin: 1rem 0;">
+                <div style="
+                    width: 80px;
+                    height: 80px;
+                    border-radius: 50%;
+                    background: conic-gradient({color} {porcentaje * 3.6}deg, #e0e0e0 0deg);
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    position: relative;
+           ">
+                    <div style="
+                        width: 60px;
+                        height: 60px;
+                        border-radius: 50%;
+                        background: white;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-weight: bold;
+                        color: {color};
+              ">
+                        {porcentaje}%
+                    </div>
+                </div>
+                <p style="margin: 0.5rem 0 0 0; font-size: 0.8rem; color: #666;">Confianza</p>
+            </div>
             """, unsafe_allow_html=True)
         
         with col2:

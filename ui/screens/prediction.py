@@ -81,19 +81,44 @@ def pantalla_prediccion_feedback():
         </div>
         """, unsafe_allow_html=True)
         
-        # Indicador de confianza (centrado) - CORREGIDO
+        # Indicador de confianza circular (centrado)
         confianza = resultado["confianza"]
         porcentaje = int(confianza * 100)
         color = "#4caf50" if porcentaje > 70 else "#ff9800" if porcentaje > 40 else "#f44336"
         
-        # Crear el indicador circular usando métricas de Streamlit
-        col1, col2, col3 = st.columns([2, 1, 2])
-        with col2:
-            st.metric(
-                label="Confianza",
-                value=f"{porcentaje}%",
-                delta=None
-            )
+        # Usar HTML para crear el círculo
+        st.markdown(f"""
+        <div style="display: flex; justify-content: center; align-items: center; margin: 2rem 0;">
+            <div style="position: relative; width: 100px; height: 100px;">
+                <svg width="100" height="100" style="transform: rotate(-90deg);">
+                    <circle cx="50" cy="50" r="40" 
+                            stroke="#e0e0e0" 
+                            stroke-width="8" 
+                            fill="none"/>
+                    <circle cx="50" cy="50" r="40" 
+                            stroke="{color}" 
+                            stroke-width="8" 
+                            fill="none"
+                            stroke-dasharray="{porcentaje * 2.51} 251"
+                            stroke-linecap="round"/>
+                </svg>
+                <div style="
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    text-align: center;
+                ">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: {color};">
+                        {porcentaje}%
+                    </div>
+                    <div style="font-size: 0.8rem; color: #666;">
+                        Confianza
+                    </div>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
         
         # Descripción
         if datos.get('descripcion') and info_planta.get('fuente') == 'firestore':
@@ -136,10 +161,6 @@ def pantalla_prediccion_feedback():
         
         # Cerrar divs
         st.markdown("</div></div>", unsafe_allow_html=True)
-    
-    # Mostrar imagen del usuario
-    with st.expander("Ver tu foto original"):
-        st.image(st.session_state.imagen_actual, caption="Foto que subiste", use_container_width=True)
     
     # Botones de feedback
     st.markdown("<br>", unsafe_allow_html=True)

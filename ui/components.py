@@ -1,11 +1,22 @@
 import streamlit as st
+from pathlib import Path
 
 def mostrar_header():
-    """Muestra el header principal de la aplicación"""
-    st.markdown('<h1 class="main-header">🌱 BucaraFlora - Identificador de Plantas IA</h1>', unsafe_allow_html=True)
-    st.markdown("**Sube una foto de tu planta y descubre qué especie es**")
+    """Muestra el header principal de la aplicación con logo"""
+    # Intentar cargar logo local
+    logo_path = Path("assets/logo.png")  # Ajusta el nombre si es diferente
     
-    # Mostrar solo el estado de la base de datos (quitar API)
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if logo_path.exists():
+            st.image(str(logo_path), use_container_width=True)
+        else:
+            # Fallback al texto si no encuentra la imagen
+            st.markdown('<h1 class="main-header">🌱 BucaraFlora - Identificador de Plantas IA</h1>', unsafe_allow_html=True)
+    
+    st.markdown("**Sube una foto de tu planta y descubre qué especie es**", unsafe_allow_html=True)
+    
+    # Mostrar solo el estado de la base de datos
     if st.session_state.get('firestore_initialized'):
         st.success("✅ Sistema conectado y listo")
     else:

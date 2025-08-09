@@ -25,32 +25,30 @@ def pantalla_prediccion_feedback():
         ">
         """, unsafe_allow_html=True)
         
-        # PARTE SUPERIOR: Imagen de referencia del servidor
-        nombre_cientifico = datos.get('nombre_cientifico', resultado.get("especie_predicha", ''))
-        if nombre_cientifico and SERVER_URL:
-            nombre_carpeta = nombre_cientifico.replace(' ', '_')
-            especie_encoded = quote(nombre_carpeta)
-            imagen_url = f"{SERVER_URL}/api/image-referencia/{especie_encoded}"
-            
+        # PARTE SUPERIOR: Imagen de referencia
+        # Primero intentar mostrar imagen del servidor
+        imagen_mostrada = False
+        nombre_cientifico = resultado.get("especie_predicha", '')
+        
+        if nombre_cientifico:
             try:
-                st.image(
-                    imagen_url,
-                    use_container_width=True
-                )
+                # Intentar con la función existente
+                from ui.components import mostrar_imagen_referencia
+                col1, col2, col3 = st.columns([1, 6, 1])
+                with col2:
+                    mostrar_imagen_referencia(nombre_cientifico)
+                    imagen_mostrada = True
             except:
-                # Si falla, mostrar la imagen del usuario como fallback
-                st.image(
-                    st.session_state.imagen_actual,
-                    use_container_width=True
-                )
-        else:
-            # Fallback a imagen del usuario
+                pass
+        
+        # Si no se pudo mostrar imagen del servidor, usar la del usuario
+        if not imagen_mostrada:
             st.image(
                 st.session_state.imagen_actual,
                 use_container_width=True
             )
         
-        # PARTE INFERIOR: Información con fondo blanco limpio
+        # PARTE INFERIOR: Información
         st.markdown("""
         <div style="
             background: white;
@@ -59,12 +57,7 @@ def pantalla_prediccion_feedback():
         ">
         """, unsafe_allow_html=True)
         
-        # Nombre de la planta
-        # Nombre de la planta y confianza (centrado)
-        confianza = resultado["confianza"]
-        porcentaje = int(confianza * 100)
-        color = "#4caf50" if porcentaje > 70 else "#ff9800" if porcentaje > 40 else "#f44336"
-
+        # Nombre de la planta (centrado)
         st.markdown(f"""
         <div style="text-align: center; margin-bottom: 1rem;">
             <h2 style="color: #2e7d32; margin: 0;">
@@ -73,36 +66,34 @@ def pantalla_prediccion_feedback():
             <p style="color: #666; font-style: italic; font-size: 1.1rem; margin: 0.5rem 0;">
                 {datos.get('nombre_cientifico', 'N/A')}
             </p>
-    
-            <div style="margin: 1rem 0;">
-                <div style="
-                    width: 80px;
-                    height: 80px;
-                    border-radius: 50%;
-                    background: conic-gradient({color} {porcentaje * 3.6}deg, #e0e0e0 0deg);
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    position: relative;
-                ">
-                    <div style="
-                        width: 60px;
-                        height: 60px;
-                        border-radius: 50%;
-                        background: white;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-weight: bold;
-                        color: {color};
-                    ">
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Indicador de confianza (centrado) - USANDO COLUMNAS DE STREAMLIT
+        confianza = resultado["confianza"]
+        porcentaje = int(confianza * 100)
+        color = "#4caf50" if porcentaje > 70 else "#ff9800" if porcentaje > 40 else "#f44336"
+        
+        col1, col2, col3 = st.columns([2, 1, 2])
+        with col2:
+            st.markdown(
+                f"""
+                <div style="text-align: center;">
+                    <svg width="80" height="80">
+                        <circle cx="40" cy="40" r="35" stroke="#e0e0e0" stroke-width="10" fill="none"/>
+                        <circle cx="40" cy="40" r="35" stroke="{color}" stroke-width="10" fill="none"
+                                stroke-dasharray="{porcentaje * 2.2} 220"
+                                stroke-dashoffset="0"
+                                transform="rotate(-90 40 40)"/>
+                    </svg>
+                    <div style="margin-top: -60px; font-size: 1.2rem; font-weight: bold; color: {color};">
                         {porcentaje}%
                     </div>
-                 </div>
-                <p style="margin: 0.5rem 0 0 0; font-size: 0.8rem; color: #666;">Confianza</p>
-            </div>
-        </div>
-""", unsafe_allow_html=True)
+                    <div style="font-size: 0.8rem; color: #666; margin-top: 0.5rem;">Confianza</div>
+                </div>
+                """, 
+                unsafe_allow_html=True
+            )
         
         # Descripción
         if datos.get('descripcion') and info_planta.get('fuente') == 'firestore':
@@ -121,7 +112,7 @@ def pantalla_prediccion_feedback():
             </div>
             """, unsafe_allow_html=True)
         
-        # Información taxonómica en grid
+        # Información taxonómica
         if datos.get('taxonomia') and info_planta.get('fuente') == 'firestore':
             taxonomia = datos.get('taxonomia', {})
             st.markdown(f"""
@@ -146,11 +137,11 @@ def pantalla_prediccion_feedback():
         # Cerrar divs
         st.markdown("</div></div>", unsafe_allow_html=True)
     
-    # Mostrar la imagen del usuario en una sección aparte más pequeña
+    # Mostrar imagen del usuario
     with st.expander("Ver tu foto original"):
         st.image(st.session_state.imagen_actual, caption="Foto que subiste", use_container_width=True)
     
-    # Botones de feedback con nuevo estilo
+    # Botones de feedback
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("<h3 style='text-align: center;'>¿Esta es tu planta?</h3>", unsafe_allow_html=True)
     

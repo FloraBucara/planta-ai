@@ -25,28 +25,40 @@ def pantalla_prediccion_feedback():
         ">
         """, unsafe_allow_html=True)
         
-        # PARTE SUPERIOR: Imagen de referencia
-        # Primero intentar mostrar imagen del servidor
-        imagen_mostrada = False
+        # PARTE SUPERIOR: Imagen de referencia del servidor
         nombre_cientifico = resultado.get("especie_predicha", '')
         
-        if nombre_cientifico:
+        if nombre_cientifico and SERVER_URL:
+            # Convertir nombre a formato de carpeta
+            nombre_carpeta = nombre_cientifico.replace(' ', '_')
+            especie_encoded = quote(nombre_carpeta)
+            imagen_url = f"{SERVER_URL}/api/image-referencia/{especie_encoded}"
+            
             try:
-                # Intentar con la función existente
-                from ui.components import mostrar_imagen_referencia
-                col1, col2, col3 = st.columns([1, 6, 1])
-                with col2:
-                    mostrar_imagen_referencia(nombre_cientifico)
-                    imagen_mostrada = True
-            except:
-                pass
-        
-        # Si no se pudo mostrar imagen del servidor, usar la del usuario
-        if not imagen_mostrada:
+                st.image(
+                    imagen_url,
+                    use_container_width=True,
+                    caption=f"🌿 {datos.get('nombre_comun', nombre_cientifico)}"
+                )
+            except Exception as e:
+                # Si falla, usar imagen del usuario como fallback
+                print(f"⚠️ Error cargando imagen del servidor: {e}")
+                st.image(
+                    st.session_state.imagen_actual,
+                    use_container_width=True,
+                    caption=f"🌿 {datos.get('nombre_comun', nombre_cientifico)}"
+                )
+        else:
+            # Fallback si no hay servidor configurado
             st.image(
                 st.session_state.imagen_actual,
-                use_container_width=True
+                use_container_width=True,
+                caption=f"🌿 {datos.get('nombre_comun', nombre_cientifico)}"
             )
+        
+        # Mostrar imagen del usuario justo debajo de la imagen de referencia
+        with st.expander("Ver tu foto original"):
+            st.image(st.session_state.imagen_actual, caption="Foto que subiste", use_container_width=True)
         
         # PARTE INFERIOR: Información
         st.markdown("""
@@ -59,7 +71,7 @@ def pantalla_prediccion_feedback():
         
         # Nombre de la planta (centrado)
         st.markdown(f"""
-        <div style="text-align: center; margin-bottom: 1rem;">
+        <div style="text-align: center; margin-bottom: 2rem;">
             <h2 style="color: #2e7d32; margin: 0;">
                 🌿 {datos.get('nombre_comun', 'Nombre no disponible')}
             </h2>
@@ -69,30 +81,18 @@ def pantalla_prediccion_feedback():
         </div>
         """, unsafe_allow_html=True)
         
-        # Indicador de confianza (centrado) - USANDO COLUMNAS DE STREAMLIT
+        # Indicador de confianza (centrado) - CORREGIDO
         confianza = resultado["confianza"]
         porcentaje = int(confianza * 100)
         color = "#4caf50" if porcentaje > 70 else "#ff9800" if porcentaje > 40 else "#f44336"
         
+        # Crear el indicador circular usando métricas de Streamlit
         col1, col2, col3 = st.columns([2, 1, 2])
         with col2:
-            st.markdown(
-                f"""
-                <div style="text-align: center;">
-                    <svg width="80" height="80">
-                        <circle cx="40" cy="40" r="35" stroke="#e0e0e0" stroke-width="10" fill="none"/>
-                        <circle cx="40" cy="40" r="35" stroke="{color}" stroke-width="10" fill="none"
-                                stroke-dasharray="{porcentaje * 2.2} 220"
-                                stroke-dashoffset="0"
-                                transform="rotate(-90 40 40)"/>
-                    </svg>
-                    <div style="margin-top: -60px; font-size: 1.2rem; font-weight: bold; color: {color};">
-                        {porcentaje}%
-                    </div>
-                    <div style="font-size: 0.8rem; color: #666; margin-top: 0.5rem;">Confianza</div>
-                </div>
-                """, 
-                unsafe_allow_html=True
+            st.metric(
+                label="Confianza",
+                value=f"{porcentaje}%",
+                delta=None
             )
         
         # Descripción

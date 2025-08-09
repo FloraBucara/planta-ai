@@ -60,63 +60,21 @@ def pantalla_prediccion_feedback():
         """, unsafe_allow_html=True)
         
         # Nombre de la planta
-        col1, col2 = st.columns([3, 1])
-        with col1:
-            # Nombre de la planta (centrado)
-            st.markdown(f"""
-            <div style="text-align: center; margin-bottom: 1rem;">
-                <h2 style="color: #2e7d32; margin: 0;">
-                    🌿 {datos.get('nombre_comun', 'Nombre no disponible')}
-                </h2>
-                <p style="color: #666; font-style: italic; font-size: 1.1rem; margin: 0.5rem 0;">
-                    {datos.get('nombre_cientifico', 'N/A')}
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
+        # Nombre de la planta y confianza (centrado)
+        confianza = resultado["confianza"]
+        porcentaje = int(confianza * 100)
+        color = "#4caf50" if porcentaje > 70 else "#ff9800" if porcentaje > 40 else "#f44336"
 
-            # Indicador de confianza (centrado)
-            confianza = resultado["confianza"]
-            porcentaje = int(confianza * 100)
-            color = "#4caf50" if porcentaje > 70 else "#ff9800" if porcentaje > 40 else "#f44336"
-
-            st.markdown(f"""
-            <div style="text-align: center; margin: 1rem 0;">
-                <div style="
-                    width: 80px;
-                    height: 80px;
-                    border-radius: 50%;
-                    background: conic-gradient({color} {porcentaje * 3.6}deg, #e0e0e0 0deg);
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    position: relative;
-           ">
-                    <div style="
-                        width: 60px;
-                        height: 60px;
-                        border-radius: 50%;
-                        background: white;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-weight: bold;
-                        color: {color};
-              ">
-                        {porcentaje}%
-                    </div>
-                </div>
-                <p style="margin: 0.5rem 0 0 0; font-size: 0.8rem; color: #666;">Confianza</p>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with col2:
-            # Indicador de confianza circular
-            confianza = resultado["confianza"]
-            porcentaje = int(confianza * 100)
-            color = "#4caf50" if porcentaje > 70 else "#ff9800" if porcentaje > 40 else "#f44336"
-            
-            st.markdown(f"""
-            <div style="text-align: center;">
+        st.markdown(f"""
+        <div style="text-align: center; margin-bottom: 1rem;">
+            <h2 style="color: #2e7d32; margin: 0;">
+                🌿 {datos.get('nombre_comun', 'Nombre no disponible')}
+            </h2>
+            <p style="color: #666; font-style: italic; font-size: 1.1rem; margin: 0.5rem 0;">
+                {datos.get('nombre_cientifico', 'N/A')}
+            </p>
+    
+            <div style="margin: 1rem 0;">
                 <div style="
                     width: 80px;
                     height: 80px;
@@ -140,10 +98,11 @@ def pantalla_prediccion_feedback():
                     ">
                         {porcentaje}%
                     </div>
-                </div>
+                 </div>
                 <p style="margin: 0.5rem 0 0 0; font-size: 0.8rem; color: #666;">Confianza</p>
             </div>
-            """, unsafe_allow_html=True)
+        </div>
+""", unsafe_allow_html=True)
         
         # Descripción
         if datos.get('descripcion') and info_planta.get('fuente') == 'firestore':
@@ -193,7 +152,7 @@ def pantalla_prediccion_feedback():
     
     # Botones de feedback con nuevo estilo
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("### ¿Es correcta esta identificación?")
+    st.markdown("<h3 style='text-align: center;'>¿Esta es tu planta?</h3>", unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
     

@@ -1,10 +1,54 @@
 import streamlit as st
+from pathlib import Path
+import base64
+
+def get_base64_image(image_path):
+    """Convierte imagen a base64"""
+    try:
+        with open(image_path, "rb") as img_file:
+            return base64.b64encode(img_file.read()).decode()
+    except:
+        return None
 
 def aplicar_estilos():
-    """Aplica todos los estilos CSS de la aplicación"""
-    st.markdown("""
+    """Aplica todos los estilos CSS de la aplicación incluyendo fondo"""
+    
+    # Obtener imagen de fondo
+    fondo_path = Path("assets/fondo.png")
+    fondo_base64 = get_base64_image(fondo_path) if fondo_path.exists() else None
+    
+    # CSS con imagen de fondo
+    css_fondo = ""
+    if fondo_base64:
+        css_fondo = f"""
+        .stApp {{
+            background-image: url("data:image/png;base64,{fondo_base64}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }}
+        
+        /* Hacer los contenedores semi-transparentes para que se vea el fondo */
+        .main .block-container {{
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }}
+        
+        /* Sidebar con transparencia */
+        section[data-testid="stSidebar"] > div {{
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }}
+        """
+    
+    st.markdown(f"""
     <style>
-        .main-header {
+        {css_fondo}
+        
+        .main-header {{
             text-align: center;
             padding: 1rem 0;
             background: linear-gradient(90deg, #2E8B57, #98FB98);
@@ -14,122 +58,122 @@ def aplicar_estilos():
             font-size: 2.5rem;
             font-weight: bold;
             margin-bottom: 1rem;
-        }
+        }}
         
-        .prediction-card {
-            background: #f8f9fa;
+        .prediction-card {{
+            background: rgba(248, 249, 250, 0.95);
             padding: 1.5rem;
             border-radius: 10px;
             border-left: 4px solid #28a745;
             margin: 1rem 0;
-        }
+        }}
         
-        .info-card {
-            background: #e8f5e9;
+        .info-card {{
+            background: rgba(232, 245, 233, 0.95);
             padding: 1rem;
             border-radius: 8px;
             margin: 0.5rem 0;
-        }
+        }}
         
-        .species-card {
-            background: #f0f8ff;
+        .species-card {{
+            background: rgba(240, 248, 255, 0.95);
             padding: 1rem;
             border-radius: 8px;
             border: 2px solid #e0e0e0;
             margin: 0.5rem 0;
             text-align: center;
             transition: all 0.3s;
-        }
+        }}
         
-        .species-card:hover {
+        .species-card:hover {{
             border-color: #28a745;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
+        }}
         
-        .debug-info {
-            background: #fff3cd;
+        .debug-info {{
+            background: rgba(255, 243, 205, 0.95);
             color: #856404;
             padding: 0.75rem;
             border-radius: 5px;
             border: 1px solid #ffeaa7;
             margin: 0.5rem 0;
             font-size: 0.9em;
-        }
+        }}
         
-        .error-message {
-            background: #f8d7da;
+        .error-message {{
+            background: rgba(248, 215, 218, 0.95);
             color: #721c24;
             padding: 1rem;
             border-radius: 5px;
             border: 1px solid #f5c6cb;
             margin: 1rem 0;
-        }
+        }}
         
-        .success-message {
-            background: #d4edda;
+        .success-message {{
+            background: rgba(212, 237, 218, 0.95);
             color: #155724;
             padding: 1rem;
             border-radius: 5px;
             border: 1px solid #c3e6cb;
             margin: 1rem 0;
-        }
+        }}
         
-        .firestore-status {
+        .firestore-status {{
             padding: 0.5rem;
             border-radius: 5px;
             margin: 0.5rem 0;
             font-size: 0.9rem;
-        }
+        }}
         
-        .firestore-connected {
-            background: #d4edda;
+        .firestore-connected {{
+            background: rgba(212, 237, 218, 0.95);
             border: 1px solid #c3e6cb;
             color: #155724;
-        }
+        }}
         
-        .firestore-disconnected {
-            background: #f8d7da;
+        .firestore-disconnected {{
+            background: rgba(248, 215, 218, 0.95);
             border: 1px solid #f5c6cb;
             color: #721c24;
-        }
+        }}
         
-        .confidence-bar {
-            background: #e9ecef;
+        .confidence-bar {{
+            background: rgba(233, 236, 239, 0.95);
             border-radius: 10px;
             height: 20px;
             margin: 0.5rem 0;
             overflow: hidden;
-        }
+        }}
         
-        .confidence-fill {
+        .confidence-fill {{
             background: linear-gradient(90deg, #28a745, #20c997);
             height: 100%;
             transition: width 0.3s ease;
-        }
+        }}
         
-        .camera-info {
-            background: #e3f2fd;
+        .camera-info {{
+            background: rgba(227, 242, 253, 0.95);
             padding: 1rem;
             border-radius: 8px;
             border-left: 4px solid #2196f3;
             margin: 1rem 0;
-        }
+        }}
         
-        .upload-info {
-            background: #f3e5f5;
+        .upload-info {{
+            background: rgba(243, 229, 245, 0.95);
             padding: 1rem;
             border-radius: 8px;
             border-left: 4px solid #9c27b0;
             margin: 1rem 0;
-        }
+        }}
         
-        .stTabs [data-baseweb="tab-list"] {
+        .stTabs [data-baseweb="tab-list"] {{
             gap: 2rem;
-        }
+        }}
         
-        .stTabs [data-baseweb="tab"] {
+        .stTabs [data-baseweb="tab"] {{
             padding: 1rem 2rem;
             border-radius: 8px 8px 0 0;
-        }
+        }}
     </style>
     """, unsafe_allow_html=True)

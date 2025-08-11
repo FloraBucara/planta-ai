@@ -14,97 +14,77 @@ def pantalla_seleccion_metodo():
     
     st.markdown("### 📸 ¿Cómo quieres agregar tu planta?")
     
-    # CSS para ocultar los botones de Streamlit
-    st.markdown("""
-    <style>
-    div[data-testid="column"] button {
-        opacity: 0;
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        z-index: 1;
-        cursor: pointer;
-    }
-    div[data-testid="column"] > div {
-        position: relative;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    
     # Rutas de las imágenes
     upload_normal = Path("assets/btn_upload_normal.png")
     upload_pressed = Path("assets/btn_upload_pressed.png")
     camera_normal = Path("assets/btn_camera_normal.png")
     camera_pressed = Path("assets/btn_camera_pressed.png")
     
-    # Inicializar estados
-    if 'show_upload_pressed' not in st.session_state:
-        st.session_state.show_upload_pressed = False
-    if 'show_camera_pressed' not in st.session_state:
-        st.session_state.show_camera_pressed = False
+    # Estados para controlar el cambio de imagen
+    if 'upload_pressed' not in st.session_state:
+        st.session_state.upload_pressed = False
+    if 'camera_pressed' not in st.session_state:
+        st.session_state.camera_pressed = False
     
     col1, col2, col3 = st.columns([1, 2, 1])
     
     with col2:
-        # BOTÓN UPLOAD
+        # IMAGEN DE UPLOAD
         if upload_normal.exists():
-            # Contenedor para el botón upload
-            container_upload = st.container()
-            
-            with container_upload:
-                # Determinar qué imagen mostrar
-                if st.session_state.show_upload_pressed and upload_pressed.exists():
-                    img = Image.open(upload_pressed)
-                    st.image(img, use_container_width=True)
-                    # Cambiar después de mostrar
-                    st.session_state.show_upload_pressed = False
-                    time.sleep(0.2)
-                    st.session_state.metodo_seleccionado = "archivo"
+            # Verificar si debe mostrar imagen pressed
+            if st.session_state.upload_pressed and upload_pressed.exists():
+                st.image(str(upload_pressed), use_container_width=True)
+                st.session_state.upload_pressed = False
+                time.sleep(0.3)
+                st.session_state.metodo_seleccionado = "archivo"
+                st.rerun()
+            else:
+                # Mostrar imagen normal
+                if st.button("", key="upload_btn", use_container_width=True):
+                    st.session_state.upload_pressed = True
                     st.rerun()
-                else:
-                    img = Image.open(upload_normal)
-                    st.image(img, use_container_width=True)
                 
-                # Botón invisible encima de la imagen
-                if st.button("Click", key="btn_upload"):
-                    st.session_state.show_upload_pressed = True
-                    st.rerun()
+                # Mover la imagen arriba del botón con margen negativo
+                st.markdown(
+                    f'<img src="data:image/png;base64,{image_to_base64(upload_normal)}" style="width: 100%; margin-top: -80px; cursor: pointer;">',
+                    unsafe_allow_html=True
+                )
         else:
-            # Fallback
-            if st.button("📁 Subir imagen desde mi dispositivo",
-                        use_container_width=True, type="primary", key="btn_upload_fallback"):
+            # Fallback si no hay imagen
+            if st.button("📁 Subir imagen desde mi dispositivo", use_container_width=True, type="primary"):
                 st.session_state.metodo_seleccionado = "archivo"
                 st.rerun()
         
-        # Espacio entre botones
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
+        st.markdown("<br><br>", unsafe_allow_html=True)
         
-        # BOTÓN CÁMARA
+        # IMAGEN DE CÁMARA
         if camera_normal.exists():
-            # Contenedor para el botón cámara
-            container_camera = st.container()
-            
-            with container_camera:
-                # Determinar qué imagen mostrar
-                if st.session_state.show_camera_pressed and camera_pressed.exists():
-                    img = Image.open(camera_pressed)
-                    st.image(img, use_container_width=True)
-                    # Cambiar después de mostrar
-                    st.session_state.show_camera_pressed = False
-                    time.sleep(0.2)
-                    st.session_state.metodo_seleccionado = "camara"
-                    st.rerun()
-                else:
-                    img = Image.open(camera_normal)
-                    st.image(img, use_container_width=True)
-                
-                # Botón invisible encima
-                if st.button("Click", key="btn_camera"):
-                    st.session_state.show_camera_pressed = True
-                    st.rerun()
-        else:
-            # Fallback
-            if st.button("📷 Tomar foto con la cámara",
-                        use_container_width=True, type="primary", key="btn_camera_fallback"):
+            # Verificar si debe mostrar imagen pressed
+            if st.session_state.camera_pressed and camera_pressed.exists():
+                st.image(str(camera_pressed), use_container_width=True)
+                st.session_state.camera_pressed = False
+                time.sleep(0.3)
                 st.session_state.metodo_seleccionado = "camara"
                 st.rerun()
+            else:
+                # Mostrar imagen normal
+                if st.button("", key="camera_btn", use_container_width=True):
+                    st.session_state.camera_pressed = True
+                    st.rerun()
+                
+                # Mover la imagen arriba del botón
+                st.markdown(
+                    f'<img src="data:image/png;base64,{image_to_base64(camera_normal)}" style="width: 100%; margin-top: -80px; cursor: pointer;">',
+                    unsafe_allow_html=True
+                )
+        else:
+            # Fallback si no hay imagen
+            if st.button("📷 Tomar foto con la cámara", use_container_width=True, type="primary"):
+                st.session_state.metodo_seleccionado = "camara"
+                st.rerun()
+
+def image_to_base64(image_path):
+    """Convierte imagen a base64"""
+    import base64
+    with open(image_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode()

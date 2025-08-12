@@ -12,7 +12,8 @@ def get_base64_image(image_path):
 
 def aplicar_estilos():
     """Aplica todos los estilos CSS de la aplicación incluyendo fondo"""
-    
+    # DEBUG: Verificar que se está ejecutando
+    print("🎨 DEBUG: Aplicando estilos CSS...")
     # Obtener imagen de fondo
     fondo_path = Path("assets/fondo.png")
     fondo_base64 = get_base64_image(fondo_path) if fondo_path.exists() else None
@@ -357,3 +358,66 @@ def aplicar_estilos():
         }}
     </style>
     """, unsafe_allow_html=True)
+    st.markdown("""
+<style>
+    /* DEBUG: Forzar estilos en TODOS los botones primero */
+    .stButton > button {
+        font-weight: 600 !important;
+        border-radius: 0.5rem !important;
+        transition: all 0.3s ease !important;
+        border: none !important;
+    }
+    
+    /* BOTÓN IDENTIFICAR PLANTA - Verde llamativo */
+    button[data-testid="baseButton-primary"][aria-label*="Identificar"],
+    button[kind="primary"]:has-text("Identificar Planta"),
+    .stButton > button:contains("🔍 Identificar Planta") {
+        background: linear-gradient(90deg, #00C851, #007E33) !important;
+        color: white !important;
+        padding: 1.2rem 2rem !important;
+        font-size: 1.2rem !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        box-shadow: 0 6px 20px rgba(0, 200, 81, 0.4) !important;
+    }
+    
+    /* BOTONES PRINCIPALES - Verde estándar */
+    button[data-testid="baseButton-primary"]:has-text("Subir imagen"),
+    button[data-testid="baseButton-primary"]:has-text("Tomar foto") {
+        background: linear-gradient(90deg, #2E8B57, #228B22) !important;
+        color: white !important;
+        box-shadow: 0 4px 12px rgba(46, 139, 87, 0.3) !important;
+    }
+    
+    /* BOTÓN CORRECTO - Verde degradado */
+    button:has-text("¡Sí, es correcta!") {
+        background: linear-gradient(90deg, #28a745, #20c997) !important;
+        color: white !important;
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3) !important;
+    }
+    
+    /* BOTÓN INCORRECTO - Rojo degradado NOTORIO */
+    button:has-text("No, es incorrecta") {
+        background: linear-gradient(90deg, #ff4757, #c44569) !important;
+        color: white !important;
+        box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3) !important;
+    }
+    
+    /* BOTÓN REGRESAR - Verde + Gris */
+    button:has-text("Regresar") {
+        background: linear-gradient(90deg, #28a745, #6c757d) !important;
+        color: white !important;
+        box-shadow: 0 3px 12px rgba(40, 167, 69, 0.25) !important;
+    }
+    
+    /* Efectos hover */
+    .stButton > button:hover {
+        transform: translateY(-2px) !important;
+    }
+    
+    /* DEBUG: Fondo temporal para verificar que funciona */
+    .stButton {
+        margin: 0.5rem 0 !important;
+    }
+</style>
+""", unsafe_allow_html=True)

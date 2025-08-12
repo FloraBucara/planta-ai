@@ -2,7 +2,6 @@ import streamlit as st
 import time
 from ui.components import mostrar_imagen_referencia_sin_barra
 from ui.screens.upload import buscar_info_planta_firestore, limpiar_sesion
-from ui.styles import crear_boton_personalizado
 from utils.api_client import enviar_feedback
 from utils.session_manager import session_manager
 
@@ -35,14 +34,10 @@ def pantalla_top_especies():
     for i, especie_data in enumerate(top_especies):
         mostrar_especie_opcion(i, especie_data)
     
-    # OPCIÓN "NO ES NINGUNA DE ESTAS" - ROJO DEGRADADO NOTORIO
+    # Opción "No es ninguna de estas"
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if crear_boton_personalizado(
-            "❌ No es ninguna de estas",
-            "btn-base btn-incorrect",
-            "btn_none_selection"
-        ):
+        if st.button("❌ No es ninguna de estas", type="secondary", use_container_width=True):
             # Establecer mensaje para mostrar en inicio
             st.session_state.mensaje_inicio = "no_identificada"
             
@@ -84,28 +79,15 @@ def mostrar_especie_opcion(i, especie_data):
             </p>
             """, unsafe_allow_html=True)
             
-            # BOTÓN EXPANDIR/CONTRAER - CON NUEVOS ESTILOS
+            # Botón expandir/contraer información
             expand_key = f"expand_{i}"
-            if not st.session_state.get(expand_key, False):
-                # Botón "Ver información completa" - VERDE CLARO
-                if crear_boton_personalizado(
-                    "▼ Ver información completa",
-                    "btn-base btn-expand-show",
-                    f"btn_expand_show_{i}",
-                    use_container_width=False
-                ):
-                    st.session_state[expand_key] = True
-                    st.rerun()
-            else:
-                # Botón "Ocultar información" - VERDE OSCURO
-                if crear_boton_personalizado(
-                    "▲ Ocultar información",
-                    "btn-base btn-expand-hide",
-                    f"btn_expand_hide_{i}",
-                    use_container_width=False
-                ):
-                    st.session_state[expand_key] = False
-                    st.rerun()
+            if st.button(
+                "▼ Ver información completa" if not st.session_state.get(expand_key, False) else "▲ Ocultar información",
+                key=f"toggle_{i}",
+                type="secondary"
+            ):
+                st.session_state[expand_key] = not st.session_state.get(expand_key, False)
+                st.rerun()
             
             # Mostrar información expandida si está activada
             if st.session_state.get(expand_key, False):
@@ -152,11 +134,12 @@ def mostrar_info_expandida(i, especie_data, datos, info_planta):
     
     st.markdown("---")
     
-    # BOTÓN "ES ESTA" AL FINAL DE LA INFORMACIÓN EXPANDIDA - VERDE DEGRADADO
-    if crear_boton_personalizado(
+    # BOTÓN "ES ESTA" AL FINAL DE LA INFORMACIÓN EXPANDIDA
+    if st.button(
         "✅ ¡Es esta planta!",
-        "btn-base btn-confirm",
-        f"btn_confirm_species_{i}"
+        key=f"select_final_{i}",
+        type="primary",
+        use_container_width=True
     ):
         procesar_seleccion_especie(especie_data, datos)
 

@@ -1,7 +1,6 @@
 import streamlit as st
 from PIL import Image
 from ui.screens.upload import mostrar_imagen_y_procesar
-from ui.styles import crear_boton_personalizado
 
 def pantalla_tomar_foto():
     """Pantalla específica para tomar foto"""
@@ -21,13 +20,9 @@ def pantalla_tomar_foto():
         except Exception as e:
             st.error(f"❌ Error procesando foto: {e}")
     
-    # Botón para regresar - VERDE + GRIS
+    # Botón para regresar
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if crear_boton_personalizado(
-            "← Regresar a selección de método",
-            "btn-base btn-back",
-            "btn_back_camera"
-        ):
+        if st.button("← Regresar a selección de método", key="back_from_camera", use_container_width=True):
             st.session_state.metodo_seleccionado = None
             st.rerun()

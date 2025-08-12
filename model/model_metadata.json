@@ -352,8 +352,8 @@
     "epochs": 50,
     "learning_rate": 0.0001,
     "validation_split": 0.2,
-    "model_name": "plant_classifier.h5",
-    "backup_model_name": "plant_classifier_backup.h5",
+    "model_name": "plant_classifier.onnx",
+    "backup_model_name": "plant_classifier_backup.onnx",
     "species_list_name": "species_list.json",
     "base_model": "MobileNetV2",
     "freeze_base": true,
@@ -366,5 +366,8 @@
     "top5_accuracy": 0.8244147300720215,
     "total_params": 2465167,
     "num_classes": 335
-  }
+  },
+  "model_format": "ONNX Runtime",
+  "migrated_from": "TensorFlow",
+  "migration_date": "2025-07-25"
 }

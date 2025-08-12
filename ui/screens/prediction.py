@@ -4,6 +4,7 @@ from datetime import datetime
 from utils.api_client import enviar_feedback, servidor_disponible, obtener_estadisticas, SERVER_URL
 from ui.screens.upload import limpiar_sesion
 from urllib.parse import quote
+from ui.loading_buttons import boton_confirmacion_correcta
 
 def pantalla_prediccion_feedback():
     """Pantalla de predicción con diseño tipo card moderno"""
@@ -169,12 +170,7 @@ def pantalla_prediccion_feedback():
     col1, col2 = st.columns(2)
     
     with col1:
-        if st.button(
-            "✅ ¡Sí, es correcta!", 
-            type="primary", 
-            use_container_width=True,
-            help="Confirmar que la identificación es correcta"
-        ):
+        if boton_confirmacion_correcta("feedback_correcto_loading"):
             procesar_feedback_positivo(resultado)
     
     with col2:

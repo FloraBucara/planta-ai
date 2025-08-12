@@ -4,8 +4,6 @@ from ui.components import mostrar_imagen_referencia_sin_barra
 from ui.screens.upload import buscar_info_planta_firestore, limpiar_sesion
 from utils.api_client import enviar_feedback
 from utils.session_manager import session_manager
-from ui.loading_buttons import boton_seleccion_planta
-from ui.expand_buttons import boton_expandible_toggle
 
 def pantalla_top_especies():
     """Pantalla de selección manual de las top 5 especies - VERSIÓN EXPANDIBLE"""
@@ -83,15 +81,12 @@ def mostrar_especie_opcion(i, especie_data):
             
             # Botón expandir/contraer información
             expand_key = f"expand_{i}"
-            expandido = st.session_state.get(expand_key, False)
-
-            if boton_expandible_toggle(
-                texto_expandir="Ver información completa",
-                texto_contraer="Ocultar información", 
+            if st.button(
+                "▼ Ver información completa" if not st.session_state.get(expand_key, False) else "▲ Ocultar información",
                 key=f"toggle_{i}",
-                expandido=expandido
+                type="secondary"
             ):
-                st.session_state[expand_key] = not expandido
+                st.session_state[expand_key] = not st.session_state.get(expand_key, False)
                 st.rerun()
             
             # Mostrar información expandida si está activada
@@ -140,7 +135,12 @@ def mostrar_info_expandida(i, especie_data, datos, info_planta):
     st.markdown("---")
     
     # BOTÓN "ES ESTA" AL FINAL DE LA INFORMACIÓN EXPANDIDA
-    if boton_seleccion_planta(f"select_final_{i}", datos.get('nombre_comun', 'esta planta')):
+    if st.button(
+        "✅ ¡Es esta planta!",
+        key=f"select_final_{i}",
+        type="primary",
+        use_container_width=True
+    ):
         procesar_seleccion_especie(especie_data, datos)
 
 def procesar_seleccion_especie(especie_data, datos):

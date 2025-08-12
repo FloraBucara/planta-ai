@@ -1,7 +1,6 @@
 import streamlit as st
 from PIL import Image
 from config import STREAMLIT_CONFIG
-from ui.bubbly_buttons import boton_identificar
 
 def pantalla_upload_archivo():
     """Pantalla específica para subir archivo"""
@@ -46,7 +45,12 @@ def mostrar_imagen_y_procesar(imagen, fuente):
     # Botón de análisis
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if boton_identificar("btn_analyze_bubbly"):
+        if st.button(
+            "🔍 Identificar Planta",
+            type="primary",
+            use_container_width=True,
+            key="btn_analyze"
+        ):
             # Guardar imagen y procesar
             st.session_state.temp_imagen = imagen
             procesar_identificacion()

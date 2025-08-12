@@ -2,6 +2,7 @@ import streamlit as st
 import time
 from ui.components import mostrar_imagen_referencia_sin_barra
 from ui.screens.upload import buscar_info_planta_firestore, limpiar_sesion
+from ui.styles import crear_boton_personalizado
 from utils.api_client import enviar_feedback
 from utils.session_manager import session_manager
 
@@ -34,14 +35,13 @@ def pantalla_top_especies():
     for i, especie_data in enumerate(top_especies):
         mostrar_especie_opcion(i, especie_data)
     
-    # OPCIÓN "NO ES NINGUNA DE ESTAS" - CON NUEVO ESTILO ROJO
+    # OPCIÓN "NO ES NINGUNA DE ESTAS" - ROJO DEGRADADO NOTORIO
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button(
-            "❌ No es ninguna de estas", 
-            type="secondary", 
-            use_container_width=True,
-            key="btn_none_of_these"  # ← KEY PARA ESTILO ROJO DEGRADADO NOTORIO
+        if crear_boton_personalizado(
+            "❌ No es ninguna de estas",
+            "btn-base btn-incorrect",
+            "btn_none_selection"
         ):
             # Establecer mensaje para mostrar en inicio
             st.session_state.mensaje_inicio = "no_identificada"
@@ -87,20 +87,22 @@ def mostrar_especie_opcion(i, especie_data):
             # BOTÓN EXPANDIR/CONTRAER - CON NUEVOS ESTILOS
             expand_key = f"expand_{i}"
             if not st.session_state.get(expand_key, False):
-                # Botón "Ver información completa" - Verde claro
-                if st.button(
+                # Botón "Ver información completa" - VERDE CLARO
+                if crear_boton_personalizado(
                     "▼ Ver información completa",
-                    key=f"btn_expand_show_{i}",  # ← KEY PARA ESTILO VERDE CLARO
-                    type="secondary"
+                    "btn-base btn-expand-show",
+                    f"btn_expand_show_{i}",
+                    use_container_width=False
                 ):
                     st.session_state[expand_key] = True
                     st.rerun()
             else:
-                # Botón "Ocultar información" - Verde oscuro
-                if st.button(
+                # Botón "Ocultar información" - VERDE OSCURO
+                if crear_boton_personalizado(
                     "▲ Ocultar información",
-                    key=f"btn_expand_hide_{i}",  # ← KEY PARA ESTILO VERDE OSCURO
-                    type="secondary"
+                    "btn-base btn-expand-hide",
+                    f"btn_expand_hide_{i}",
+                    use_container_width=False
                 ):
                     st.session_state[expand_key] = False
                     st.rerun()
@@ -150,12 +152,11 @@ def mostrar_info_expandida(i, especie_data, datos, info_planta):
     
     st.markdown("---")
     
-    # BOTÓN "ES ESTA" AL FINAL DE LA INFORMACIÓN EXPANDIDA - CON NUEVO ESTILO
-    if st.button(
+    # BOTÓN "ES ESTA" AL FINAL DE LA INFORMACIÓN EXPANDIDA - VERDE DEGRADADO
+    if crear_boton_personalizado(
         "✅ ¡Es esta planta!",
-        key=f"btn_confirm_species_{i}",  # ← KEY PARA ESTILO VERDE DEGRADADO (IGUAL QUE "SÍ, ES CORRECTA")
-        type="primary",
-        use_container_width=True
+        "btn-base btn-confirm",
+        f"btn_confirm_species_{i}"
     ):
         procesar_seleccion_especie(especie_data, datos)
 

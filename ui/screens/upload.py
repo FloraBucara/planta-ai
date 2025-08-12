@@ -1,6 +1,7 @@
 import streamlit as st
 from PIL import Image
 from config import STREAMLIT_CONFIG
+from ui.styles import crear_boton_personalizado
 
 def pantalla_upload_archivo():
     """Pantalla específica para subir archivo"""
@@ -25,13 +26,13 @@ def pantalla_upload_archivo():
         except Exception as e:
             st.error(f"❌ Error cargando imagen: {e}")
     
-    # Botón para regresar - CON NUEVO ESTILO
+    # Botón para regresar - VERDE + GRIS
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button(
-            "← Regresar a selección de método", 
-            key="btn_back",  # ← NUEVA KEY PARA ESTILO
-            use_container_width=True
+        if crear_boton_personalizado(
+            "← Regresar a selección de método",
+            "btn-base btn-back",
+            "btn_back_upload"
         ):
             st.session_state.metodo_seleccionado = None
             st.rerun()
@@ -46,14 +47,13 @@ def mostrar_imagen_y_procesar(imagen, fuente):
     with col2:
         st.image(imagen, caption=f"Tu planta (desde {fuente})", use_container_width=True)
     
-    # BOTÓN DE ANÁLISIS - CON NUEVO ESTILO VERDE LLAMATIVO
+    # BOTÓN DE ANÁLISIS - VERDE LLAMATIVO
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button(
+        if crear_boton_personalizado(
             "🔍 Identificar Planta",
-            type="primary",
-            use_container_width=True,
-            key="btn_identify_plant"  # ← NUEVA KEY PARA ESTILO VERDE LLAMATIVO
+            "btn-base btn-identify-plant",
+            "btn_identify_upload"
         ):
             # Guardar imagen y procesar
             st.session_state.temp_imagen = imagen

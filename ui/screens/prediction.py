@@ -3,6 +3,7 @@ import time
 from datetime import datetime
 from utils.api_client import enviar_feedback, servidor_disponible, obtener_estadisticas, SERVER_URL
 from ui.screens.upload import limpiar_sesion
+from ui.styles import crear_boton_personalizado
 from urllib.parse import quote
 
 def pantalla_prediccion_feedback():
@@ -162,29 +163,27 @@ def pantalla_prediccion_feedback():
         # Cerrar divs
         st.markdown("</div></div>", unsafe_allow_html=True)
     
-    # BOTONES DE FEEDBACK - CON NUEVOS ESTILOS
+    # BOTONES DE FEEDBACK - CON NUEVOS ESTILOS PERSONALIZADOS
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("<h3 style='text-align: center;'>¿Esta es tu planta?</h3>", unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
     
     with col1:
-        if st.button(
-            "✅ ¡Sí, es correcta!", 
-            type="primary", 
-            use_container_width=True,
-            key="btn_correct",  # ← KEY PARA ESTILO VERDE DEGRADADO
-            help="Confirmar que la identificación es correcta"
+        # BOTÓN CONFIRMAR - VERDE DEGRADADO
+        if crear_boton_personalizado(
+            "✅ ¡Sí, es correcta!",
+            "btn-base btn-confirm",
+            "btn_correct_prediction"
         ):
             procesar_feedback_positivo(resultado)
     
     with col2:
-        if st.button(
-            "❌ No, es incorrecta", 
-            type="secondary", 
-            use_container_width=True,
-            key="btn_incorrect",  # ← KEY PARA ESTILO ROJO DEGRADADO NOTORIO
-            help="Ver otras opciones posibles"
+        # BOTÓN INCORRECTO - ROJO DEGRADADO NOTORIO
+        if crear_boton_personalizado(
+            "❌ No, es incorrecta",
+            "btn-base btn-incorrect",
+            "btn_incorrect_prediction"
         ):
             procesar_feedback_negativo(resultado)
 

@@ -2,6 +2,7 @@ import streamlit as st
 from datetime import datetime
 from utils.api_client import servidor_disponible, obtener_estadisticas
 from ui.screens.upload import limpiar_sesion
+from ui.styles import crear_boton_personalizado
 
 def mostrar_sidebar(estado_sistema):
     """Muestra el sidebar con información del sistema"""
@@ -28,12 +29,12 @@ def mostrar_sidebar(estado_sistema):
         else:
             st.info("ℹ️ Sistema funcionando en modo básico")
     
-        # BOTÓN DE RESET - CON NUEVO ESTILO GRIS DEGRADADO
+        # BOTÓN DE RESET - GRIS DEGRADADO
         st.markdown("---")
-        if st.button(
-            "🔄 Nueva Consulta", 
-            use_container_width=True,
-            key="btn_new_query"  # ← KEY PARA ESTILO GRIS DEGRADADO
+        if crear_boton_personalizado(
+            "🔄 Nueva Consulta",
+            "btn-base btn-secondary",
+            "btn_new_query_sidebar"
         ):
             limpiar_sesion()
             st.rerun()

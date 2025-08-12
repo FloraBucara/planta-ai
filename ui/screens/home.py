@@ -1,4 +1,5 @@
 import streamlit as st
+from ui.styles import crear_boton_personalizado
 
 def pantalla_seleccion_metodo():
     """Pantalla para seleccionar método de entrada"""
@@ -15,24 +16,22 @@ def pantalla_seleccion_metodo():
     col1, col2, col3 = st.columns([1, 2, 1])
     
     with col2:
-        # BOTÓN 1: Subir archivo - CON NUEVO ESTILO VERDE ESTÁNDAR
-        if st.button(
+        # BOTÓN 1: Subir archivo - VERDE ESTÁNDAR
+        if crear_boton_personalizado(
             "📁 Subir imagen desde mi dispositivo",
-            use_container_width=True,
-            type="primary",
-            key="btn_upload"  # ← KEY PARA ESTILO VERDE ESTÁNDAR
+            "btn-base btn-primary-green",
+            "btn_upload_home"
         ):
             st.session_state.metodo_seleccionado = "archivo"
             st.rerun()
         
         st.markdown("<br>", unsafe_allow_html=True)  # Espacio
         
-        # BOTÓN 2: Tomar foto - CON NUEVO ESTILO VERDE ESTÁNDAR
-        if st.button(
+        # BOTÓN 2: Tomar foto - VERDE ESTÁNDAR
+        if crear_boton_personalizado(
             "📷 Tomar foto con la cámara",
-            use_container_width=True,
-            type="primary",
-            key="btn_camera"  # ← KEY PARA ESTILO VERDE ESTÁNDAR
+            "btn-base btn-primary-green",
+            "btn_camera_home"
         ):
             st.session_state.metodo_seleccionado = "camara"
             st.rerun()

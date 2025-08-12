@@ -34,10 +34,15 @@ def pantalla_top_especies():
     for i, especie_data in enumerate(top_especies):
         mostrar_especie_opcion(i, especie_data)
     
-    # Opción "No es ninguna de estas"
+    # OPCIÓN "NO ES NINGUNA DE ESTAS" - CON NUEVO ESTILO ROJO
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button("❌ No es ninguna de estas", type="secondary", use_container_width=True):
+        if st.button(
+            "❌ No es ninguna de estas", 
+            type="secondary", 
+            use_container_width=True,
+            key="btn_none_of_these"  # ← KEY PARA ESTILO ROJO DEGRADADO NOTORIO
+        ):
             # Establecer mensaje para mostrar en inicio
             st.session_state.mensaje_inicio = "no_identificada"
             
@@ -79,15 +84,26 @@ def mostrar_especie_opcion(i, especie_data):
             </p>
             """, unsafe_allow_html=True)
             
-            # Botón expandir/contraer información
+            # BOTÓN EXPANDIR/CONTRAER - CON NUEVOS ESTILOS
             expand_key = f"expand_{i}"
-            if st.button(
-                "▼ Ver información completa" if not st.session_state.get(expand_key, False) else "▲ Ocultar información",
-                key=f"toggle_{i}",
-                type="secondary"
-            ):
-                st.session_state[expand_key] = not st.session_state.get(expand_key, False)
-                st.rerun()
+            if not st.session_state.get(expand_key, False):
+                # Botón "Ver información completa" - Verde claro
+                if st.button(
+                    "▼ Ver información completa",
+                    key=f"btn_expand_show_{i}",  # ← KEY PARA ESTILO VERDE CLARO
+                    type="secondary"
+                ):
+                    st.session_state[expand_key] = True
+                    st.rerun()
+            else:
+                # Botón "Ocultar información" - Verde oscuro
+                if st.button(
+                    "▲ Ocultar información",
+                    key=f"btn_expand_hide_{i}",  # ← KEY PARA ESTILO VERDE OSCURO
+                    type="secondary"
+                ):
+                    st.session_state[expand_key] = False
+                    st.rerun()
             
             # Mostrar información expandida si está activada
             if st.session_state.get(expand_key, False):
@@ -134,10 +150,10 @@ def mostrar_info_expandida(i, especie_data, datos, info_planta):
     
     st.markdown("---")
     
-    # BOTÓN "ES ESTA" AL FINAL DE LA INFORMACIÓN EXPANDIDA
+    # BOTÓN "ES ESTA" AL FINAL DE LA INFORMACIÓN EXPANDIDA - CON NUEVO ESTILO
     if st.button(
         "✅ ¡Es esta planta!",
-        key=f"select_final_{i}",
+        key=f"btn_confirm_species_{i}",  # ← KEY PARA ESTILO VERDE DEGRADADO (IGUAL QUE "SÍ, ES CORRECTA")
         type="primary",
         use_container_width=True
     ):

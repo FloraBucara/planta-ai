@@ -15,24 +15,24 @@ def pantalla_seleccion_metodo():
     col1, col2, col3 = st.columns([1, 2, 1])
     
     with col2:
-        # Botón 1: Subir archivo
+        # BOTÓN 1: Subir archivo - CON NUEVO ESTILO VERDE ESTÁNDAR
         if st.button(
             "📁 Subir imagen desde mi dispositivo",
             use_container_width=True,
             type="primary",
-            key="btn_upload"
+            key="btn_upload"  # ← KEY PARA ESTILO VERDE ESTÁNDAR
         ):
             st.session_state.metodo_seleccionado = "archivo"
             st.rerun()
         
         st.markdown("<br>", unsafe_allow_html=True)  # Espacio
         
-        # Botón 2: Tomar foto
+        # BOTÓN 2: Tomar foto - CON NUEVO ESTILO VERDE ESTÁNDAR
         if st.button(
             "📷 Tomar foto con la cámara",
             use_container_width=True,
             type="primary",
-            key="btn_camera"
+            key="btn_camera"  # ← KEY PARA ESTILO VERDE ESTÁNDAR
         ):
             st.session_state.metodo_seleccionado = "camara"
             st.rerun()

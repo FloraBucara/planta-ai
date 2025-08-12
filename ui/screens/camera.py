@@ -20,9 +20,13 @@ def pantalla_tomar_foto():
         except Exception as e:
             st.error(f"❌ Error procesando foto: {e}")
     
-    # Botón para regresar
+    # Botón para regresar - CON NUEVO ESTILO VERDE + GRIS
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button("← Regresar a selección de método", key="back_from_camera", use_container_width=True):
+        if st.button(
+            "← Regresar a selección de método", 
+            key="btn_back_camera",  # ← KEY DIFERENTE PARA EVITAR CONFLICTOS
+            use_container_width=True
+        ):
             st.session_state.metodo_seleccionado = None
             st.rerun()

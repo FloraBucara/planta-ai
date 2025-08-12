@@ -28,9 +28,13 @@ def mostrar_sidebar(estado_sistema):
         else:
             st.info("ℹ️ Sistema funcionando en modo básico")
     
-        # Botón de reset
+        # BOTÓN DE RESET - CON NUEVO ESTILO GRIS DEGRADADO
         st.markdown("---")
-        if st.button("🔄 Nueva Consulta", use_container_width=True):
+        if st.button(
+            "🔄 Nueva Consulta", 
+            use_container_width=True,
+            key="btn_new_query"  # ← KEY PARA ESTILO GRIS DEGRADADO
+        ):
             limpiar_sesion()
             st.rerun()
         

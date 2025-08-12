@@ -25,10 +25,14 @@ def pantalla_upload_archivo():
         except Exception as e:
             st.error(f"❌ Error cargando imagen: {e}")
     
-    # Botón para regresar
+    # Botón para regresar - CON NUEVO ESTILO
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button("← Regresar a selección de método", key="back_from_upload", use_container_width=True):
+        if st.button(
+            "← Regresar a selección de método", 
+            key="btn_back",  # ← NUEVA KEY PARA ESTILO
+            use_container_width=True
+        ):
             st.session_state.metodo_seleccionado = None
             st.rerun()
 
@@ -42,14 +46,14 @@ def mostrar_imagen_y_procesar(imagen, fuente):
     with col2:
         st.image(imagen, caption=f"Tu planta (desde {fuente})", use_container_width=True)
     
-    # Botón de análisis
+    # BOTÓN DE ANÁLISIS - CON NUEVO ESTILO VERDE LLAMATIVO
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button(
             "🔍 Identificar Planta",
             type="primary",
             use_container_width=True,
-            key="btn_analyze"
+            key="btn_identify_plant"  # ← NUEVA KEY PARA ESTILO VERDE LLAMATIVO
         ):
             # Guardar imagen y procesar
             st.session_state.temp_imagen = imagen

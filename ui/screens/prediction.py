@@ -162,7 +162,7 @@ def pantalla_prediccion_feedback():
         # Cerrar divs
         st.markdown("</div></div>", unsafe_allow_html=True)
     
-    # Botones de feedback
+    # BOTONES DE FEEDBACK - CON NUEVOS ESTILOS
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("<h3 style='text-align: center;'>¿Esta es tu planta?</h3>", unsafe_allow_html=True)
     
@@ -173,6 +173,7 @@ def pantalla_prediccion_feedback():
             "✅ ¡Sí, es correcta!", 
             type="primary", 
             use_container_width=True,
+            key="btn_correct",  # ← KEY PARA ESTILO VERDE DEGRADADO
             help="Confirmar que la identificación es correcta"
         ):
             procesar_feedback_positivo(resultado)
@@ -182,6 +183,7 @@ def pantalla_prediccion_feedback():
             "❌ No, es incorrecta", 
             type="secondary", 
             use_container_width=True,
+            key="btn_incorrect",  # ← KEY PARA ESTILO ROJO DEGRADADO NOTORIO
             help="Ver otras opciones posibles"
         ):
             procesar_feedback_negativo(resultado)

@@ -60,6 +60,186 @@ def aplicar_estilos():
             margin-bottom: 1rem;
         }}
         
+        /* ==================== BOTONES PRINCIPALES ==================== */
+        
+        /* Botón Identificar Planta - Verde degradado llamativo */
+        .stButton > button[key="btn_identify_plant"] {{
+            background: linear-gradient(90deg, #00C851, #007E33) !important;
+            color: white !important;
+            border: none !important;
+            padding: 1.2rem 2rem !important;
+            border-radius: 0.75rem !important;
+            font-weight: 700 !important;
+            font-size: 1.2rem !important;
+            width: 100% !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 6px 20px rgba(0, 200, 81, 0.4) !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+        }}
+        
+        .stButton > button[key="btn_identify_plant"]:hover {{
+            transform: translateY(-3px) !important;
+            box-shadow: 0 8px 25px rgba(0, 200, 81, 0.5) !important;
+            background: linear-gradient(90deg, #007E33, #00C851) !important;
+        }}
+        
+        /* Botones principales sin cambios - Verde estándar */
+        .stButton > button[key="btn_upload"], 
+        .stButton > button[key="btn_camera"] {{
+            background: linear-gradient(90deg, #2E8B57, #228B22) !important;
+            color: white !important;
+            border: none !important;
+            padding: 1rem 1.5rem !important;
+            border-radius: 0.5rem !important;
+            font-weight: 600 !important;
+            font-size: 1.1rem !important;
+            width: 100% !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 12px rgba(46, 139, 87, 0.3) !important;
+        }}
+        
+        .stButton > button[key="btn_upload"]:hover,
+        .stButton > button[key="btn_camera"]:hover {{
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(46, 139, 87, 0.4) !important;
+            background: linear-gradient(90deg, #228B22, #2E8B57) !important;
+        }}
+        
+        /* ==================== BOTONES DE CONFIRMACIÓN ==================== */
+        
+        /* Botones "Sí, es correcta" y "Es esta planta" - Verde degradado */
+        .stButton > button[key="btn_correct"],
+        .stButton > button[key^="btn_confirm_species"] {{
+            background: linear-gradient(90deg, #28a745, #20c997) !important;
+            color: white !important;
+            border: none !important;
+            padding: 1rem 1.5rem !important;
+            border-radius: 0.5rem !important;
+            font-weight: 600 !important;
+            font-size: 1.1rem !important;
+            width: 100% !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3) !important;
+        }}
+        
+        .stButton > button[key="btn_correct"]:hover,
+        .stButton > button[key="btn_confirm_species"]:hover {{
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4) !important;
+            background: linear-gradient(90deg, #20c997, #28a745) !important;
+        }}
+        
+        /* ==================== BOTONES NEGATIVOS ==================== */
+        
+        /* Botones "No, es incorrecta" y "No es ninguna de estas" - Rojo degradado NOTORIO */
+        .stButton > button[key="btn_incorrect"],
+        .stButton > button[key="btn_none_of_these"] {{
+            background: linear-gradient(90deg, #ff4757, #c44569) !important;
+            color: white !important;
+            border: none !important;
+            padding: 1rem 1.5rem !important;
+            border-radius: 0.5rem !important;
+            font-weight: 600 !important;
+            font-size: 1.1rem !important;
+            width: 100% !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3) !important;
+        }}
+        
+        .stButton > button[key="btn_incorrect"]:hover,
+        .stButton > button[key="btn_none_of_these"]:hover {{
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(255, 71, 87, 0.4) !important;
+            background: linear-gradient(90deg, #c44569, #ff4757) !important;
+        }}
+        
+        /* ==================== BOTONES EXPANDIBLES ==================== */
+        
+        /* Botón "Ver información completa" - Verde claro */
+        .stButton > button[key^="btn_expand_show"] {{
+            background: linear-gradient(90deg, #48d668, #4CAF50) !important;
+            color: white !important;
+            border: none !important;
+            padding: 0.8rem 1.2rem !important;
+            border-radius: 0.5rem !important;
+            font-weight: 500 !important;
+            font-size: 0.95rem !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 3px 10px rgba(72, 214, 104, 0.3) !important;
+        }}
+        
+        .stButton > button[key="btn_expand_show"]:hover {{
+            transform: translateY(-1px) !important;
+            box-shadow: 0 5px 15px rgba(72, 214, 104, 0.4) !important;
+            background: linear-gradient(90deg, #4CAF50, #48d668) !important;
+        }}
+        
+        /* Botón "Ocultar información" - Verde oscuro */
+        .stButton > button[key^="btn_expand_hide"] {{
+            background: linear-gradient(90deg, #1B5E20, #2E7D32) !important;
+            color: white !important;
+            border: none !important;
+            padding: 0.8rem 1.2rem !important;
+            border-radius: 0.5rem !important;
+            font-weight: 500 !important;
+            font-size: 0.95rem !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 3px 10px rgba(27, 94, 32, 0.3) !important;
+        }}
+        
+        .stButton > button[key="btn_expand_hide"]:hover {{
+            transform: translateY(-1px) !important;
+            box-shadow: 0 5px 15px rgba(27, 94, 32, 0.4) !important;
+            background: linear-gradient(90deg, #2E7D32, #1B5E20) !important;
+        }}
+        
+        /* ==================== BOTÓN REGRESAR ==================== */
+
+        /* Botón "Regresar" - Verde + Gris (AMBAS PANTALLAS) */
+        .stButton > button[key="btn_back"],
+        .stButton > button[key="btn_back_camera"] {{
+            background: linear-gradient(90deg, #28a745, #6c757d) !important;
+            color: white !important;
+            border: none !important;
+            padding: 0.85rem 1.5rem !important;
+            border-radius: 0.5rem !important;
+            font-weight: 600 !important;
+            font-size: 1rem !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 3px 12px rgba(40, 167, 69, 0.25) !important;
+        }}
+
+        .stButton > button[key="btn_back"]:hover,
+        .stButton > button[key="btn_back_camera"]:hover {{
+            transform: translateY(-2px) !important;
+            box-shadow: 0 5px 18px rgba(40, 167, 69, 0.35) !important;
+            background: linear-gradient(90deg, #6c757d, #28a745) !important;
+        }}
+        
+        /* ==================== BOTONES SECUNDARIOS ==================== */
+        
+        /* Otros botones secundarios - Gris degradado */
+        .stButton > button[key="btn_new_query"] {{
+            background: linear-gradient(90deg, #6c757d, #5a6268) !important;
+            color: white !important;
+            border: none !important;
+            padding: 0.75rem 1.25rem !important;
+            border-radius: 0.5rem !important;
+            font-weight: 500 !important;
+            font-size: 1rem !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 3px 10px rgba(108, 117, 125, 0.3) !important;
+        }}
+        
+        .stButton > button[key="btn_new_query"]:hover {{
+            transform: translateY(-1px) !important;
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4) !important;
+            background: linear-gradient(90deg, #5a6268, #6c757d) !important;
+        }}
+        
+        /* ==================== OTROS ESTILOS EXISTENTES ==================== */
+        
         .prediction-card {{
             background: rgba(248, 249, 250, 0.95);
             padding: 1.5rem;

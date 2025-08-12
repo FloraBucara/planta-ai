@@ -11,7 +11,7 @@ def get_base64_image(image_path):
         return None
 
 def aplicar_estilos():
-    """Aplica todos los estilos CSS finales - VERSIÓN BONITA"""
+    """CSS COMPLETO con todos los estilos específicos - VERSIÓN INTELIGENTE"""
     
     # Obtener imagen de fondo
     fondo_path = Path("assets/fondo.png")
@@ -58,22 +58,29 @@ def aplicar_estilos():
             margin-bottom: 1rem;
         }}
         
-        /* ==================== BOTONES PRIMARY - Verde estándar ==================== */
-        div[data-testid="stButton"] > button[kind="primary"] {{
-            background: linear-gradient(90deg, #2E8B57, #228B22) !important;
-            color: white !important;
+        /* ==================== BASE PARA TODOS LOS BOTONES ==================== */
+        div[data-testid="stButton"] > button {{
             border: none !important;
             border-radius: 0.5rem !important;
             font-weight: 600 !important;
-            font-size: 1.1rem !important;
-            padding: 1rem 1.5rem !important;
             transition: all 0.3s ease !important;
-            box-shadow: 0 4px 12px rgba(46, 139, 87, 0.3) !important;
             width: 100% !important;
         }}
         
-        div[data-testid="stButton"] > button[kind="primary"]:hover {{
+        div[data-testid="stButton"] > button:hover {{
             transform: translateY(-2px) !important;
+        }}
+        
+        /* ==================== BOTONES PRIMARY - Verde estándar por defecto ==================== */
+        div[data-testid="stButton"] > button[kind="primary"] {{
+            background: linear-gradient(90deg, #2E8B57, #228B22) !important;
+            color: white !important;
+            font-size: 1.1rem !important;
+            padding: 1rem 1.5rem !important;
+            box-shadow: 0 4px 12px rgba(46, 139, 87, 0.3) !important;
+        }}
+        
+        div[data-testid="stButton"] > button[kind="primary"]:hover {{
             box-shadow: 0 6px 20px rgba(46, 139, 87, 0.4) !important;
             background: linear-gradient(90deg, #228B22, #2E8B57) !important;
         }}
@@ -82,26 +89,28 @@ def aplicar_estilos():
         div[data-testid="stButton"] > button[kind="secondary"] {{
             background: linear-gradient(90deg, #ff4757, #c44569) !important;
             color: white !important;
-            border: none !important;
-            border-radius: 0.5rem !important;
-            font-weight: 600 !important;
             font-size: 1.1rem !important;
             padding: 1rem 1.5rem !important;
-            transition: all 0.3s ease !important;
             box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3) !important;
-            width: 100% !important;
         }}
         
         div[data-testid="stButton"] > button[kind="secondary"]:hover {{
-            transform: translateY(-2px) !important;
             box-shadow: 0 6px 20px rgba(255, 71, 87, 0.4) !important;
             background: linear-gradient(90deg, #c44569, #ff4757) !important;
         }}
         
-        /* ==================== BOTONES ESPECÍFICOS ==================== */
+        /* ==================== PANTALLA HOME: Botones de selección de método ==================== */
         
-        /* Hacer el botón "Identificar Planta" más grande y llamativo */
-        div[data-testid="stButton"] > button[kind="primary"]:first-child {{
+        /* Selectores: En home.py, los botones están en col2 y son los únicos primary */
+        .main .block-container > div > div:nth-child(2) div[data-testid="stButton"] > button[kind="primary"] {{
+            /* Verde estándar - ya aplicado arriba */
+        }}
+        
+        /* ==================== PANTALLA UPLOAD/CAMERA: Botón Identificar Planta ==================== */
+        
+        /* Selector: Botón "Identificar" en pantalla upload (suele ser el primer primary en esa pantalla) */
+        .main .block-container div:has-text("Identificar") + div[data-testid="stButton"] > button[kind="primary"],
+        .main .block-container div[data-testid="stButton"] > button[kind="primary"]:contains("🔍") {{
             background: linear-gradient(90deg, #00C851, #007E33) !important;
             padding: 1.2rem 2rem !important;
             border-radius: 0.75rem !important;
@@ -112,14 +121,63 @@ def aplicar_estilos():
             box-shadow: 0 6px 20px rgba(0, 200, 81, 0.4) !important;
         }}
         
-        div[data-testid="stButton"] > button[kind="primary"]:first-child:hover {{
+        .main .block-container div:has-text("Identificar") + div[data-testid="stButton"] > button[kind="primary"]:hover,
+        .main .block-container div[data-testid="stButton"] > button[kind="primary"]:contains("🔍"):hover {{
             transform: translateY(-3px) !important;
             box-shadow: 0 8px 25px rgba(0, 200, 81, 0.5) !important;
             background: linear-gradient(90deg, #007E33, #00C851) !important;
         }}
         
-        /* Botones "Regresar" - Verde + Gris */
-        div[data-testid="stButton"] > button:last-child {{
+        /* ==================== PANTALLA PREDICTION: Botones de confirmación ==================== */
+        
+        /* Selector: Botones en columnas (col1 y col2) */
+        .main .block-container div[data-baseweb="column"]:first-child div[data-testid="stButton"] > button[kind="primary"] {{
+            /* Verde degradado para confirmación */
+            background: linear-gradient(90deg, #28a745, #20c997) !important;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3) !important;
+        }}
+        
+        .main .block-container div[data-baseweb="column"]:first-child div[data-testid="stButton"] > button[kind="primary"]:hover {{
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4) !important;
+            background: linear-gradient(90deg, #20c997, #28a745) !important;
+        }}
+        
+        /* ==================== PANTALLA SELECTION: Botones expandibles ==================== */
+        
+        /* Botones con "Ver información" - Verde claro */
+        div[data-testid="stButton"] > button:contains("▼"),
+        div[data-testid="stButton"] > button:contains("Ver información") {{
+            background: linear-gradient(90deg, #48d668, #4CAF50) !important;
+            color: white !important;
+            padding: 0.8rem 1.2rem !important;
+            font-size: 0.95rem !important;
+            font-weight: 500 !important;
+            box-shadow: 0 3px 10px rgba(72, 214, 104, 0.3) !important;
+        }}
+        
+        /* Botones con "Ocultar información" - Verde oscuro */
+        div[data-testid="stButton"] > button:contains("▲"),
+        div[data-testid="stButton"] > button:contains("Ocultar información") {{
+            background: linear-gradient(90deg, #1B5E20, #2E7D32) !important;
+            color: white !important;
+            padding: 0.8rem 1.2rem !important;
+            font-size: 0.95rem !important;
+            font-weight: 500 !important;
+            box-shadow: 0 3px 10px rgba(27, 94, 32, 0.3) !important;
+        }}
+        
+        /* Botones "Es esta planta" dentro de información expandida - Verde degradado */
+        .main .block-container div:contains("Es esta") div[data-testid="stButton"] > button[kind="primary"] {{
+            background: linear-gradient(90deg, #28a745, #20c997) !important;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3) !important;
+        }}
+        
+        /* ==================== BOTONES REGRESAR ==================== */
+        
+        /* Último botón en una pantalla (suele ser "Regresar") - Verde + Gris */
+        .main .block-container > div:last-child div[data-testid="stButton"] > button,
+        div[data-testid="stButton"] > button:contains("←"),
+        div[data-testid="stButton"] > button:contains("Regresar") {{
             background: linear-gradient(90deg, #28a745, #6c757d) !important;
             color: white !important;
             padding: 0.85rem 1.5rem !important;
@@ -127,14 +185,16 @@ def aplicar_estilos():
             box-shadow: 0 3px 12px rgba(40, 167, 69, 0.25) !important;
         }}
         
-        div[data-testid="stButton"] > button:last-child:hover {{
+        .main .block-container > div:last-child div[data-testid="stButton"] > button:hover,
+        div[data-testid="stButton"] > button:contains("←"):hover,
+        div[data-testid="stButton"] > button:contains("Regresar"):hover {{
             box-shadow: 0 5px 18px rgba(40, 167, 69, 0.35) !important;
             background: linear-gradient(90deg, #6c757d, #28a745) !important;
         }}
         
         /* ==================== SIDEBAR ==================== */
         
-        /* Botón "Nueva Consulta" en sidebar - Gris degradado */
+        /* Botones en sidebar - Gris degradado */
         section[data-testid="stSidebar"] div[data-testid="stButton"] > button {{
             background: linear-gradient(90deg, #6c757d, #5a6268) !important;
             color: white !important;
@@ -144,7 +204,6 @@ def aplicar_estilos():
             padding: 0.75rem 1.25rem !important;
             transition: all 0.3s ease !important;
             box-shadow: 0 3px 10px rgba(108, 117, 125, 0.3) !important;
-            width: 100% !important;
         }}
         
         section[data-testid="stSidebar"] div[data-testid="stButton"] > button:hover {{

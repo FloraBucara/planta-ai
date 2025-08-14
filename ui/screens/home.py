@@ -1,42 +1,56 @@
 import streamlit as st
 
 def pantalla_seleccion_metodo():
-    """Pantalla para seleccionar método de entrada - VERSIÓN LIMPIA SIN SUPERPOSICIONES"""
+    """Pantalla para seleccionar método de entrada - CENTRADA Y LIMPIA"""
     
-    # Ocultar elementos de Streamlit que causan conflictos
+    # CSS para centrado perfecto
     st.markdown("""
     <style>
-        /* Ocultar elementos que causan superposición */
+        /* Ocultar elementos de Streamlit */
         .stDeployButton { display: none !important; }
         .stDecoration { display: none !important; }
         .stToolbar { display: none !important; }
         .stStatusWidget { display: none !important; }
-        .stMainBlockContainer { padding: 0 !important; }
         
-        /* Limpiar cualquier margin/padding residual */
+        /* Centrar todo el contenido */
         .main .block-container {
-            padding-top: 0 !important;
-            padding-bottom: 0 !important;
-            margin-top: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            min-height: 60vh !important;
+            text-align: center !important;
+            padding: 2rem !important;
+        }
+        
+        /* Centrar mensajes */
+        .stAlert {
+            width: 100% !important;
+            max-width: 600px !important;
+            margin: 0 auto 1rem auto !important;
+        }
+        
+        /* Centrar título */
+        .main h3 {
+            text-align: center !important;
+            color: #2e7d32 !important;
+            font-size: 1.8rem !important;
+            margin-bottom: 2rem !important;
         }
     </style>
     """, unsafe_allow_html=True)
     
-    # Mostrar mensajes si existen
+    # Mostrar mensajes si existen (centrados)
     if st.session_state.get('mensaje_inicio') == "no_identificada":
         st.warning("😔 Lo sentimos, no pudimos identificar tu planta anterior.")
         st.info("💡 **Sugerencia:** Intenta con otra foto desde un ángulo diferente, asegurándote de que se vean claramente las hojas o flores.")
-        # Limpiar el mensaje después de mostrarlo
         st.session_state.mensaje_inicio = None
     
-    # Título
+    # Título centrado
     st.markdown("### 📸 ¿Cómo quieres agregar tu planta?")
     
-    # Espacio entre título y botones
-    st.markdown("<br>", unsafe_allow_html=True)
-    
-    # Contenedor para los botones centrados
-    col1, col2, col3 = st.columns([1, 2, 1])
+    # Contenedor para botones centrados
+    col1, col2, col3 = st.columns([1, 3, 1])
     
     with col2:
         # Botón 1: Subir archivo
@@ -50,7 +64,7 @@ def pantalla_seleccion_metodo():
             st.rerun()
         
         # Espacio entre botones
-        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
         
         # Botón 2: Tomar foto
         if st.button(

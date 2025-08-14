@@ -96,7 +96,8 @@ def pantalla_splash():
                        text-align: center;
                        cursor: pointer;
                    "
-                   
+                   onmouseover="this.style.background='rgba(96, 96, 96, 1)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.15)';"
+                   onmouseout="this.style.background='rgba(128, 128, 128, 1)'; this.style.transform='translateY(0px)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)';">
                     🔗 Abrir Servidor y Autorizar
                 </a>
             </div>

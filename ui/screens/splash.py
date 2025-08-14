@@ -38,34 +38,32 @@ def pantalla_splash():
         """, unsafe_allow_html=True)
     
     # Texto explicativo del proyecto - CON FONDO CONSISTENTE
-    st.markdown("""
+        st.markdown("""
         <div style="
-            text-align: center;                    # ← AGREGAR ESTA LÍNEA (centrar texto)
-            max-width: 500px;                      # ← AGREGAR ESTA LÍNEA (hacer más pequeña)
-            margin: 0 auto 1rem auto;              # ← CAMBIAR ESTA LÍNEA (centrar la caja)
-            background: rgba(255, 243, 205, 0.95);
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 3px solid #ffc107;
-            margin-bottom: -3rem;
-            backdrop-filter: blur(5px);
+            text-align: center;                    # ← AGREGAR: centrar texto
+            max-width: 500px;                      # ← AGREGAR: hacer caja más pequeña
+            margin: 0 auto 1rem auto;              # ← CAMBIAR: centrar la caja
+            background: rgba(255, 243, 205, 0.95); # ← MANTENER: fondo amarillo
+            padding: 0.75rem;                      # ← REDUCIR: menos espacio interno
+            border-radius: 8px;                    # ← MANTENER: esquinas redondeadas
+            border-left: 3px solid #ffc107;        # ← MANTENER: barra amarilla izquierda
+            backdrop-filter: blur(5px);            # ← MANTENER: efecto blur
         ">
             <p style="
-                font-size: 0.9rem; 
-                color: #856404; 
+                font-size: 0.9rem;                 # ← REDUCIR: texto más pequeño
+                color: #856404;                    # ← MANTENER: color marrón
                 margin: 0;
                 font-weight: bold;
                 text-shadow: 
                     0.5px 0.5px 1px rgba(255,255,255,0.8),
-                    -0.5px -0.5px 1px rgba(255,255,255,0.8);
+                   -0.5px -0.5px 1px rgba(255,255,255,0.8);
             ">
                 ⚠️ <strong>Autorización Requerida</strong><br>
                 Para utilizar el sistema, primero debes autorizar el acceso al servidor 
                 de procesamiento de imágenes.
             </p>
         </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
     
     # Botón de autorización centrado
     col1, col2, col3 = st.columns([1, 2, 1])

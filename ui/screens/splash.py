@@ -103,7 +103,7 @@ def pantalla_splash():
             """, unsafe_allow_html=True)
             
             # Espacio entre botones
-            st.markdown("<div style='margin: -1rem 0;'></div>", unsafe_allow_html=True)
+            st.markdown("<div style='margin: -3rem 0;'></div>", unsafe_allow_html=True)
             
             # CSS para personalizar el botón de Streamlit
             st.markdown("""

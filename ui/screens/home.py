@@ -3,14 +3,51 @@ import streamlit as st
 def pantalla_seleccion_metodo():
     """Pantalla para seleccionar método de entrada - CENTRADA Y LIMPIA"""
     
-    # CSS para centrado perfecto
+    # CSS para centrado perfecto y bloqueo de scroll
     st.markdown("""
     <style>
+        /* BLOQUEAR SCROLL COMPLETAMENTE */
+        html, body {
+            overflow: hidden !important;
+            height: 100vh !important;
+            position: fixed !important;
+            width: 100% !important;
+        }
+        
+        .stApp {
+            overflow: hidden !important;
+            height: 100vh !important;
+            position: fixed !important;
+            width: 100% !important;
+        }
+        
+        .main {
+            overflow: hidden !important;
+            height: 100vh !important;
+            position: fixed !important;
+            width: 100% !important;
+        }
+        
         /* Ocultar elementos de Streamlit */
         .stDeployButton { display: none !important; }
         .stDecoration { display: none !important; }
         .stToolbar { display: none !important; }
         .stStatusWidget { display: none !important; }
+        
+        /* Ocultar scrollbars completamente */
+        ::-webkit-scrollbar {
+            width: 0px !important;
+            background: transparent !important;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: transparent !important;
+        }
+        
+        * {
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+        }
         
         /* Centrar todo el contenido */
         .main .block-container {
@@ -18,9 +55,14 @@ def pantalla_seleccion_metodo():
             flex-direction: column !important;
             justify-content: center !important;
             align-items: center !important;
-            min-height: 60vh !important;
+            height: 100vh !important;
             text-align: center !important;
             padding: 2rem !important;
+            overflow: hidden !important;
+            position: fixed !important;
+            width: 100% !important;
+            left: 0 !important;
+            top: 0 !important;
         }
         
         /* Centrar mensajes */
@@ -37,7 +79,63 @@ def pantalla_seleccion_metodo():
             font-size: 1.8rem !important;
             margin-bottom: 2rem !important;
         }
+        
+        /* Prevenir interacciones de scroll */
+        body, html {
+            touch-action: none !important;
+            -webkit-touch-callout: none !important;
+            -webkit-user-select: none !important;
+            -khtml-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            user-select: none !important;
+        }
+        
+        /* Permitir selección solo en botones */
+        .stButton, .stSelectbox, .stTextInput {
+            -webkit-user-select: auto !important;
+            -moz-user-select: auto !important;
+            -ms-user-select: auto !important;
+            user-select: auto !important;
+        }
+        
+        /* Responsivo para móviles */
+        @media (max-width: 768px) {
+            .main h3 {
+                font-size: 1.5rem !important;
+            }
+            
+            .main .block-container {
+                padding: 1rem !important;
+            }
+        }
     </style>
+    """, unsafe_allow_html=True)
+    
+    # JavaScript adicional para asegurar el bloqueo
+    st.markdown("""
+    <script>
+        // Bloquear scroll con JavaScript
+        document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflow = 'hidden';
+        
+        // Prevenir scroll con eventos
+        window.addEventListener('scroll', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        });
+        
+        // Prevenir scroll con touch
+        document.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+        
+        // Prevenir scroll con wheel
+        document.addEventListener('wheel', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+    </script>
     """, unsafe_allow_html=True)
     
     # Mostrar mensajes si existen (centrados)

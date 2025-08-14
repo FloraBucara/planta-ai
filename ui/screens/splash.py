@@ -121,7 +121,7 @@ def pantalla_splash():
                     box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
                     width: 85% !important;
                     max-width: 300px !important;
-                    margin: 0.25rem 0 !important;
+                    margin: 0rem 0 !important;
                 }
                 
                 div[data-testid="column"]:nth-child(2) > div > div > div > button:hover {

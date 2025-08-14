@@ -9,7 +9,14 @@ def mostrar_header():
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if logo_path.exists():
-            st.image(str(logo_path), use_container_width=True)
+            # AQUÍ PUEDES CONTROLAR EL TAMAÑO DEL LOGO
+            st.image(str(logo_path), width=300)  # Cambia este número para ajustar tamaño
+            # Opciones:
+            # width=300  -> Logo pequeño
+            # width=400  -> Logo mediano
+            # width=500  -> Logo grande
+            # width=600  -> Logo muy grande
+            # use_container_width=True -> Logo ocupa todo el ancho de la columna
         else:
             # Fallback al texto si no encuentra la imagen
             st.markdown("""

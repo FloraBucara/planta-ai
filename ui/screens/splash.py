@@ -128,7 +128,7 @@ def pantalla_splash():
             <style>
                 /* Personalizar el próximo botón de Streamlit con el mismo tamaño que home */
                 div[data-testid="column"]:nth-child(2) > div > div > div > button {
-                    background: linear-gradient(135deg, #28a745, #20c997, #17a2b8) !important;
+                    background: linear-gradient(135deg, #007bff, #0056b3) !important;
                     color: white !important;
                     border: none !important;
                     border-radius: 8px !important;
@@ -183,7 +183,7 @@ def pantalla_splash():
                 }
                 
                 .stButton > button:hover {
-                    background: linear-gradient(135deg, #218838, #1dd1a1, #138496) !important;
+                    background: linear-gradient(135deg, #0056b3, #004085) !important;
                 }
             </style>
             """, unsafe_allow_html=True)

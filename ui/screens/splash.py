@@ -68,7 +68,7 @@ def pantalla_splash():
     col1, col2, col3 = st.columns([1, 2, 1])
     
     with col2:
-        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("<div style='margin: 0.5rem 0;'></div>", unsafe_allow_html=True)  # ← 8px
         
         # Verificar si hay URL del servidor
         if SERVER_URL:
@@ -103,7 +103,7 @@ def pantalla_splash():
             """, unsafe_allow_html=True)
             
             # Espacio entre botones
-            st.markdown("<div style='margin: 0.5rem 0;'></div>", unsafe_allow_html=True)
+            st.markdown("<div style='margin: -1rem 0;'></div>", unsafe_allow_html=True)
             
             # CSS para personalizar el botón de Streamlit
             st.markdown("""
@@ -220,7 +220,7 @@ def pantalla_splash():
     <div style="
         text-align: center; 
         margin-top: -2rem; 
-        padding: -1rem;
+        padding: 0.1rem;
         border-top: 1px solid rgba(238, 238, 238, 0.8);
         color: #666;
         font-size: 0.9rem;

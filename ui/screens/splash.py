@@ -48,6 +48,7 @@ def pantalla_splash():
             backdrop-filter: blur(5px);
         ">
             <p style="
+                text-align: center;
                 font-size: 0.9rem; 
                 color: #856404; 
                 margin: 0;

@@ -217,7 +217,7 @@ def pantalla_splash():
             col1, col2, col3 = st.columns([1, 2, 1])
             with col2:
                 if st.button(
-                    "✅ Ya autoricé el servidor - Continuar al Sistema",
+                    "✅ Ya autoricé - Continuar al Sistema",
                     key="continuar_sistema",
                     type="primary",
                     use_container_width=True

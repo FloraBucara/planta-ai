@@ -153,7 +153,7 @@ def pantalla_splash():
             <style>
                 /* Personalizar el próximo botón de Streamlit para que se vea igual al enlace */
                 div[data-testid="column"]:nth-child(2) > div > div > div > button {
-                    background: linear-gradient(135deg, #28a745, #20c997) !important;
+                    background: linear-gradient(135deg, #28a745, #20c997, #17a2b8) !important;
                     color: white !important;
                     border: none !important;
                     border-radius: 8px !important;
@@ -168,14 +168,43 @@ def pantalla_splash():
                 }
                 
                 div[data-testid="column"]:nth-child(2) > div > div > div > button:hover {
+                    background: linear-gradient(135deg, #218838, #1dd1a1, #138496) !important;
                     transform: translateY(-2px) !important;
                     box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
+                }
+                
+                /* Forzar el degradado - Algunas veces Streamlit lo sobreescribe */
+                div[data-testid="column"]:nth-child(2) > div > div > div > button::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: linear-gradient(135deg, #28a745, #20c997, #17a2b8);
+                    border-radius: 8px;
+                    z-index: -1;
+                }
+                
+                /* Asegurar que el botón esté posicionado relativamente */
+                div[data-testid="column"]:nth-child(2) > div > div > div > button {
+                    position: relative !important;
+                    overflow: hidden !important;
                 }
                 
                 /* Centrar el botón */
                 div[data-testid="column"]:nth-child(2) > div > div {
                     display: flex !important;
                     justify-content: center !important;
+                }
+                
+                /* Selector alternativo más específico por si el anterior no funciona */
+                .stButton > button {
+                    background: linear-gradient(135deg, #28a745, #20c997, #17a2b8) !important;
+                }
+                
+                .stButton > button:hover {
+                    background: linear-gradient(135deg, #218838, #1dd1a1, #138496) !important;
                 }
             </style>
             """, unsafe_allow_html=True)

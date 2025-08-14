@@ -183,7 +183,7 @@ def pantalla_splash():
                 }
                 
                 .stButton > button:hover {
-                    background: linear-gradient(135deg, #0056b3, #004085) !important;
+                    background: linear-gradient(135deg, #218838, #1dd1a1, #138496) !important;
                 }
             </style>
             """, unsafe_allow_html=True)

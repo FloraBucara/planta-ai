@@ -15,7 +15,7 @@ def pantalla_seleccion_metodo():
         <h4 style="
             margin-bottom: 0; 
             font-size: 1.25rem;
-            color: #333333;
+            color: #000000;
             text-shadow: 1px 1px 2px white, -1px -1px 2px white, 1px -1px 2px white, -1px 1px 2px white;
         ">&emsp;¿Cómo quieres agregar tu planta?</h4>
     </div>

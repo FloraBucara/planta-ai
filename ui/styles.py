@@ -11,7 +11,7 @@ def get_base64_image(image_path):
         return None
 
 def aplicar_estilos():
-    """Aplica todos los estilos CSS incluyendo bloqueo de scroll"""
+    """Aplica estilos CSS limpios sin conflictos"""
     
     # Obtener imagen de fondo
     fondo_path = Path("assets/fondo.png")
@@ -34,73 +34,16 @@ def aplicar_estilos():
     <style>
         {css_fondo}
         
-        /* BLOQUEAR SCROLL COMPLETAMENTE */
-        html, body {{
-            overflow: hidden !important;
-            height: 100vh !important;
-            position: fixed !important;
-            width: 100% !important;
-        }}
-        
-        .stApp {{
-            overflow: hidden !important;
-            height: 100vh !important;
-            position: fixed !important;
-            width: 100% !important;
-        }}
-        
-        .main {{
-            overflow: hidden !important;
-            height: 100vh !important;
-            position: fixed !important;
-            width: 100% !important;
-        }}
-        
+        /* Contenedor principal transparente */
         .main .block-container {{
-            overflow: hidden !important;
-            height: 100vh !important;
-            position: fixed !important;
-            width: 100% !important;
-            padding: 0 !important;
-            margin: 0 !important;
             background-color: rgba(255, 255, 255, 0.95);
-            border-radius: 0 !important;
+            border-radius: 15px;
+            padding: 2rem;
             backdrop-filter: blur(10px);
+            margin-top: 1rem;
         }}
         
-        /* Ocultar elementos de Streamlit que causan scroll */
-        .stDeployButton {{
-            display: none !important;
-        }}
-        
-        .stDecoration {{
-            display: none !important;
-        }}
-        
-        .stToolbar {{
-            display: none !important;
-        }}
-        
-        .stStatusWidget {{
-            display: none !important;
-        }}
-        
-        /* Ocultar scrollbars completamente */
-        ::-webkit-scrollbar {{
-            width: 0px !important;
-            background: transparent !important;
-        }}
-        
-        ::-webkit-scrollbar-thumb {{
-            background: transparent !important;
-        }}
-        
-        * {{
-            scrollbar-width: none !important;
-            -ms-overflow-style: none !important;
-        }}
-        
-        /* Header principal centrado */
+        /* Header principal */
         .main-header {{
             text-align: center;
             padding: 1rem 0;
@@ -111,26 +54,9 @@ def aplicar_estilos():
             font-size: 2.5rem;
             font-weight: bold;
             margin-bottom: 1rem;
-            position: fixed;
-            top: 10%;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            width: 100%;
         }}
         
-        /* Contenedor de botones centrado */
-        .button-container {{
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1001;
-            width: 400px;
-            max-width: 90vw;
-        }}
-        
-        /* Estilos de botones mejorados */
+        /* Mejorar botones */
         .stButton > button {{
             width: 100% !important;
             height: 60px !important;
@@ -155,65 +81,121 @@ def aplicar_estilos():
             box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3) !important;
         }}
         
-        /* Mensajes de notificación centrados */
-        .notification-message {{
-            position: fixed;
-            top: 20%;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            z-index: 1000;
-            max-width: 80vw;
+        /* Cards para información */
+        .prediction-card {{
+            background: rgba(248, 249, 250, 0.95);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #28a745;
+            margin: 1rem 0;
         }}
         
-        /* Sidebar con transparencia */
+        .info-card {{
+            background: rgba(232, 245, 233, 0.95);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 0.5rem 0;
+        }}
+        
+        .species-card {{
+            background: rgba(240, 248, 255, 0.95);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            margin: 0.5rem 0;
+            text-align: center;
+            transition: all 0.3s;
+        }}
+        
+        .species-card:hover {{
+            border-color: #28a745;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }}
+        
+        /* Mensajes del sistema */
+        .debug-info {{
+            background: rgba(255, 243, 205, 0.95);
+            color: #856404;
+            padding: 0.75rem;
+            border-radius: 5px;
+            border: 1px solid #ffeaa7;
+            margin: 0.5rem 0;
+            font-size: 0.9em;
+        }}
+        
+        .error-message {{
+            background: rgba(248, 215, 218, 0.95);
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 5px;
+            border: 1px solid #f5c6cb;
+            margin: 1rem 0;
+        }}
+        
+        .success-message {{
+            background: rgba(212, 237, 218, 0.95);
+            color: #155724;
+            padding: 1rem;
+            border-radius: 5px;
+            border: 1px solid #c3e6cb;
+            margin: 1rem 0;
+        }}
+        
+        /* Barra de confianza */
+        .confidence-bar {{
+            background: rgba(233, 236, 239, 0.95);
+            border-radius: 10px;
+            height: 20px;
+            margin: 0.5rem 0;
+            overflow: hidden;
+        }}
+        
+        .confidence-fill {{
+            background: linear-gradient(90deg, #28a745, #20c997);
+            height: 100%;
+            transition: width 0.3s ease;
+        }}
+        
+        /* Sidebar transparente */
         section[data-testid="stSidebar"] > div {{
             background-color: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            overflow: hidden !important;
-            height: 100vh !important;
         }}
         
-        section[data-testid="stSidebar"] {{
-            overflow: hidden !important;
-            height: 100vh !important;
-        }}
-        
-        /* Ocultar elementos innecesarios cuando estamos en home */
-        .home-static .stProgress {{
+        /* Ocultar elementos problemáticos */
+        .stDeployButton {{
             display: none !important;
         }}
         
-        .home-static .stSpinner {{
+        .stDecoration {{
             display: none !important;
         }}
         
-        /* Asegurar que los elementos fijos no se muevan */
-        .static-element {{
-            position: fixed !important;
-            z-index: 1000 !important;
+        .stToolbar {{
+            display: none !important;
         }}
         
-        /* Prevenir interacciones de scroll */
-        body, html {{
-            touch-action: none !important;
-            -webkit-touch-callout: none !important;
-            -webkit-user-select: none !important;
-            -khtml-user-select: none !important;
-            -moz-user-select: none !important;
-            -ms-user-select: none !important;
-            user-select: none !important;
+        .stStatusWidget {{
+            display: none !important;
         }}
         
-        /* Solo permitir selección en elementos específicos */
-        .stButton, .stSelectbox, .stTextInput {{
-            -webkit-user-select: auto !important;
-            -moz-user-select: auto !important;
-            -ms-user-select: auto !important;
-            user-select: auto !important;
+        /* Responsivo */
+        @media (max-width: 768px) {{
+            .main-header {{
+                font-size: 1.8rem !important;
+            }}
+            
+            .stButton > button {{
+                height: 50px !important;
+                font-size: 1rem !important;
+            }}
+            
+            .main .block-container {{
+                padding: 1rem !important;
+            }}
         }}
         
-        /* Efectos visuales adicionales */
+        /* Efectos especiales */
         .glass-effect {{
             background: rgba(255, 255, 255, 0.1) !important;
             backdrop-filter: blur(20px) !important;
@@ -222,7 +204,7 @@ def aplicar_estilos():
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37) !important;
         }}
         
-        /* Animaciones sutiles */
+        /* Animaciones */
         @keyframes fadeIn {{
             from {{ opacity: 0; transform: translateY(20px); }}
             to {{ opacity: 1; transform: translateY(0); }}
@@ -232,31 +214,18 @@ def aplicar_estilos():
             animation: fadeIn 0.6s ease-out !important;
         }}
         
-        /* Responsivo para móviles */
-        @media (max-width: 768px) {{
-            .main-header {{
-                font-size: 1.8rem !important;
-                top: 15% !important;
-            }}
-            
-            .button-container {{
-                width: 90vw !important;
-            }}
-            
-            .stButton > button {{
-                height: 50px !important;
-                font-size: 1rem !important;
-            }}
+        /* Tabs mejorados */
+        .stTabs [data-baseweb="tab-list"] {{
+            gap: 2rem;
+        }}
+        
+        .stTabs [data-baseweb="tab"] {{
+            padding: 1rem 2rem;
+            border-radius: 8px 8px 0 0;
         }}
     </style>
     """, unsafe_allow_html=True)
 
 def aplicar_clase_home_static():
-    """Aplica clase CSS específica para la página home"""
-    st.markdown("""
-    <script>
-        document.body.classList.add('home-static');
-        document.documentElement.style.overflow = 'hidden';
-        document.body.style.overflow = 'hidden';
-    </script>
-    """, unsafe_allow_html=True)
+    """Esta función ya no es necesaria en la versión limpia"""
+    pass

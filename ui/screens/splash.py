@@ -69,35 +69,52 @@ def pantalla_splash():
     col1, col2, col3 = st.columns([1, 2, 1])
     
     with col2:
-        st.markdown("<div style='margin: 0rem 0;'></div>", unsafe_allow_html=True)  # ← 8px
-        
         # Verificar si hay URL del servidor
         if SERVER_URL:
-            # Enlace azul-verde con mismo tamaño que botones de home
+            st.markdown("""
+            <style>
+            .boton-gris-custom {
+                display: inline-block !important;
+                background: rgba(128, 128, 128, 1) !important;
+                color: white !important;
+                padding: 0.75rem 1rem !important;
+                border-radius: 8px !important;
+                text-decoration: none !important;
+                font-weight: bold !important;
+                font-size: 1.1rem !important;
+                transition: all 0.3s ease !important;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
+                border: none !important;
+                width: 85% !important;
+                max-width: 300px !important;
+                text-align: center !important;
+                cursor: pointer !important;
+            }
+
+            .boton-gris-custom:hover {
+                background: rgba(96, 96, 96, 1) !important;
+                color: white !important;
+                transform: translateY(-2px) !important;
+                box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
+                text-decoration: none !important;
+            }
+
+            .boton-gris-custom:visited,
+            .boton-gris-custom:link,
+            .boton-gris-custom:active {
+                color: white !important;
+                text-decoration: none !important;
+            }
+            </style>
+            """, unsafe_allow_html=True)
+
+            # Luego el enlace simplificado
             st.markdown(f"""
-            <div style="text-align: center; margin: 1rem 0 -2.2rem 0;">
+            <div style="text-align: center; margin: 1rem 0 0.25rem 0;">
                 <a href="{SERVER_URL}" 
                    target="_blank" 
                    rel="noopener noreferrer"
-                   style="
-                       display: inline-block;
-                       background: rgba(128, 128, 128, 1)
-                       color: white;
-                       padding: 0.75rem 1rem;
-                       border-radius: 8px;
-                       text-decoration: none;
-                       font-weight: bold;
-                       font-size: 1.1rem;
-                       transition: all 0.3s ease;
-                       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-                       border: none;
-                       width: 85%;
-                       max-width: 300px;
-                       text-align: center;
-                       cursor: pointer;
-                   "
-                   onmouseover="this.style.background='rgba(96, 96, 96, 1)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.15)';"
-                   onmouseout="this.style.background='rgba(128, 128, 128, 1)'; this.style.transform='translateY(0px)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)';">
+                   class="boton-gris-custom">
                     🔗 Abrir Servidor y Autorizar
                 </a>
             </div>

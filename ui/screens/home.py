@@ -11,7 +11,7 @@ def pantalla_seleccion_metodo():
     
     # Título centrado - TEXTO MODIFICADO
     st.markdown("""
-    <div style="text-align: center; margin-bottom: 0.5rem;">
+    <div style="text-align: center; margin-bottom: 0.25rem;">
         <h4 style="margin-bottom: 0; font-size: 1.25rem;">¿Cómo quieres agregar tu planta?</h4>
     </div>
     """, unsafe_allow_html=True)
@@ -31,7 +31,7 @@ def pantalla_seleccion_metodo():
             st.rerun()
         
         # AQUÍ CAMBIAS EL ESPACIO ENTRE BOTONES:
-        st.markdown("<div style='margin: 0.5rem 0;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='margin: 0.25rem 0;'></div>", unsafe_allow_html=True)
         # Opciones de espaciado:
         # margin: 0.25rem 0;  → Poco espacio
         # margin: 0.5rem 0;   → Espacio normal (actual)

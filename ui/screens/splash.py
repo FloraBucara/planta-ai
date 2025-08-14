@@ -40,15 +40,18 @@ def pantalla_splash():
     # Texto explicativo del proyecto - CON FONDO CONSISTENTE
     st.markdown("""
         <div style="
+            text-align: center;                    # ← AGREGAR ESTA LÍNEA (centrar texto)
+            max-width: 500px;                      # ← AGREGAR ESTA LÍNEA (hacer más pequeña)
+            margin: 0 auto 1rem auto;              # ← CAMBIAR ESTA LÍNEA (centrar la caja)
             background: rgba(255, 243, 205, 0.95);
-            padding: 1rem;
+            padding: 0.75rem;
             border-radius: 8px;
             border-left: 3px solid #ffc107;
             margin-bottom: -3rem;
             backdrop-filter: blur(5px);
         ">
             <p style="
-                font-size: 0.95rem; 
+                font-size: 0.9rem; 
                 color: #856404; 
                 margin: 0;
                 font-weight: bold;
@@ -219,7 +222,7 @@ def pantalla_splash():
     st.markdown("""
     <div style="
         text-align: center; 
-        margin-top: -1rem; 
+        margin-top: -2rem; 
         padding: 0.1rem;
         border-top: 1px solid rgba(238, 238, 238, 0.8);
         color: #666;

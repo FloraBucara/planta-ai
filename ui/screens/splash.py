@@ -44,7 +44,7 @@ def pantalla_splash():
             padding: 1rem;
             border-radius: 8px;
             border-left: 3px solid #ffc107;
-            margin-bottom: 0rem;
+            margin-bottom: -2rem;
             backdrop-filter: blur(5px);
         ">
             <p style="

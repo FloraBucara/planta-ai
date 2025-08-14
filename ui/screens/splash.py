@@ -215,34 +215,3 @@ def pantalla_splash():
             ):
                 st.session_state.splash_completado = True
                 st.rerun()
-    
-    # Footer con información adicional
-    st.markdown("""
-    <div style="
-        text-align: center; 
-        margin-top: 4rem; 
-        padding: 0.1rem;
-        border-top: 1px solid rgba(238, 238, 238, 0.8);
-        color: #666;
-        font-size: 0.9rem;
-        background: rgba(255, 255, 255, 0.8);
-        border-radius: 10px;
-        backdrop-filter: blur(5px);
-        text-shadow: 
-            0.5px 0.5px 1px white,
-            -0.5px -0.5px 1px white;
-    ">
-        <p>🎓 Desarrollado como proyecto de grado universitario</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-def verificar_estado_servidor():
-    """Verifica si el servidor está disponible y autorizado"""
-    try:
-        from utils.api_client import servidor_disponible
-        if servidor_disponible():
-            return "conectado"
-        else:
-            return "desconectado"
-    except:
-        return "error"

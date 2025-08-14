@@ -50,7 +50,7 @@ def aplicar_estilos():
         
         /* REDUCIR ESPACIOS GENERALES */
         .main .block-container {{
-            padding-top: 0.25rem !important; /* MUCHO menos espacio arriba */
+            padding-top: 0rem !important; /* MUCHO menos espacio arriba */
             padding-bottom: 1rem !important;
         }}
         

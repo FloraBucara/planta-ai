@@ -42,7 +42,6 @@ def pantalla_splash():
         <div style="
             text-align: center;                    # ← AGREGAR ESTA LÍNEA (centrar texto)
             max-width: 500px;                      # ← AGREGAR ESTA LÍNEA (hacer más pequeña)
-            margin: 0 auto 1rem auto;              # ← CAMBIAR ESTA LÍNEA (centrar la caja)
             background: rgba(255, 243, 205, 0.95);
             padding: 0.75rem;
             border-radius: 8px;

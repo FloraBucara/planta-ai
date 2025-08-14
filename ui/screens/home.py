@@ -1,45 +1,55 @@
 import streamlit as st
 
 def pantalla_seleccion_metodo():
-    """Pantalla REALMENTE estática - sin scroll"""
+    """Pantalla estática que SÍ muestra el contenido"""
     
-    # Inyectar CSS y JavaScript de forma más agresiva
+    # CSS equilibrado - bloquea scroll pero muestra contenido
     st.markdown("""
     <style>
-        /* FORZAR OVERRIDE DE TODOS LOS ESTILOS */
-        html, body, #root, .stApp, .main, .block-container {
-            height: 100vh !important;
-            max-height: 100vh !important;
+        /* Bloquear scroll manteniendo el contenido visible */
+        html, body {
             overflow: hidden !important;
-            position: fixed !important;
-            width: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
+            height: 100vh !important;
         }
         
+        .stApp {
+            overflow: hidden !important;
+            height: 100vh !important;
+        }
+        
+        .main {
+            overflow: hidden !important;
+            height: 100vh !important;
+        }
+        
+        /* Contenedor principal - MANTENER VISIBLE */
         .main .block-container {
-            padding: 1rem !important;
+            overflow: hidden !important;
+            height: 100vh !important;
             display: flex !important;
             flex-direction: column !important;
             justify-content: center !important;
             align-items: center !important;
             text-align: center !important;
+            padding: 2rem !important;
+            position: relative !important; /* NO fixed para que se vea */
+        }
+        
+        /* Ocultar elementos de Streamlit molestos */
+        .stDeployButton, .stDecoration, .stToolbar, .stStatusWidget {
+            display: none !important;
         }
         
         /* Ocultar scrollbars */
         ::-webkit-scrollbar { width: 0 !important; }
         * { scrollbar-width: none !important; }
         
-        /* Ocultar elementos de Streamlit */
-        .stDeployButton, .stDecoration, .stToolbar, .stStatusWidget {
-            display: none !important;
-        }
-        
         /* Estilos del contenido */
         .main h3 {
             color: #2e7d32 !important;
             font-size: 1.8rem !important;
             margin: 1rem 0 2rem 0 !important;
+            text-align: center !important;
         }
         
         .stAlert {
@@ -47,59 +57,55 @@ def pantalla_seleccion_metodo():
             margin: 0 auto 1rem auto !important;
         }
         
+        /* Asegurar que los botones se vean */
+        .stButton {
+            display: block !important;
+            margin: 0.5rem 0 !important;
+        }
+        
+        .stButton > button {
+            width: 100% !important;
+            height: 60px !important;
+            font-size: 1.2rem !important;
+        }
+        
         /* Responsivo */
         @media (max-width: 768px) {
             .main h3 { font-size: 1.5rem !important; }
-            .main .block-container { padding: 0.5rem !important; }
+            .main .block-container { padding: 1rem !important; }
+            .stButton > button { height: 50px !important; font-size: 1rem !important; }
         }
     </style>
     """, unsafe_allow_html=True)
     
-    # JavaScript más agresivo para bloquear scroll
+    # JavaScript SOLO para bloquear scroll, sin tocar el layout
     st.markdown("""
     <script>
-        // Función para bloquear scroll
-        function bloquearScroll() {
+        // Bloquear scroll sin afectar el contenido
+        function bloquearSoloScroll() {
             document.body.style.overflow = 'hidden';
             document.documentElement.style.overflow = 'hidden';
-            document.body.style.position = 'fixed';
-            document.body.style.width = '100%';
-            document.body.style.height = '100%';
         }
         
         // Ejecutar inmediatamente
-        bloquearScroll();
+        bloquearSoloScroll();
         
-        // Prevenir todos los tipos de scroll
+        // Prevenir eventos de scroll solamente
         const preventDefault = (e) => {
             e.preventDefault();
-            e.stopPropagation();
             return false;
         };
         
-        // Eventos de scroll
         window.addEventListener('scroll', preventDefault, { passive: false });
         window.addEventListener('wheel', preventDefault, { passive: false });
         window.addEventListener('touchmove', preventDefault, { passive: false });
-        window.addEventListener('keydown', (e) => {
-            // Bloquear teclas de navegación
-            if ([32, 33, 34, 35, 36, 37, 38, 39, 40].includes(e.keyCode)) {
-                preventDefault(e);
-            }
-        });
         
-        // Re-aplicar cada 100ms para asegurar
-        setInterval(bloquearScroll, 100);
-        
-        // Observer para cambios en el DOM
-        const observer = new MutationObserver(bloquearScroll);
-        observer.observe(document.body, { 
-            childList: true, 
-            subtree: true, 
-            attributes: true 
-        });
+        // Re-aplicar cada 500ms (menos agresivo)
+        setInterval(bloquearSoloScroll, 500);
     </script>
     """, unsafe_allow_html=True)
+    
+    # Contenido normal de Streamlit
     
     # Mostrar mensajes si existen
     if st.session_state.get('mensaje_inicio') == "no_identificada":
@@ -121,14 +127,6 @@ def pantalla_seleccion_metodo():
             type="primary",
             key="btn_upload"
         ):
-            # Restaurar scroll antes de cambiar pantalla
-            st.markdown("""
-            <script>
-                document.body.style.overflow = 'auto';
-                document.documentElement.style.overflow = 'auto';
-                document.body.style.position = 'relative';
-            </script>
-            """, unsafe_allow_html=True)
             st.session_state.metodo_seleccionado = "archivo"
             st.rerun()
         
@@ -142,13 +140,5 @@ def pantalla_seleccion_metodo():
             type="primary",
             key="btn_camera"
         ):
-            # Restaurar scroll antes de cambiar pantalla
-            st.markdown("""
-            <script>
-                document.body.style.overflow = 'auto';
-                document.documentElement.style.overflow = 'auto';
-                document.body.style.position = 'relative';
-            </script>
-            """, unsafe_allow_html=True)
             st.session_state.metodo_seleccionado = "camara"
             st.rerun()

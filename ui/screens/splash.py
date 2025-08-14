@@ -6,30 +6,30 @@ from utils.api_client import SERVER_URL
 def pantalla_splash():
     """Pantalla de bienvenida y autorización del servidor"""
     
-    # Logo centrado
+    # Logo centrado - MISMO TAMAÑO Y ESPACIOS QUE HOME
     logo_path = Path("assets/logo.png")
     
     if logo_path.exists():
-        # Mostrar logo grande en splash
+        # Mostrar logo con mismo tamaño que home (300px)
         with open(logo_path, "rb") as file:
             logo_base64 = base64.b64encode(file.read()).decode()
         
         html_logo = f"""
-        <div style="display: flex; justify-content: center; align-items: center; margin: 2rem 0;">
-            <img src="data:image/png;base64,{logo_base64}" style="width: 450px; height: auto;" />
+        <div style="display: flex; justify-content: center; align-items: center; margin: -2.5rem 0 0.25rem 0;">
+            <img src="data:image/png;base64,{logo_base64}" style="width: 300px; height: auto;" />
         </div>
         """
         st.markdown(html_logo, unsafe_allow_html=True)
     else:
-        # Fallback: Título grande
+        # Fallback: Título con mismo espaciado que home
         st.markdown("""
-        <div style="text-align: center; margin: 2rem 0;">
+        <div style="text-align: center; margin: -0.5rem 0 0.25rem 0;">
             <h1 style="
                 background: linear-gradient(90deg, #2E8B57, #98FB98);
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
                 background-clip: text;
-                font-size: 3rem;
+                font-size: 2.5rem;
                 font-weight: bold;
                 margin: 0;
             ">🌱 BucaraFlora</h1>
@@ -115,136 +115,45 @@ def pantalla_splash():
         
         # Verificar si hay URL del servidor
         if SERVER_URL:
-            # PASO 1: Mostrar solo el enlace azul inicialmente
-            if not st.session_state.get('servidor_clicked', False):
-                # JavaScript para detectar clic y mostrar botón
-                st.markdown(f"""
-                <div style="text-align: center; margin: 1rem 0;">
-                    <a href="{SERVER_URL}" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       onclick="
-                           // Marcar que se hizo clic
-                           fetch('/', {{
-                               method: 'POST',
-                               headers: {{'Content-Type': 'application/json'}},
-                               body: JSON.stringify({{'action': 'servidor_clicked'}})
-                           }}).catch(() => {{}});
-                           
-                           // Forzar actualización de Streamlit después de un delay
-                           setTimeout(() => {{
-                               window.parent.postMessage({{
-                                   type: 'streamlit:setComponentValue',
-                                   value: 'clicked'
-                               }}, '*');
-                           }}, 500);
-                           
-                           return true;
-                       "
-                       style="
-                           display: inline-block;
-                           background: linear-gradient(135deg, #007bff, #0056b3);
-                           color: white;
-                           padding: 0.75rem 2rem;
-                           border-radius: 8px;
-                           text-decoration: none;
-                           font-weight: bold;
-                           font-size: 1.1rem;
-                           transition: all 0.3s ease;
-                           box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-                           border: none;
-                           width: 80%;
-                           text-align: center;
-                           cursor: pointer;
-                       "
-                       onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.15)';"
-                       onmouseout="this.style.transform='translateY(0px)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)';">
-                        🔗 Abrir Servidor y Autorizar
-                    </a>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                # Componente invisible para detectar el clic
-                clicked = st.button("", key="invisible_button", help="", type="secondary")
-                
-                # Botón temporal para simular el clic (mientras no funcione el JavaScript perfectamente)
-                st.markdown("<hr style='margin: 2rem 0;'>", unsafe_allow_html=True)
-                st.markdown("**⚠️ Si el enlace no funciona automáticamente:**", unsafe_allow_html=True)
-                if st.button("🔧 Marcar como abierto manualmente", key="manual_click", type="secondary"):
-                    st.session_state.servidor_clicked = True
-                    st.rerun()
+            # Enlace simple y directo
+            st.markdown(f"""
+            <div style="text-align: center; margin: 1rem 0;">
+                <a href="{SERVER_URL}" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   style="
+                       display: inline-block;
+                       background: linear-gradient(135deg, #007bff, #0056b3);
+                       color: white;
+                       padding: 0.75rem 2rem;
+                       border-radius: 8px;
+                       text-decoration: none;
+                       font-weight: bold;
+                       font-size: 1.1rem;
+                       transition: all 0.3s ease;
+                       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                       border: none;
+                       width: 80%;
+                       text-align: center;
+                       cursor: pointer;
+                   "
+                   onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.15)';"
+                   onmouseout="this.style.transform='translateY(0px)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)';">
+                    🔗 Abrir Servidor y Autorizar
+                </a>
+            </div>
+            """, unsafe_allow_html=True)
             
-            # PASO 2: Mostrar mensaje + botón continuar DESPUÉS del clic
-            else:
-                # Mostrar el enlace nuevamente (por si necesita volver a abrirlo)
-                st.markdown(f"""
-                <div style="text-align: center; margin: 1rem 0;">
-                    <a href="{SERVER_URL}" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       style="
-                           display: inline-block;
-                           background: linear-gradient(135deg, #007bff, #0056b3);
-                           color: white;
-                           padding: 0.75rem 2rem;
-                           border-radius: 8px;
-                           text-decoration: none;
-                           font-weight: bold;
-                           font-size: 1.1rem;
-                           transition: all 0.3s ease;
-                           box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-                           border: none;
-                           width: 80%;
-                           text-align: center;
-                           cursor: pointer;
-                       "
-                       onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.15)';"
-                       onmouseout="this.style.transform='translateY(0px)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)';">
-                        🔗 Reabrir Servidor (si es necesario)
-                    </a>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                # Mensaje de confirmación
-                st.markdown("""
-                <div style="
-                    background: rgba(212, 237, 218, 0.95);
-                    padding: 1.5rem;
-                    border-radius: 8px;
-                    border-left: 4px solid #28a745;
-                    margin: 1rem 0;
-                    backdrop-filter: blur(5px);
-                    text-align: center;
-                ">
-                    <h4 style="color: #155724; margin-bottom: 1rem;">
-                        ✅ Servidor Abierto
-                    </h4>
-                    <p style="color: #155724; margin: 0; font-weight: bold;">
-                        💡 <strong>Autoriza el acceso en la otra pestaña</strong><br>
-                        Una vez autorizado, presiona "Continuar al Sistema"
-                    </p>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                # BOTÓN FINAL: Continuar al Sistema
-                if st.button(
-                    "✅ Continuar al Sistema",
-                    type="primary",
-                    use_container_width=True,
-                    key="btn_continue_final"
-                ):
-                    st.session_state.splash_completado = True
-                    st.rerun()
-                
-                # Botón para volver atrás si es necesario
-                if st.button(
-                    "← Volver al enlace",
-                    type="secondary",
-                    use_container_width=True,
-                    key="btn_back_to_link"
-                ):
-                    st.session_state.servidor_clicked = False
-                    st.rerun()
+            # Botón directo para continuar
+            if st.button(
+                "✅ Ya autoricé el servidor - Continuar al Sistema",
+                key="continuar_sistema",
+                type="primary",
+                use_container_width=True,
+                help="Presiona después de autorizar en la nueva pestaña"
+            ):
+                st.session_state.splash_completado = True
+                st.rerun()
         
         else:
             # NO hay URL configurada

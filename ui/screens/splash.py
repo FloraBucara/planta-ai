@@ -107,22 +107,22 @@ def pantalla_splash():
     </div>
     """, unsafe_allow_html=True)
     
-    # Información técnica opcional
-    with st.expander("🔧 Información Técnica del Proyecto"):
-        st.markdown("""
-        **Tecnologías utilizadas:**
-        - 🤖 **Modelo:** MobileNetV2 con Transfer Learning
-        - ⚡ **Runtime:** ONNX Runtime para máximo rendimiento  
-        - 🐍 **Backend:** Python con FastAPI
-        - 🎨 **Frontend:** Streamlit
-        - 🗄️ **Base de datos:** Firebase Firestore
-        - 🌐 **Deployment:** Streamlit Cloud + ngrok
-        
-        **Métricas del modelo:**
-        - 📊 **Accuracy:** ~63% en 335 especies
-        - ⚡ **Velocidad:** ~20-50ms por predicción
-        - 📱 **Compatibilidad:** Python 3.13, multiplataforma
-        """)
+    # Información técnica opcional - REMOVIDA
+    # with st.expander("🔧 Información Técnica del Proyecto"):
+    #     st.markdown("""
+    #     **Tecnologías utilizadas:**
+    #     - 🤖 **Modelo:** MobileNetV2 con Transfer Learning
+    #     - ⚡ **Runtime:** ONNX Runtime para máximo rendimiento  
+    #     - 🐍 **Backend:** Python con FastAPI
+    #     - 🎨 **Frontend:** Streamlit
+    #     - 🗄️ **Base de datos:** Firebase Firestore
+    #     - 🌐 **Deployment:** Streamlit Cloud + ngrok
+    #     
+    #     **Métricas del modelo:**
+    #     - 📊 **Accuracy:** ~63% en 335 especies
+    #     - ⚡ **Velocidad:** ~20-50ms por predicción
+    #     - 📱 **Compatibilidad:** Python 3.13, multiplataforma
+    #     """)
     
     # Botón de autorización centrado
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -141,66 +141,59 @@ def pantalla_splash():
                 border-left: 4px solid #28a745;
                 margin: 1rem 0;
                 backdrop-filter: blur(5px);
+                text-align: center;
             ">
                 <h4 style="color: #155724; margin-bottom: 1rem;">
-                    🌐 Servidor Configurado
+                    🌐 Servidor de Procesamiento
                 </h4>
                 <p style="
                     color: #333;
-                    margin-bottom: 0.5rem;
+                    margin-bottom: 1rem;
                     font-family: monospace;
                     background: rgba(255,255,255,0.8);
-                    padding: 0.5rem;
+                    padding: 0.75rem;
                     border-radius: 5px;
+                    word-break: break-all;
                 ">
-                    <strong>URL:</strong> {SERVER_URL}
+                    {SERVER_URL}
+                </p>
+                <p style="color: #666; font-size: 0.9rem; margin: 0;">
+                    💡 Autoriza el acceso en esta página para usar todas las funciones
                 </p>
             </div>
             """, unsafe_allow_html=True)
             
-            server_status = verificar_estado_servidor()
+            # Botón principal para abrir servidor
+            if st.button(
+                "🔗 Abrir Servidor y Autorizar",
+                type="primary",
+                use_container_width=True,
+                key="btn_open_server"
+            ):
+                # JavaScript para abrir en nueva pestaña
+                st.markdown(f"""
+                <script>
+                    window.open('{SERVER_URL}', '_blank');
+                </script>
+                """, unsafe_allow_html=True)
+                
+                # Mostrar mensaje de confirmación
+                st.success("✅ Servidor abierto en nueva pestaña")
+                st.info("Autoriza el acceso y luego presiona 'Continuar'")
             
-            if server_status == "conectado":
-                # Servidor ya autorizado y funcionando
-                st.success("✅ Servidor autorizado y funcionando correctamente")
-                
-                if st.button(
-                    "🚀 Continuar al Sistema",
-                    type="primary",
-                    use_container_width=True,
-                    key="btn_continue"
-                ):
-                    st.session_state.splash_completado = True
-                    st.rerun()
-            else:
-                # Servidor configurado pero necesita autorización
-                st.warning("⚠️ Servidor configurado - Requiere autorización")
-                
-                if st.button(
-                    "🔐 Autorizar Servidor",
-                    type="primary", 
-                    use_container_width=True,
-                    key="btn_authorize"
-                ):
-                    # Abrir en nueva pestaña
-                    st.markdown(f"""
-                    <script>
-                        window.open('{SERVER_URL}', '_blank');
-                    </script>
-                    """, unsafe_allow_html=True)
-                    
-                    # Mostrar instrucciones
-                    st.info("""
-                    📋 **Instrucciones:**
-                    1. Se abrió una nueva pestaña con el servidor
-                    2. Autoriza el acceso cuando te lo solicite ngrok
-                    3. Regresa a esta pestaña y presiona el botón de abajo
-                    """)
-                    
-                    # Botón para continuar después de autorizar
-                    if st.button("✅ Ya autoricé - Continuar", key="btn_continue_after"):
-                        st.session_state.splash_completado = True
-                        st.rerun()
+            # Espaciado
+            st.markdown("<br>", unsafe_allow_html=True)
+            
+            # Botón para continuar después de autorizar
+            if st.button(
+                "🚀 Continuar al Sistema",
+                type="secondary",
+                use_container_width=True,
+                key="btn_continue"
+            ):
+                st.session_state.splash_completado = True
+                st.rerun()
+        
         else:
             # NO hay URL configurada
             st.error("❌ Servidor no configurado")
@@ -213,30 +206,18 @@ def pantalla_splash():
                 border-left: 4px solid #dc3545;
                 margin: 1rem 0;
                 backdrop-filter: blur(5px);
+                text-align: center;
             ">
                 <h4 style="color: #721c24; margin-bottom: 1rem;">
                     🔧 Configuración Requerida
                 </h4>
                 <p style="color: #721c24; margin-bottom: 1rem;">
-                    El servidor no está configurado en <code>api_client.py</code>
-                </p>
-                <p style="
-                    color: #333;
-                    font-size: 0.9rem;
-                    background: rgba(255,255,255,0.8);
-                    padding: 1rem;
-                    border-radius: 5px;
-                    font-family: monospace;
-                    margin: 0;
-                ">
-                    <strong>Para desarrolladores:</strong><br>
-                    Actualiza la variable SERVER_URL en utils/api_client.py:<br><br>
-                    SERVER_URL = "https://tu-ngrok-url.ngrok-free.app"
+                    Configura SERVER_URL en <code>utils/api_client.py</code>
                 </p>
             </div>
             """, unsafe_allow_html=True)
             
-            # Botón para continuar sin servidor (modo demo)
+            # Botón para continuar en modo demo
             if st.button(
                 "🔄 Continuar en Modo Demo",
                 type="secondary",
@@ -245,28 +226,6 @@ def pantalla_splash():
             ):
                 st.session_state.splash_completado = True
                 st.rerun()
-            
-            # Información sobre el modo demo
-            st.markdown("""
-            <div style="
-                background: rgba(255, 248, 225, 0.95);
-                padding: 1rem;
-                border-radius: 8px;
-                border-left: 3px solid #ff9800;
-                margin-top: 1rem;
-                backdrop-filter: blur(5px);
-            ">
-                <p style="
-                    color: #ef6c00;
-                    font-size: 0.9rem;
-                    margin: 0;
-                    text-shadow: 0.5px 0.5px 1px rgba(255,255,255,0.8);
-                ">
-                    📝 <strong>Modo Demo:</strong> Podrás usar el identificador de plantas, 
-                    pero las funciones de servidor estarán deshabilitadas.
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
     
     # Footer con información adicional - CON FONDO CONSISTENTE
     st.markdown("""

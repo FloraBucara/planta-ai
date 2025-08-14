@@ -115,7 +115,7 @@ def pantalla_splash():
         
         # Verificar si hay URL del servidor
         if SERVER_URL:
-            # Enlace azul-verde con mismo diseño que el botón
+            # Enlace azul-verde con mismo tamaño que botones de home
             st.markdown(f"""
             <div style="text-align: center; margin: 1rem 0;">
                 <a href="{SERVER_URL}" 
@@ -125,7 +125,7 @@ def pantalla_splash():
                        display: inline-block;
                        background: linear-gradient(135deg, #007bff, #28a745);
                        color: white;
-                       padding: 0.75rem 2rem;
+                       padding: 0.75rem 1rem;
                        border-radius: 8px;
                        text-decoration: none;
                        font-weight: bold;
@@ -133,7 +133,7 @@ def pantalla_splash():
                        transition: all 0.3s ease;
                        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
                        border: none;
-                       width: 80%;
+                       width: 85%;
                        max-width: 300px;
                        text-align: center;
                        cursor: pointer;
@@ -151,20 +151,20 @@ def pantalla_splash():
             # CSS para personalizar el botón de Streamlit
             st.markdown("""
             <style>
-                /* Personalizar el próximo botón de Streamlit para que se vea igual al enlace */
+                /* Personalizar el próximo botón de Streamlit con el mismo tamaño que home */
                 div[data-testid="column"]:nth-child(2) > div > div > div > button {
                     background: linear-gradient(135deg, #28a745, #20c997, #17a2b8) !important;
                     color: white !important;
                     border: none !important;
                     border-radius: 8px !important;
-                    padding: 0.75rem 2rem !important;
+                    padding: 0.75rem 1rem !important;
                     font-weight: bold !important;
                     font-size: 1.1rem !important;
                     transition: all 0.3s ease !important;
                     box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
-                    width: 80% !important;
+                    width: 85% !important;
                     max-width: 300px !important;
-                    margin: 0 auto !important;
+                    margin: 0.25rem 0 !important;
                 }
                 
                 div[data-testid="column"]:nth-child(2) > div > div > div > button:hover {
@@ -192,7 +192,7 @@ def pantalla_splash():
                     overflow: hidden !important;
                 }
                 
-                /* Centrar el botón */
+                /* Centrar el botón igual que en home */
                 div[data-testid="column"]:nth-child(2) > div > div {
                     display: flex !important;
                     justify-content: center !important;
@@ -201,6 +201,10 @@ def pantalla_splash():
                 /* Selector alternativo más específico por si el anterior no funciona */
                 .stButton > button {
                     background: linear-gradient(135deg, #28a745, #20c997, #17a2b8) !important;
+                    width: 85% !important;
+                    max-width: 300px !important;
+                    padding: 0.75rem 1rem !important;
+                    margin: 0.25rem 0 !important;
                 }
                 
                 .stButton > button:hover {

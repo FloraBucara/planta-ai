@@ -132,14 +132,18 @@ def pantalla_splash():
         
         # Verificar si hay URL del servidor
         if SERVER_URL:
-            # SOLUCIÓN SIMPLE Y CONFIABLE
+            # SOLUCIÓN: Enlace + JavaScript para mostrar botón
             
-            # Enlace HTML que SÍ funciona para abrir nueva pestaña
+            # Enlace HTML que SÍ funciona + trigger para mostrar botón
             st.markdown(f"""
             <div style="text-align: center; margin: 1rem 0;">
                 <a href="{SERVER_URL}" 
                    target="_blank" 
                    rel="noopener noreferrer"
+                   onclick="
+                       document.getElementById('continue-section').style.display = 'block';
+                       return true;
+                   "
                    style="
                        display: inline-block;
                        background: linear-gradient(135deg, #007bff, #0056b3);
@@ -161,20 +165,67 @@ def pantalla_splash():
                     🔗 Abrir Servidor y Autorizar
                 </a>
             </div>
+            
+            <!-- Sección que aparece después del clic -->
+            <div id="continue-section" style="display: none; text-align: center; margin: 1rem 0;">
+                <div style="
+                    background: rgba(212, 237, 218, 0.95);
+                    padding: 1rem;
+                    border-radius: 8px;
+                    border-left: 4px solid #28a745;
+                    margin: 1rem 0;
+                    backdrop-filter: blur(5px);
+                ">
+                    <p style="color: #155724; margin: 0; font-weight: bold;">
+                        ✅ Servidor abierto en nueva pestaña<br>
+                        💡 Autoriza el acceso y luego presiona 'Continuar'
+                    </p>
+                </div>
+            </div>
             """, unsafe_allow_html=True)
             
-            # Espaciado
-            st.markdown("<div style='margin: 1rem 0;'></div>", unsafe_allow_html=True)
+            # Botón que solo aparece después del clic en el enlace
+            # Usamos un contenedor vacío que se llena cuando se hace clic
+            continue_placeholder = st.empty()
             
-            # Botón para marcar que ya se abrió el servidor
-            if st.button(
-                "✅ Ya abrí el servidor - Continuar",
-                type="secondary",
-                use_container_width=True,
-                key="btn_continue_after_open",
-                help="Presiona después de hacer clic en el enlace de arriba"
-            ):
-                st.session_state.splash_completado = True
+            # JavaScript para activar el botón de Streamlit
+            st.markdown("""
+            <script>
+                // Observar cambios en el div continue-section
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                            const continueSection = document.getElementById('continue-section');
+                            if (continueSection && continueSection.style.display === 'block') {
+                                // Enviar señal a Streamlit
+                                window.parent.postMessage({type: 'show_continue_button'}, '*');
+                            }
+                        }
+                    });
+                });
+                
+                const continueSection = document.getElementById('continue-section');
+                if (continueSection) {
+                    observer.observe(continueSection, {attributes: true});
+                }
+            </script>
+            """, unsafe_allow_html=True)
+            
+            # Verificar si se debe mostrar el botón (usando session_state)
+            if st.session_state.get('servidor_clicked', False):
+                with continue_placeholder.container():
+                    if st.button(
+                        "✅ Continuar al Sistema",
+                        type="secondary",
+                        use_container_width=True,
+                        key="btn_continue_final"
+                    ):
+                        st.session_state.splash_completado = True
+                        st.rerun()
+            
+            # Botón temporal para activar (hasta que funcione el JavaScript)
+            if st.button("🔄 Mostrar botón continuar", key="temp_show", help="Temporal: presiona después de abrir el servidor"):
+                st.session_state.servidor_clicked = True
                 st.rerun()
         
         else:

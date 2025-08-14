@@ -76,7 +76,8 @@ def inicializar_estado():
         'max_intentos': 3,
         'mensaje_inicio': None,
         'splash_completado': False,  # NUEVO ESTADO PARA SPLASH
-        'servidor_abierto': False    # NUEVO ESTADO PARA MOSTRAR BOTÓN CONTINUAR
+        'servidor_abierto': False,   # NUEVO ESTADO PARA MOSTRAR BOTÓN CONTINUAR
+        'servidor_clicked': False    # NUEVO ESTADO PARA DETECTAR CLIC EN ENLACE
     }
     
     # Inicializar cada estado si no existe

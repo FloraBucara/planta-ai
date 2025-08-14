@@ -148,50 +148,39 @@ def pantalla_splash():
             # Espacio entre botones
             st.markdown("<div style='margin: 0.5rem 0;'></div>", unsafe_allow_html=True)
             
-            # Botón verde con mismo diseño usando CSS personalizado
-            boton_verde_html = """
+            # CSS para personalizar el botón de Streamlit
+            st.markdown("""
             <style>
-                .boton-verde-custom {
-                    display: inline-block;
-                    background: linear-gradient(135deg, #28a745, #20c997);
-                    color: white;
-                    padding: 0.75rem 2rem;
-                    border-radius: 8px;
-                    font-weight: bold;
-                    font-size: 1.1rem;
-                    transition: all 0.3s ease;
-                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-                    border: none;
-                    width: 80%;
-                    max-width: 300px;
-                    text-align: center;
-                    cursor: pointer;
-                    user-select: none;
-                    text-decoration: none;
-                    margin: 1rem 0;
+                /* Personalizar el próximo botón de Streamlit para que se vea igual al enlace */
+                div[data-testid="column"]:nth-child(2) > div > div > div > button {
+                    background: linear-gradient(135deg, #28a745, #20c997) !important;
+                    color: white !important;
+                    border: none !important;
+                    border-radius: 8px !important;
+                    padding: 0.75rem 2rem !important;
+                    font-weight: bold !important;
+                    font-size: 1.1rem !important;
+                    transition: all 0.3s ease !important;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
+                    width: 80% !important;
+                    max-width: 300px !important;
+                    margin: 0 auto !important;
                 }
                 
-                .boton-verde-custom:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+                div[data-testid="column"]:nth-child(2) > div > div > div > button:hover {
+                    transform: translateY(-2px) !important;
+                    box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
                 }
                 
-                .boton-verde-container {
-                    text-align: center;
-                    margin: 1rem 0;
+                /* Centrar el botón */
+                div[data-testid="column"]:nth-child(2) > div > div {
+                    display: flex !important;
+                    justify-content: center !important;
                 }
             </style>
+            """, unsafe_allow_html=True)
             
-            <div class="boton-verde-container">
-                <div class="boton-verde-custom">
-                    ✅ Ya autoricé el servidor - Continuar al Sistema
-                </div>
-            </div>
-            """
-            
-            st.markdown(boton_verde_html, unsafe_allow_html=True)
-            
-            # Botón de Streamlit normal pero con estilo oculto
+            # Un solo botón de Streamlit con estilo personalizado
             col1, col2, col3 = st.columns([1, 2, 1])
             with col2:
                 if st.button(
@@ -202,40 +191,6 @@ def pantalla_splash():
                 ):
                     st.session_state.splash_completado = True
                     st.rerun()
-            
-            # CSS para ocultar el botón de Streamlit y usar solo el personalizado
-            st.markdown("""
-            <style>
-                /* Ocultar el botón real de Streamlit */
-                div[data-testid="column"]:nth-child(2) > div > div > div > button {
-                    opacity: 0;
-                    position: absolute;
-                    pointer-events: none;
-                    height: 0;
-                    overflow: hidden;
-                }
-                
-                /* Hacer que el div personalizado active el botón real */
-                .boton-verde-custom {
-                    position: relative;
-                    z-index: 10;
-                }
-            </style>
-            
-            <script>
-                // Hacer que el div personalizado active el botón real
-                document.addEventListener('DOMContentLoaded', function() {
-                    const botonPersonalizado = document.querySelector('.boton-verde-custom');
-                    const botonReal = document.querySelector('button[data-testid="baseButton-primary"]');
-                    
-                    if (botonPersonalizado && botonReal) {
-                        botonPersonalizado.addEventListener('click', function() {
-                            botonReal.click();
-                        });
-                    }
-                });
-            </script>
-            """, unsafe_allow_html=True)
         
         else:
             # NO hay URL configurada

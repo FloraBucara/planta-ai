@@ -159,23 +159,51 @@ def main():
     
     # Determinar qué pantalla mostrar
     if st.session_state.get('mostrar_top_especies', False):
+        # Restaurar scroll para otras pantallas
+        st.markdown("""
+        <script>
+            document.body.style.overflow = 'auto';
+            document.documentElement.style.overflow = 'auto';
+        </script>
+        """, unsafe_allow_html=True)
         mostrar_header()
         pantalla_top_especies()
         mostrar_sidebar(estado_sistema)
     elif st.session_state.get('resultado_actual'):
+        # Restaurar scroll para otras pantallas
+        st.markdown("""
+        <script>
+            document.body.style.overflow = 'auto';
+            document.documentElement.style.overflow = 'auto';
+        </script>
+        """, unsafe_allow_html=True)
         mostrar_header()
         pantalla_prediccion_feedback()
         mostrar_sidebar(estado_sistema)
     elif st.session_state.get('metodo_seleccionado') == "archivo":
+        # Restaurar scroll para otras pantallas
+        st.markdown("""
+        <script>
+            document.body.style.overflow = 'auto';
+            document.documentElement.style.overflow = 'auto';
+        </script>
+        """, unsafe_allow_html=True)
         mostrar_header()
         pantalla_upload_archivo()
         mostrar_sidebar(estado_sistema)
     elif st.session_state.get('metodo_seleccionado') == "camara":
+        # Restaurar scroll para otras pantallas
+        st.markdown("""
+        <script>
+            document.body.style.overflow = 'auto';
+            document.documentElement.style.overflow = 'auto';
+        </script>
+        """, unsafe_allow_html=True)
         mostrar_header()
         pantalla_tomar_foto()
         mostrar_sidebar(estado_sistema)
     else:
-        # PANTALLA HOME - Solo header limpio, sin estado ni sidebar
+        # PANTALLA HOME - Solo header limpio, sin estado ni sidebar, SIN SCROLL
         mostrar_header_limpio()
         pantalla_seleccion_metodo()
 

@@ -130,16 +130,18 @@ def pantalla_splash():
                 div[data-testid="column"]:nth-child(2) > div > div > div > button {
                     background: #28a745 !important;
                     color: white !important;
-                    border: none !important;
-                    border-radius: 8px !important;
                     padding: 0.75rem 1rem !important;
+                    border-radius: 8px !important;
+                    text-decoration: none !important;
                     font-weight: bold !important;
                     font-size: 1.1rem !important;
                     transition: all 0.3s ease !important;
                     box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
+                    border: none !important;
                     width: 85% !important;
                     max-width: 300px !important;
-                    margin: 0.25rem 0 !important;
+                    text-align: center !important;
+                    cursor: pointer !important;
                 }
                 
                 div[data-testid="column"]:nth-child(2) > div > div > div > button:hover {

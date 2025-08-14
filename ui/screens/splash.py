@@ -232,7 +232,6 @@ def pantalla_splash():
             -0.5px -0.5px 1px white;
     ">
         <p>🎓 Desarrollado como proyecto de grado universitario</p>
-        <p>🌱 Contribuyendo a la conservación de la biodiversidad colombiana</p>
     </div>
     """, unsafe_allow_html=True)
 

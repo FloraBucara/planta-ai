@@ -14,7 +14,7 @@ def mostrar_header():
             logo_base64 = base64.b64encode(file.read()).decode()
         
         html_logo = f"""
-        <div style="display: flex; justify-content: center; align-items: center; margin: -1.9rem 0 0.25rem 0;">
+        <div style="display: flex; justify-content: center; align-items: center; margin: -2rem 0 0.25rem 0;">
             <img src="data:image/png;base64,{logo_base64}" style="width: 300px; height: auto;" />
         </div>
         """
@@ -33,7 +33,7 @@ def mostrar_header():
     
     # Texto descriptivo centrado
     html_descripcion = """
-    <div style="text-align: center; margin-bottom: 1rem; margin-top: -0.5rem;">
+    <div style="text-align: center; margin-bottom: 1rem; margin-top: 1rem;">
         <p style="font-size: 1.1rem; color: #666; margin: 0;">
             <strong>Sube una foto de tu planta y descubre qué especie es</strong>
         </p>

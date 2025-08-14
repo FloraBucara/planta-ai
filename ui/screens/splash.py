@@ -81,8 +81,8 @@ def pantalla_splash():
                    rel="noopener noreferrer"
                    style="
                        display: inline-block;
-                       background: rgba(128, 128, 128)
-                       color: #808080;
+                       background: rgba(255, 243, 0.95)
+                       color: #856404;
                        padding: 0.75rem 1rem;
                        border-radius: 8px;
                        text-decoration: none;

@@ -13,7 +13,7 @@ def mostrar_header():
         else:
             # Fallback al texto si no encuentra la imagen
             st.markdown("""
-            <div style="text-align: center; margin-bottom: 1rem;">
+            <div style="text-align: center; margin-bottom: 0.5rem; margin-top: -0.25rem;">
                 <h1 style="
                     background: linear-gradient(90deg, #2E8B57, #98FB98);
                     -webkit-background-clip: text;
@@ -28,7 +28,7 @@ def mostrar_header():
     
     # Texto descriptivo centrado - SIN ESPACIO EXTRA
     st.markdown("""
-    <div style="text-align: center; margin-bottom: 1.5rem;">
+    <div style="text-align: center; margin-bottom: 1rem; margin-top: -0.5rem;">
         <p style="font-size: 1.1rem; color: #666; margin: 0;">
             <strong>Sube una foto de tu planta y descubre qué especie es</strong>
         </p>

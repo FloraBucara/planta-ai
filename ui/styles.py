@@ -50,31 +50,37 @@ def aplicar_estilos():
         
         /* REDUCIR ESPACIOS GENERALES */
         .main .block-container {{
-            padding-top: 1rem !important; /* Menos espacio arriba */
+            padding-top: 0.25rem !important; /* MUCHO menos espacio arriba */
             padding-bottom: 1rem !important;
         }}
         
         /* Títulos sin margen extra */
         h1, h2, h3 {{
             margin-top: 0 !important;
-            margin-bottom: 1rem !important;
+            margin-bottom: 0.5rem !important; /* Aún menos margen */
+        }}
+        
+        /* NUEVOS ESTILOS PARA SUBIR EL LOGO AÚN MÁS */
+        .stImage {{
+            margin-top: -0.5rem !important; /* Subir imagen específicamente */
+            margin-bottom: 0.25rem !important;
         }}
         
         /* Reducir espacios entre elementos */
         .stMarkdown {{
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem; /* Aún menos margen */
         }}
         
         .main-header {{
             text-align: center;
-            padding: 0.5rem 0; /* Reducir padding */
+            padding: 0.25rem 0; /* AÚN menos padding */
             background: linear-gradient(90deg, #2E8B57, #98FB98);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             font-size: 2.5rem;
             font-weight: bold;
-            margin-bottom: 0.5rem; /* Reducir margen */
+            margin-bottom: 0.25rem; /* Margen mínimo */
         }}
         
         .prediction-card {{

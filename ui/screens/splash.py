@@ -132,12 +132,40 @@ def pantalla_splash():
         
         # Verificar si hay URL del servidor
         if SERVER_URL:
+            # Mostrar información del servidor configurado
+            st.markdown(f"""
+            <div style="
+                background: rgba(232, 245, 233, 0.95);
+                padding: 1.5rem;
+                border-radius: 10px;
+                border-left: 4px solid #28a745;
+                margin: 1rem 0;
+                backdrop-filter: blur(5px);
+            ">
+                <h4 style="color: #155724; margin-bottom: 1rem;">
+                    🌐 Servidor Configurado
+                </h4>
+                <p style="
+                    color: #333;
+                    margin-bottom: 0.5rem;
+                    font-family: monospace;
+                    background: rgba(255,255,255,0.8);
+                    padding: 0.5rem;
+                    border-radius: 5px;
+                ">
+                    <strong>URL:</strong> {SERVER_URL}
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+            
             server_status = verificar_estado_servidor()
             
             if server_status == "conectado":
-                # Servidor ya autorizado
+                # Servidor ya autorizado y funcionando
+                st.success("✅ Servidor autorizado y funcionando correctamente")
+                
                 if st.button(
-                    "✅ Servidor Autorizado - Continuar",
+                    "🚀 Continuar al Sistema",
                     type="primary",
                     use_container_width=True,
                     key="btn_continue"
@@ -145,9 +173,11 @@ def pantalla_splash():
                     st.session_state.splash_completado = True
                     st.rerun()
             else:
-                # Necesita autorización
+                # Servidor configurado pero necesita autorización
+                st.warning("⚠️ Servidor configurado - Requiere autorización")
+                
                 if st.button(
-                    "🔐 Autorizar Servidor y Continuar",
+                    "🔐 Autorizar Servidor",
                     type="primary", 
                     use_container_width=True,
                     key="btn_authorize"
@@ -163,7 +193,7 @@ def pantalla_splash():
                     st.info("""
                     📋 **Instrucciones:**
                     1. Se abrió una nueva pestaña con el servidor
-                    2. Autoriza el acceso cuando te lo solicite
+                    2. Autoriza el acceso cuando te lo solicite ngrok
                     3. Regresa a esta pestaña y presiona el botón de abajo
                     """)
                     
@@ -172,12 +202,39 @@ def pantalla_splash():
                         st.session_state.splash_completado = True
                         st.rerun()
         else:
-            # No hay URL configurada
-            st.error("❌ URL del servidor no configurada")
+            # NO hay URL configurada
+            st.error("❌ Servidor no configurado")
+            
             st.markdown("""
-            **Para desarrolladores:**  
-            Configura `SERVER_URL` en `api_client.py`
-            """)
+            <div style="
+                background: rgba(248, 215, 218, 0.95);
+                padding: 1.5rem;
+                border-radius: 10px;
+                border-left: 4px solid #dc3545;
+                margin: 1rem 0;
+                backdrop-filter: blur(5px);
+            ">
+                <h4 style="color: #721c24; margin-bottom: 1rem;">
+                    🔧 Configuración Requerida
+                </h4>
+                <p style="color: #721c24; margin-bottom: 1rem;">
+                    El servidor no está configurado en <code>api_client.py</code>
+                </p>
+                <p style="
+                    color: #333;
+                    font-size: 0.9rem;
+                    background: rgba(255,255,255,0.8);
+                    padding: 1rem;
+                    border-radius: 5px;
+                    font-family: monospace;
+                    margin: 0;
+                ">
+                    <strong>Para desarrolladores:</strong><br>
+                    Actualiza la variable SERVER_URL en utils/api_client.py:<br><br>
+                    SERVER_URL = "https://tu-ngrok-url.ngrok-free.app"
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
             
             # Botón para continuar sin servidor (modo demo)
             if st.button(
@@ -188,6 +245,28 @@ def pantalla_splash():
             ):
                 st.session_state.splash_completado = True
                 st.rerun()
+            
+            # Información sobre el modo demo
+            st.markdown("""
+            <div style="
+                background: rgba(255, 248, 225, 0.95);
+                padding: 1rem;
+                border-radius: 8px;
+                border-left: 3px solid #ff9800;
+                margin-top: 1rem;
+                backdrop-filter: blur(5px);
+            ">
+                <p style="
+                    color: #ef6c00;
+                    font-size: 0.9rem;
+                    margin: 0;
+                    text-shadow: 0.5px 0.5px 1px rgba(255,255,255,0.8);
+                ">
+                    📝 <strong>Modo Demo:</strong> Podrás usar el identificador de plantas, 
+                    pero las funciones de servidor estarán deshabilitadas.
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
     
     # Footer con información adicional - CON FONDO CONSISTENTE
     st.markdown("""

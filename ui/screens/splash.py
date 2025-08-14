@@ -220,7 +220,7 @@ def pantalla_splash():
     st.markdown("""
     <div style="
         text-align: center; 
-        margin-top: -2rem; 
+        margin-top: -3rem; 
         padding: 0.1rem;
         border-top: 1px solid rgba(238, 238, 238, 0.8);
         color: #666;

@@ -11,7 +11,7 @@ def pantalla_seleccion_metodo():
     
     # Título centrado - TEXTO MODIFICADO
     st.markdown("""
-    <div style="text-align: center; margin-bottom: 1rem;">
+    <div style="text-align: center; margin-bottom: 0.5rem;">
         <h4 style="margin-bottom: 0; font-size: 1.25rem;">¿Cómo quieres agregar tu planta?</h4>
     </div>
     """, unsafe_allow_html=True)

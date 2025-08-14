@@ -9,10 +9,15 @@ def pantalla_seleccion_metodo():
         # Limpiar el mensaje después de mostrarlo
         st.session_state.mensaje_inicio = None
     
-    # Título centrado - TEXTO MODIFICADO
+    # Título centrado - CON CONTORNO BLANCO OPCIONAL
     st.markdown("""
     <div style="text-align: center; margin-bottom: 0.25rem;">
-        <h4 style="margin-bottom: 0; font-size: 1.25rem;">¿Cómo quieres agregar tu planta?</h4>
+        <h4 style="
+            margin-bottom: 0; 
+            font-size: 1.25rem;
+            color: #333333;
+            text-shadow: 1px 1px 2px white, -1px -1px 2px white, 1px -1px 2px white, -1px 1px 2px white;
+        ">¿Cómo quieres agregar tu planta?</h4>
     </div>
     """, unsafe_allow_html=True)
     

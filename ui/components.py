@@ -18,7 +18,7 @@ def mostrar_header():
             <img src="data:image/png;base64,{logo_base64}" style="width: 300px; height: auto;" />
         </div>
         """
-        # ↑↑↑ AQUÍ CAMBIAS EL TAMAÑO: width: 400px ↑↑↑
+        # ↑↑↑ AQUÍ CAMBIAS EL TAMAÑO: width: 300px ↑↑↑
         st.markdown(html_logo, unsafe_allow_html=True)
     else:
         # Fallback: Título con texto si no hay logo
@@ -31,10 +31,16 @@ def mostrar_header():
         """
         st.markdown(html_titulo, unsafe_allow_html=True)
     
-    # Texto descriptivo centrado
+    # Texto descriptivo centrado - NEGRO CON CONTORNO BLANCO
     html_descripcion = """
     <div style="text-align: center; margin-bottom: 1rem; margin-top: 1rem;">
-        <p style="font-size: 1.1rem; color: #666; margin: 0;">
+        <p style="
+            font-size: 1.1rem; 
+            color: #000000; 
+            margin: 0;
+            text-shadow: 1px 1px 2px white, -1px -1px 2px white, 1px -1px 2px white, -1px 1px 2px white;
+            font-weight: bold;
+        ">
             <strong>Sube una foto de tu planta y descubre qué especie es</strong>
         </p>
     </div>

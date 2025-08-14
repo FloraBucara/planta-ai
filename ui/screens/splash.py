@@ -132,25 +132,44 @@ def pantalla_splash():
         
         # Verificar si hay URL del servidor
         if SERVER_URL:
-            # Botón principal que abre servidor Y va al home - SIN INFO DEL SERVIDOR
+            # Botón para abrir servidor
             if st.button(
                 "🔗 Abrir Servidor y Autorizar",
                 type="primary",
                 use_container_width=True,
-                key="btn_open_server"
+                key="btn_open_server_link"
             ):
-                # JavaScript para abrir nueva pestaña
+                # Marcar que se hizo clic en abrir servidor
+                st.session_state.servidor_abierto = True
+                
+                # Abrir en nueva pestaña usando HTML + JavaScript
                 st.markdown(f"""
                 <script>
-                    setTimeout(function() {{
-                        window.open('{SERVER_URL}', '_blank', 'noopener,noreferrer');
-                    }}, 100);
+                    window.open('{SERVER_URL}', '_blank', 'noopener,noreferrer');
                 </script>
                 """, unsafe_allow_html=True)
                 
-                # INMEDIATAMENTE ir al home
-                st.session_state.splash_completado = True
+                # Mostrar mensaje de confirmación
+                st.success("✅ Servidor abierto en nueva pestaña")
+                st.info("Autoriza el acceso en la nueva pestaña y luego presiona 'Continuar'")
+                
+                # Recargar para mostrar el botón continuar
                 st.rerun()
+            
+            # Solo mostrar el botón continuar SI ya se abrió el servidor
+            if st.session_state.get('servidor_abierto', False):
+                # Pequeño espaciado
+                st.markdown("<div style='margin: 1rem 0;'></div>", unsafe_allow_html=True)
+                
+                # Botón para ir al home (solo aparece después de abrir servidor)
+                if st.button(
+                    "✅ Continuar al Sistema",
+                    type="secondary",
+                    use_container_width=True,
+                    key="btn_continue_home"
+                ):
+                    st.session_state.splash_completado = True
+                    st.rerun()
         
         else:
             # NO hay URL configurada

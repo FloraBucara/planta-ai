@@ -39,49 +39,6 @@ def pantalla_splash():
     
     # Texto explicativo del proyecto - CON FONDO CONSISTENTE
     st.markdown("""
-    <div class="splash-card" style="
-        text-align: center; 
-        max-width: 600px; 
-        margin: 0 auto 2rem auto; 
-        background: rgba(248, 249, 250, 0.95);
-        padding: 2rem;
-        border-radius: 15px;
-        border-left: 4px solid #2E8B57;
-        backdrop-filter: blur(5px);
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    ">
-        <h3 style="color: #2E8B57; margin-bottom: 1rem;">
-            📚 Proyecto de Grado
-        </h3>
-        <p style="
-            font-size: 1.1rem; 
-            color: #333; 
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-            text-shadow: 
-                1px 1px 2px white,
-                -1px -1px 2px white,
-                1px -1px 2px white,
-                -1px 1px 2px white;
-        ">
-            <strong>BucaraFlora</strong> es un sistema de identificación de plantas colombianas 
-            desarrollado con Inteligencia Artificial como proyecto de grado universitario.
-        </p>
-        <p style="
-            font-size: 1rem; 
-            color: #666; 
-            line-height: 1.5;
-            margin-bottom: 1.5rem;
-            text-shadow: 
-                0.5px 0.5px 1px white,
-                -0.5px -0.5px 1px white,
-                0.5px -0.5px 1px white,
-                -0.5px 0.5px 1px white;
-        ">
-            Este sistema puede identificar <strong>335 especies</strong> de plantas nativas y 
-            ornamentales de Colombia utilizando técnicas avanzadas de Machine Learning 
-            y procesamiento de imágenes.
-        </p>
         <div style="
             background: rgba(255, 243, 205, 0.95);
             padding: 1rem;

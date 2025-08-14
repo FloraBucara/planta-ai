@@ -15,7 +15,7 @@ def mostrar_header():
         st.markdown(f"""
         <div style="display: flex; justify-content: center; align-items: center; margin: 0.5rem 0;">
             <img src="data:image/png;base64,{logo_base64}" 
-                 style="width: 400px; height: auto;" />
+                 style="width: 300px; height: auto;" />
         </div>
         """, unsafe_allow_html=True)
     else:

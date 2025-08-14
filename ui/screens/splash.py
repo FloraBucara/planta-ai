@@ -132,42 +132,14 @@ def pantalla_splash():
         
         # Verificar si hay URL del servidor
         if SERVER_URL:
-            # Mostrar información del servidor configurado - SIMPLIFICADO
-            st.markdown(f"""
-            <div style="
-                background: rgba(232, 245, 233, 0.95);
-                padding: 1.5rem;
-                border-radius: 10px;
-                border-left: 4px solid #28a745;
-                margin: 1rem 0;
-                backdrop-filter: blur(5px);
-                text-align: center;
-            ">
-                <p style="
-                    color: #333;
-                    margin-bottom: 1rem;
-                    font-family: monospace;
-                    background: rgba(255,255,255,0.8);
-                    padding: 0.75rem;
-                    border-radius: 5px;
-                    word-break: break-all;
-                ">
-                    {SERVER_URL}
-                </p>
-                <p style="color: #666; font-size: 0.9rem; margin: 0;">
-                    💡 Autoriza el acceso en esta página para usar todas las funciones
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            # Botón principal que abre servidor Y va al home
+            # Botón principal que abre servidor Y va al home - SIN INFO DEL SERVIDOR
             if st.button(
                 "🔗 Abrir Servidor y Autorizar",
                 type="primary",
                 use_container_width=True,
                 key="btn_open_server"
             ):
-                # Método 1: JavaScript mejorado con timeout
+                # JavaScript para abrir nueva pestaña
                 st.markdown(f"""
                 <script>
                     setTimeout(function() {{

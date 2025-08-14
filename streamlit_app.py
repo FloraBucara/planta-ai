@@ -14,6 +14,7 @@ from ui.styles import aplicar_estilos
 from ui.components import mostrar_header
 from ui.sidebar import mostrar_sidebar
 from ui.screens.error import pantalla_error_sistema
+from ui.screens.splash import pantalla_splash  # NUEVA PANTALLA
 from ui.screens.home import pantalla_seleccion_metodo
 from ui.screens.upload import pantalla_upload_archivo
 from ui.screens.camera import pantalla_tomar_foto
@@ -73,7 +74,8 @@ def inicializar_estado():
         'resultado_actual': None,
         'mostrar_top_especies': False,
         'max_intentos': 3,
-        'mensaje_inicio': None
+        'mensaje_inicio': None,
+        'splash_completado': False  # NUEVO ESTADO PARA SPLASH
     }
     
     # Inicializar cada estado si no existe
@@ -95,7 +97,12 @@ def main():
     # Aplicar estilos CSS
     aplicar_estilos()
     
-    # Mostrar header
+    # NUEVA LÓGICA: Verificar si debe mostrar splash
+    if not st.session_state.get('splash_completado', False):
+        pantalla_splash()
+        return  # No mostrar nada más hasta completar splash
+    
+    # Mostrar header (solo después del splash)
     mostrar_header()
     
     # Verificar sistema
@@ -117,7 +124,7 @@ def main():
     else:
         pantalla_seleccion_metodo()
     
-    # Mostrar sidebar
+    # Mostrar sidebar (solo después del splash)
     mostrar_sidebar(estado_sistema)
 
 # ==================== EJECUCIÓN ====================

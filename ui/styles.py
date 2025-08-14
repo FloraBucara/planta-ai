@@ -21,26 +21,55 @@ def aplicar_estilos():
     css_fondo = ""
     if fondo_base64:
         css_fondo = f"""
+        /* APLICAR FONDO A TODAS LAS VISTAS */
         .stApp {{
             background-image: url("data:image/png;base64,{fondo_base64}");
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
+            min-height: 100vh; /* Asegurar que cubra toda la pantalla */
         }}
         
-        /* Hacer los contenedores semi-transparentes para que se vea el fondo */
+        /* Hacer los contenedores semi-transparentes en TODAS las vistas */
         .main .block-container {{
             background-color: rgba(255, 255, 255, 0.95);
             border-radius: 15px;
-            padding: 1.5rem 2rem; /* Reducir padding superior */
+            padding: 1.5rem 2rem;
             backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }}
         
         /* Sidebar con transparencia */
         section[data-testid="stSidebar"] > div {{
             background-color: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
+        }}
+        
+        /* ESTILOS ESPECÍFICOS PARA SPLASH */
+        .splash-container {{
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1rem auto;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }}
+        
+        /* Cards dentro del splash con fondo similar */
+        .splash-card {{
+            background: rgba(248, 249, 250, 0.95) !important;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }}
+        
+        /* Expandir con fondo consistente */
+        .streamlit-expanderHeader {{
+            background-color: rgba(248, 249, 250, 0.95) !important;
+        }}
+        
+        .streamlit-expanderContent {{
+            background-color: rgba(255, 255, 255, 0.95) !important;
         }}
         """
     

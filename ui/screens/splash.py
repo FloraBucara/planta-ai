@@ -101,7 +101,7 @@ def pantalla_splash():
         if SERVER_URL:
             # Enlace simple y directo
             st.markdown(f"""
-            <div style="text-align: center; margin: 1rem 0;">
+            <div style="text-align: center; margin: -2rem 0;">
                 <a href="{SERVER_URL}" 
                    target="_blank" 
                    rel="noopener noreferrer"

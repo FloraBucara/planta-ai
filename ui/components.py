@@ -1,37 +1,38 @@
 import streamlit as st
 from pathlib import Path
+import base64  # Agregado para la opción de centrado con CSS
 
 def mostrar_header():
     """Muestra el header principal de la aplicación con logo - MEJORADO"""
     # Intentar cargar logo local
     logo_path = Path("assets/logo.png")  # Ajusta el nombre si es diferente
     
-    col1, col2, col3 = st.columns([2, 1, 2])
-    with col2:
-        if logo_path.exists():
-            # AQUÍ PUEDES CONTROLAR EL TAMAÑO DEL LOGO
-            st.image(str(logo_path), width=300)  # Cambia este número para ajustar tamaño
-            # Opciones:
-            # width=300  -> Logo pequeño
-            # width=400  -> Logo mediano
-            # width=500  -> Logo grande
-            # width=600  -> Logo muy grande
-            # use_container_width=True -> Logo ocupa todo el ancho de la columna
-        else:
-            # Fallback al texto si no encuentra la imagen
-            st.markdown("""
-            <div style="text-align: center; margin-bottom: 0.5rem; margin-top: -0.25rem;">
-                <h1 style="
-                    background: linear-gradient(90deg, #2E8B57, #98FB98);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    background-clip: text;
-                    font-size: 2.5rem;
-                    font-weight: bold;
-                    margin: 0;
-                ">🌱 BucaraFlora - Identificador de Plantas IA</h1>
-            </div>
-            """, unsafe_allow_html=True)
+    # Logo centrado
+    if logo_path.exists():
+        # Opción con CSS - Centrado perfecto
+        with open(logo_path, "rb") as file:
+            logo_base64 = base64.b64encode(file.read()).decode()
+        st.markdown(f"""
+        <div style="display: flex; justify-content: center; align-items: center; margin: 0.5rem 0;">
+            <img src="data:image/png;base64,{logo_base64}" 
+                 style="width: 400px; height: auto;" />
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        # Fallback: Título con texto si no hay logo
+        st.markdown('''
+        <div style="text-align: center; margin-bottom: 0.5rem; margin-top: -0.25rem;">
+            <h1 style="
+                background: linear-gradient(90deg, #2E8B57, #98FB98);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                font-size: 2.5rem;
+                font-weight: bold;
+                margin: 0;
+            ">🌱 BucaraFlora - Identificador de Plantas IA</h1>
+        </div>
+        ''', unsafe_allow_html=True)
     
     # Texto descriptivo centrado - SIN ESPACIO EXTRA
     st.markdown("""

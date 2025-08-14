@@ -221,7 +221,7 @@ def pantalla_splash():
     <div style="
         text-align: center; 
         margin-top: -3rem; 
-        padding: 0.1rem;
+        padding: 0rem;
         border-top: 1px solid rgba(238, 238, 238, 0.8);
         color: #666;
         font-size: 0.9rem;

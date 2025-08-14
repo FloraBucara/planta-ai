@@ -2,7 +2,7 @@ import streamlit as st
 from pathlib import Path
 
 def mostrar_header():
-    """Muestra el header principal de la aplicación con logo"""
+    """Muestra el header principal de la aplicación con logo - MEJORADO"""
     # Intentar cargar logo local
     logo_path = Path("assets/logo.png")  # Ajusta el nombre si es diferente
     
@@ -12,15 +12,32 @@ def mostrar_header():
             st.image(str(logo_path), use_container_width=True)
         else:
             # Fallback al texto si no encuentra la imagen
-            st.markdown('<h1 class="main-header">🌱 BucaraFlora - Identificador de Plantas IA</h1>', unsafe_allow_html=True)
+            st.markdown("""
+            <div style="text-align: center; margin-bottom: 1rem;">
+                <h1 style="
+                    background: linear-gradient(90deg, #2E8B57, #98FB98);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                    font-size: 2.5rem;
+                    font-weight: bold;
+                    margin: 0;
+                ">🌱 BucaraFlora - Identificador de Plantas IA</h1>
+            </div>
+            """, unsafe_allow_html=True)
     
-    st.markdown("**Sube una foto de tu planta y descubre qué especie es**", unsafe_allow_html=True)
+    # Texto descriptivo centrado - SIN ESPACIO EXTRA
+    st.markdown("""
+    <div style="text-align: center; margin-bottom: 1.5rem;">
+        <p style="font-size: 1.1rem; color: #666; margin: 0;">
+            <strong>Sube una foto de tu planta y descubre qué especie es</strong>
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
     
-    # Mostrar solo el estado de la base de datos
-    if st.session_state.get('firestore_initialized'):
-        st.success("✅ Sistema conectado y listo")
-    else:
-        st.warning("⚠️ Algunas funciones pueden estar limitadas")
+    # QUITAR COMPLETAMENTE EL ESTADO DE FIREBASE
+    # Solo mostrar si hay algún error crítico, pero sin el mensaje de éxito
+    pass
         
 def mostrar_info_planta_completa(info_planta):
     """

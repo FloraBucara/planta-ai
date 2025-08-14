@@ -11,7 +11,7 @@ def get_base64_image(image_path):
         return None
 
 def aplicar_estilos():
-    """Aplica estilos CSS limpios sin conflictos"""
+    """Aplica todos los estilos CSS de la aplicación incluyendo fondo - MEJORADO"""
     
     # Obtener imagen de fondo
     fondo_path = Path("assets/fondo.png")
@@ -28,60 +28,55 @@ def aplicar_estilos():
             background-repeat: no-repeat;
             background-attachment: fixed;
         }}
+        
+        /* Hacer los contenedores semi-transparentes para que se vea el fondo */
+        .main .block-container {{
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 1.5rem 2rem; /* Reducir padding superior */
+            backdrop-filter: blur(10px);
+        }}
+        
+        /* Sidebar con transparencia */
+        section[data-testid="stSidebar"] > div {{
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }}
         """
     
     st.markdown(f"""
     <style>
         {css_fondo}
         
-        /* Contenedor principal transparente */
+        /* REDUCIR ESPACIOS GENERALES */
         .main .block-container {{
-            background-color: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 2rem;
-            backdrop-filter: blur(10px);
-            margin-top: 1rem;
+            padding-top: 1rem !important; /* Menos espacio arriba */
+            padding-bottom: 1rem !important;
         }}
         
-        /* Header principal */
+        /* Títulos sin margen extra */
+        h1, h2, h3 {{
+            margin-top: 0 !important;
+            margin-bottom: 1rem !important;
+        }}
+        
+        /* Reducir espacios entre elementos */
+        .stMarkdown {{
+            margin-bottom: 0.5rem;
+        }}
+        
         .main-header {{
             text-align: center;
-            padding: 1rem 0;
+            padding: 0.5rem 0; /* Reducir padding */
             background: linear-gradient(90deg, #2E8B57, #98FB98);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             font-size: 2.5rem;
             font-weight: bold;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem; /* Reducir margen */
         }}
         
-        /* Mejorar botones */
-        .stButton > button {{
-            width: 100% !important;
-            height: 60px !important;
-            font-size: 1.2rem !important;
-            font-weight: 600 !important;
-            border-radius: 12px !important;
-            border: 2px solid #2e7d32 !important;
-            background: linear-gradient(135deg, #4caf50, #2e7d32) !important;
-            color: white !important;
-            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3) !important;
-            transition: all 0.3s ease !important;
-        }}
-        
-        .stButton > button:hover {{
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4) !important;
-            background: linear-gradient(135deg, #66bb6a, #388e3c) !important;
-        }}
-        
-        .stButton > button:active {{
-            transform: translateY(0px) !important;
-            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3) !important;
-        }}
-        
-        /* Cards para información */
         .prediction-card {{
             background: rgba(248, 249, 250, 0.95);
             padding: 1.5rem;
@@ -112,7 +107,6 @@ def aplicar_estilos():
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }}
         
-        /* Mensajes del sistema */
         .debug-info {{
             background: rgba(255, 243, 205, 0.95);
             color: #856404;
@@ -141,7 +135,25 @@ def aplicar_estilos():
             margin: 1rem 0;
         }}
         
-        /* Barra de confianza */
+        .firestore-status {{
+            padding: 0.5rem;
+            border-radius: 5px;
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+        }}
+        
+        .firestore-connected {{
+            background: rgba(212, 237, 218, 0.95);
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }}
+        
+        .firestore-disconnected {{
+            background: rgba(248, 215, 218, 0.95);
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }}
+        
         .confidence-bar {{
             background: rgba(233, 236, 239, 0.95);
             border-radius: 10px;
@@ -156,76 +168,42 @@ def aplicar_estilos():
             transition: width 0.3s ease;
         }}
         
-        /* Sidebar transparente */
-        section[data-testid="stSidebar"] > div {{
-            background-color: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+        .camera-info {{
+            background: rgba(227, 242, 253, 0.95);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+            margin: 1rem 0;
         }}
         
-        /* Ocultar elementos problemáticos */
-        .stDeployButton {{
-            display: none !important;
+        .upload-info {{
+            background: rgba(243, 229, 245, 0.95);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #9c27b0;
+            margin: 1rem 0;
         }}
         
-        .stDecoration {{
-            display: none !important;
-        }}
-        
-        .stToolbar {{
-            display: none !important;
-        }}
-        
-        .stStatusWidget {{
-            display: none !important;
-        }}
-        
-        /* Responsivo */
-        @media (max-width: 768px) {{
-            .main-header {{
-                font-size: 1.8rem !important;
-            }}
-            
-            .stButton > button {{
-                height: 50px !important;
-                font-size: 1rem !important;
-            }}
-            
-            .main .block-container {{
-                padding: 1rem !important;
-            }}
-        }}
-        
-        /* Efectos especiales */
-        .glass-effect {{
-            background: rgba(255, 255, 255, 0.1) !important;
-            backdrop-filter: blur(20px) !important;
-            border-radius: 16px !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37) !important;
-        }}
-        
-        /* Animaciones */
-        @keyframes fadeIn {{
-            from {{ opacity: 0; transform: translateY(20px); }}
-            to {{ opacity: 1; transform: translateY(0); }}
-        }}
-        
-        .fade-in {{
-            animation: fadeIn 0.6s ease-out !important;
-        }}
-        
-        /* Tabs mejorados */
+        /* Reducir espacios en tabs */
         .stTabs [data-baseweb="tab-list"] {{
-            gap: 2rem;
+            gap: 1rem; /* Reducir gap */
+            margin-bottom: 0.5rem;
         }}
         
         .stTabs [data-baseweb="tab"] {{
-            padding: 1rem 2rem;
+            padding: 0.75rem 1.5rem; /* Reducir padding */
             border-radius: 8px 8px 0 0;
+        }}
+        
+        /* Reducir espacios en columnas */
+        .stColumns > div {{
+            padding: 0 0.25rem; /* Reducir padding lateral */
+        }}
+        
+        /* Botones más compactos */
+        .stButton > button {{
+            padding: 0.5rem 1rem;
+            margin: 0.25rem 0;
         }}
     </style>
     """, unsafe_allow_html=True)
-
-def aplicar_clase_home_static():
-    """Esta función ya no es necesaria en la versión limpia"""
-    pass

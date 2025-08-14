@@ -1,7 +1,7 @@
 import streamlit as st
 
 def pantalla_seleccion_metodo():
-    """Pantalla para seleccionar método de entrada"""
+    """Pantalla para seleccionar método de entrada - MEJORADA SIN ESPACIOS"""
     # Mostrar mensajes si existen
     if st.session_state.get('mensaje_inicio') == "no_identificada":
         st.warning("😔 Lo sentimos, no pudimos identificar tu planta anterior.")
@@ -9,9 +9,14 @@ def pantalla_seleccion_metodo():
         # Limpiar el mensaje después de mostrarlo
         st.session_state.mensaje_inicio = None
     
-    st.markdown("### 📸 ¿Cómo quieres agregar tu planta?")
+    # Título centrado - SIN ESPACIO EXTRA
+    st.markdown("""
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <h3 style="margin-bottom: 0;">📸 ¿Cómo quieres agregar tu planta?</h3>
+    </div>
+    """, unsafe_allow_html=True)
     
-    # Botones verticales
+    # Botones centrados - SIN ESPACIOS EXTRA
     col1, col2, col3 = st.columns([1, 2, 1])
     
     with col2:
@@ -25,7 +30,8 @@ def pantalla_seleccion_metodo():
             st.session_state.metodo_seleccionado = "archivo"
             st.rerun()
         
-        st.markdown("<br>", unsafe_allow_html=True)  # Espacio
+        # Pequeño espaciado entre botones
+        st.markdown("<div style='margin: 1rem 0;'></div>", unsafe_allow_html=True)
         
         # Botón 2: Tomar foto
         if st.button(

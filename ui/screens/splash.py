@@ -132,7 +132,7 @@ def pantalla_splash():
         
         # Verificar si hay URL del servidor
         if SERVER_URL:
-            # Mostrar información del servidor
+            # Mostrar información del servidor configurado - SIMPLIFICADO
             st.markdown(f"""
             <div style="
                 background: rgba(232, 245, 233, 0.95);
@@ -143,10 +143,7 @@ def pantalla_splash():
                 backdrop-filter: blur(5px);
                 text-align: center;
             ">
-                <h4 style="color: #155724; margin-bottom: 1rem;">
-                    🌐 Servidor de Procesamiento
-                </h4>
-                 <p style="
+                <p style="
                     color: #333;
                     margin-bottom: 1rem;
                     font-family: monospace;
@@ -162,24 +159,88 @@ def pantalla_splash():
                 </p>
             </div>
             """, unsafe_allow_html=True)
-    
-            # BOTÓN LINK DIRECTO (más confiable que JavaScript)
-            st.link_button(
-                "🔗 Abrir Servidor y Autorizar",
-                SERVER_URL,
-                use_container_width=True,
-                type="primary"
-            )
-    
-            # Espaciado
-            st.markdown("<br>", unsafe_allow_html=True)
-    
-            # Botón para continuar
+            
+            # Botón principal que abre servidor Y va al home
             if st.button(
-                "🚀 Continuar al Sistema",
+                "🔗 Abrir Servidor y Autorizar",
+                type="primary",
+                use_container_width=True,
+                key="btn_open_server"
+            ):
+                # Método 1: JavaScript mejorado con timeout
+                st.markdown(f"""
+                <script>
+                    setTimeout(function() {{
+                        window.open('{SERVER_URL}', '_blank', 'noopener,noreferrer');
+                    }}, 100);
+                </script>
+                """, unsafe_allow_html=True)
+                
+                # INMEDIATAMENTE ir al home
+                st.session_state.splash_completado = True
+                st.rerun()
+        
+        else:
+            # NO hay URL configurada
+            st.error("❌ Servidor no configurado")
+            
+            st.markdown("""
+            <div style="
+                background: rgba(248, 215, 218, 0.95);
+                padding: 1.5rem;
+                border-radius: 10px;
+                border-left: 4px solid #dc3545;
+                margin: 1rem 0;
+                backdrop-filter: blur(5px);
+                text-align: center;
+            ">
+                <h4 style="color: #721c24; margin-bottom: 1rem;">
+                    🔧 Configuración Requerida
+                </h4>
+                <p style="color: #721c24; margin-bottom: 1rem;">
+                    Configura SERVER_URL en <code>utils/api_client.py</code>
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Botón para continuar en modo demo
+            if st.button(
+                "🔄 Continuar en Modo Demo",
                 type="secondary",
                 use_container_width=True,
-                key="btn_continue"
+                key="btn_demo"
             ):
                 st.session_state.splash_completado = True
                 st.rerun()
+    
+    # Footer con información adicional - CON FONDO CONSISTENTE
+    st.markdown("""
+    <div style="
+        text-align: center; 
+        margin-top: 3rem; 
+        padding: 2rem;
+        border-top: 1px solid rgba(238, 238, 238, 0.8);
+        color: #666;
+        font-size: 0.9rem;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 10px;
+        backdrop-filter: blur(5px);
+        text-shadow: 
+            0.5px 0.5px 1px white,
+            -0.5px -0.5px 1px white;
+    ">
+        <p>🎓 Desarrollado como proyecto de grado universitario</p>
+        <p>🌱 Contribuyendo a la conservación de la biodiversidad colombiana</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+def verificar_estado_servidor():
+    """Verifica si el servidor está disponible y autorizado"""
+    try:
+        from utils.api_client import servidor_disponible
+        if servidor_disponible():
+            return "conectado"
+        else:
+            return "desconectado"
+    except:
+        return "error"

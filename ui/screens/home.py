@@ -1,153 +1,116 @@
 import streamlit as st
 
 def pantalla_seleccion_metodo():
-    """Pantalla para seleccionar método de entrada - CENTRADA Y LIMPIA"""
+    """Pantalla REALMENTE estática - sin scroll"""
     
-    # CSS para centrado perfecto y bloqueo de scroll
+    # Inyectar CSS y JavaScript de forma más agresiva
     st.markdown("""
     <style>
-        /* BLOQUEAR SCROLL COMPLETAMENTE */
-        html, body {
-            overflow: hidden !important;
+        /* FORZAR OVERRIDE DE TODOS LOS ESTILOS */
+        html, body, #root, .stApp, .main, .block-container {
             height: 100vh !important;
+            max-height: 100vh !important;
+            overflow: hidden !important;
             position: fixed !important;
             width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
         
-        .stApp {
-            overflow: hidden !important;
-            height: 100vh !important;
-            position: fixed !important;
-            width: 100% !important;
-        }
-        
-        .main {
-            overflow: hidden !important;
-            height: 100vh !important;
-            position: fixed !important;
-            width: 100% !important;
-        }
-        
-        /* Ocultar elementos de Streamlit */
-        .stDeployButton { display: none !important; }
-        .stDecoration { display: none !important; }
-        .stToolbar { display: none !important; }
-        .stStatusWidget { display: none !important; }
-        
-        /* Ocultar scrollbars completamente */
-        ::-webkit-scrollbar {
-            width: 0px !important;
-            background: transparent !important;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: transparent !important;
-        }
-        
-        * {
-            scrollbar-width: none !important;
-            -ms-overflow-style: none !important;
-        }
-        
-        /* Centrar todo el contenido */
         .main .block-container {
+            padding: 1rem !important;
             display: flex !important;
             flex-direction: column !important;
             justify-content: center !important;
             align-items: center !important;
-            height: 100vh !important;
             text-align: center !important;
-            padding: 2rem !important;
-            overflow: hidden !important;
-            position: fixed !important;
-            width: 100% !important;
-            left: 0 !important;
-            top: 0 !important;
         }
         
-        /* Centrar mensajes */
+        /* Ocultar scrollbars */
+        ::-webkit-scrollbar { width: 0 !important; }
+        * { scrollbar-width: none !important; }
+        
+        /* Ocultar elementos de Streamlit */
+        .stDeployButton, .stDecoration, .stToolbar, .stStatusWidget {
+            display: none !important;
+        }
+        
+        /* Estilos del contenido */
+        .main h3 {
+            color: #2e7d32 !important;
+            font-size: 1.8rem !important;
+            margin: 1rem 0 2rem 0 !important;
+        }
+        
         .stAlert {
-            width: 100% !important;
             max-width: 600px !important;
             margin: 0 auto 1rem auto !important;
         }
         
-        /* Centrar título */
-        .main h3 {
-            text-align: center !important;
-            color: #2e7d32 !important;
-            font-size: 1.8rem !important;
-            margin-bottom: 2rem !important;
-        }
-        
-        /* Prevenir interacciones de scroll */
-        body, html {
-            touch-action: none !important;
-            -webkit-touch-callout: none !important;
-            -webkit-user-select: none !important;
-            -khtml-user-select: none !important;
-            -moz-user-select: none !important;
-            -ms-user-select: none !important;
-            user-select: none !important;
-        }
-        
-        /* Permitir selección solo en botones */
-        .stButton, .stSelectbox, .stTextInput {
-            -webkit-user-select: auto !important;
-            -moz-user-select: auto !important;
-            -ms-user-select: auto !important;
-            user-select: auto !important;
-        }
-        
-        /* Responsivo para móviles */
+        /* Responsivo */
         @media (max-width: 768px) {
-            .main h3 {
-                font-size: 1.5rem !important;
-            }
-            
-            .main .block-container {
-                padding: 1rem !important;
-            }
+            .main h3 { font-size: 1.5rem !important; }
+            .main .block-container { padding: 0.5rem !important; }
         }
     </style>
     """, unsafe_allow_html=True)
     
-    # JavaScript adicional para asegurar el bloqueo
+    # JavaScript más agresivo para bloquear scroll
     st.markdown("""
     <script>
-        // Bloquear scroll con JavaScript
-        document.body.style.overflow = 'hidden';
-        document.documentElement.style.overflow = 'hidden';
+        // Función para bloquear scroll
+        function bloquearScroll() {
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden';
+            document.body.style.position = 'fixed';
+            document.body.style.width = '100%';
+            document.body.style.height = '100%';
+        }
         
-        // Prevenir scroll con eventos
-        window.addEventListener('scroll', function(e) {
+        // Ejecutar inmediatamente
+        bloquearScroll();
+        
+        // Prevenir todos los tipos de scroll
+        const preventDefault = (e) => {
             e.preventDefault();
             e.stopPropagation();
             return false;
+        };
+        
+        // Eventos de scroll
+        window.addEventListener('scroll', preventDefault, { passive: false });
+        window.addEventListener('wheel', preventDefault, { passive: false });
+        window.addEventListener('touchmove', preventDefault, { passive: false });
+        window.addEventListener('keydown', (e) => {
+            // Bloquear teclas de navegación
+            if ([32, 33, 34, 35, 36, 37, 38, 39, 40].includes(e.keyCode)) {
+                preventDefault(e);
+            }
         });
         
-        // Prevenir scroll con touch
-        document.addEventListener('touchmove', function(e) {
-            e.preventDefault();
-        }, { passive: false });
+        // Re-aplicar cada 100ms para asegurar
+        setInterval(bloquearScroll, 100);
         
-        // Prevenir scroll con wheel
-        document.addEventListener('wheel', function(e) {
-            e.preventDefault();
-        }, { passive: false });
+        // Observer para cambios en el DOM
+        const observer = new MutationObserver(bloquearScroll);
+        observer.observe(document.body, { 
+            childList: true, 
+            subtree: true, 
+            attributes: true 
+        });
     </script>
     """, unsafe_allow_html=True)
     
-    # Mostrar mensajes si existen (centrados)
+    # Mostrar mensajes si existen
     if st.session_state.get('mensaje_inicio') == "no_identificada":
         st.warning("😔 Lo sentimos, no pudimos identificar tu planta anterior.")
         st.info("💡 **Sugerencia:** Intenta con otra foto desde un ángulo diferente, asegurándote de que se vean claramente las hojas o flores.")
         st.session_state.mensaje_inicio = None
     
-    # Título centrado
+    # Título
     st.markdown("### 📸 ¿Cómo quieres agregar tu planta?")
     
-    # Contenedor para botones centrados
+    # Contenedor para botones
     col1, col2, col3 = st.columns([1, 3, 1])
     
     with col2:
@@ -158,6 +121,14 @@ def pantalla_seleccion_metodo():
             type="primary",
             key="btn_upload"
         ):
+            # Restaurar scroll antes de cambiar pantalla
+            st.markdown("""
+            <script>
+                document.body.style.overflow = 'auto';
+                document.documentElement.style.overflow = 'auto';
+                document.body.style.position = 'relative';
+            </script>
+            """, unsafe_allow_html=True)
             st.session_state.metodo_seleccionado = "archivo"
             st.rerun()
         
@@ -171,5 +142,13 @@ def pantalla_seleccion_metodo():
             type="primary",
             key="btn_camera"
         ):
+            # Restaurar scroll antes de cambiar pantalla
+            st.markdown("""
+            <script>
+                document.body.style.overflow = 'auto';
+                document.documentElement.style.overflow = 'auto';
+                document.body.style.position = 'relative';
+            </script>
+            """, unsafe_allow_html=True)
             st.session_state.metodo_seleccionado = "camara"
             st.rerun()

@@ -31,14 +31,22 @@ def mostrar_header():
         """
         st.markdown(html_titulo, unsafe_allow_html=True)
     
-    # Texto descriptivo centrado - NEGRO CON CONTORNO BLANCO
+    # Texto descriptivo centrado - CONTORNO GRUESO
     html_descripcion = """
     <div style="text-align: center; margin-bottom: 1rem; margin-top: 1rem;">
         <p style="
             font-size: 1.1rem; 
             color: #000000; 
             margin: 0;
-            text-shadow: 1px 1px 2px white, -1px -1px 2px white, 1px -1px 2px white, -1px 1px 2px white;
+            text-shadow: 
+                2px 2px 0 white,
+                -2px -2px 0 white,
+                2px -2px 0 white,
+                -2px 2px 0 white,
+                0 2px 0 white,
+                0 -2px 0 white,
+                2px 0 0 white,
+                -2px 0 0 white;
             font-weight: bold;
         ">
             <strong>Sube una foto de tu planta y descubre qué especie es</strong>

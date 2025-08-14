@@ -3,49 +3,43 @@ from pathlib import Path
 import base64  # Agregado para la opción de centrado con CSS
 
 def mostrar_header():
-    """Muestra el header principal de la aplicación con logo - MEJORADO"""
+    """Muestra el header principal de la aplicación con logo - CORREGIDO"""
     # Intentar cargar logo local
-    logo_path = Path("assets/logo.png")  # Ajusta el nombre si es diferente
+    logo_path = Path("assets/logo.png")
     
     # Logo centrado
     if logo_path.exists():
         # Opción con CSS - Centrado perfecto
         with open(logo_path, "rb") as file:
             logo_base64 = base64.b64encode(file.read()).decode()
-        st.markdown(f"""
-        <div style="display: flex; justify-content: center; align-items: center; margin: 0.5rem 0;">
-            <img src="data:image/png;base64,{logo_base64}" 
-                 style="width: 300px; height: auto;" />
+        
+        html_logo = f"""
+        <div style="display: flex; justify-content: center; align-items: center; margin: -0.5rem 0 0.25rem 0;">
+            <img src="data:image/png;base64,{logo_base64}" style="width: 400px; height: auto;" />
         </div>
-        """, unsafe_allow_html=True)
+        """
+        # ↑↑↑ AQUÍ CAMBIAS EL TAMAÑO: width: 400px ↑↑↑
+        st.markdown(html_logo, unsafe_allow_html=True)
     else:
         # Fallback: Título con texto si no hay logo
-        st.markdown('''
-        <div style="text-align: center; margin-bottom: 0.5rem; margin-top: -0.25rem;">
-            <h1 style="
-                background: linear-gradient(90deg, #2E8B57, #98FB98);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-clip: text;
-                font-size: 2.5rem;
-                font-weight: bold;
-                margin: 0;
-            ">🌱 BucaraFlora - Identificador de Plantas IA</h1>
+        html_titulo = """
+        <div style="text-align: center; margin: -0.5rem 0 0.25rem 0;">
+            <h1 style="background: linear-gradient(90deg, #2E8B57, #98FB98); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 2.5rem; font-weight: bold; margin: 0;">
+                🌱 BucaraFlora - Identificador de Plantas IA
+            </h1>
         </div>
-        ''', unsafe_allow_html=True)
+        """
+        st.markdown(html_titulo, unsafe_allow_html=True)
     
-    # Texto descriptivo centrado - SIN ESPACIO EXTRA
-    st.markdown("""
+    # Texto descriptivo centrado
+    html_descripcion = """
     <div style="text-align: center; margin-bottom: 1rem; margin-top: -0.5rem;">
         <p style="font-size: 1.1rem; color: #666; margin: 0;">
             <strong>Sube una foto de tu planta y descubre qué especie es</strong>
         </p>
     </div>
-    """, unsafe_allow_html=True)
-    
-    # QUITAR COMPLETAMENTE EL ESTADO DE FIREBASE
-    # Solo mostrar si hay algún error crítico, pero sin el mensaje de éxito
-    pass
+    """
+    st.markdown(html_descripcion, unsafe_allow_html=True)
         
 def mostrar_info_planta_completa(info_planta):
     """

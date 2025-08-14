@@ -48,9 +48,9 @@ def aplicar_estilos():
     <style>
         {css_fondo}
         
-        /* REDUCIR ESPACIOS GENERALES */
+        /* REDUCIR ESPACIOS GENERALES - MÁXIMO */
         .main .block-container {{
-            padding-top: 0rem !important; /* MUCHO menos espacio arriba */
+            padding-top: 0rem !important; /* SIN espacio arriba */
             padding-bottom: 1rem !important;
         }}
         
@@ -60,10 +60,10 @@ def aplicar_estilos():
             margin-bottom: 0.5rem !important; /* Aún menos margen */
         }}
         
-        /* NUEVOS ESTILOS PARA SUBIR EL LOGO AÚN MÁS */
+        /* NUEVOS ESTILOS PARA SUBIR EL LOGO AL MÁXIMO */
         .stImage {{
-            margin-top: -0.5rem !important; /* Subir imagen específicamente */
-            margin-bottom: 0.25rem !important;
+            margin-top: -1rem !important; /* Subir imagen al máximo */
+            margin-bottom: 0rem !important;
         }}
         
         /* Reducir espacios entre elementos */

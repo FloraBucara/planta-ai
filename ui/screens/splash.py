@@ -41,10 +41,10 @@ def pantalla_splash():
     st.markdown("""
         <div style="
             background: rgba(255, 243, 205, 0.95);
-            padding: 0.75rem;
+            padding: 0.90rem;
             border-radius: 8px;
             border-left: 3px solid #ffc107;
-            margin-bottom: -2rem;
+            margin-bottom: -3rem;
             backdrop-filter: blur(5px);
         ">
             <p style="

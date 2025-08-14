@@ -206,10 +206,26 @@ def aplicar_estilos():
             padding: 0 0.25rem; /* Reducir padding lateral */
         }}
         
-        /* Botones más compactos */
+        /* ESPACIOS DE BOTONES - BOTONES MÁS PEQUEÑOS EN ANCHO */
         .stButton > button {{
-            padding: 0.5rem 1rem;
-            margin: 0.25rem 0;
+            padding: 0.75rem 1rem !important; /* Padding interno del botón */
+            margin: 0.25rem 0 !important;     /* Margen arriba/abajo del botón */
+            border-radius: 8px !important;    /* Bordes redondeados */
+            width: 85% !important;             /* Botones 85% del ancho disponible */
+            max-width: 300px !important;      /* Máximo 300px de ancho */
         }}
+        
+        /* Centrar botones más pequeños */
+        .stButton {{
+            margin-bottom: 0.5rem !important; /* Espacio debajo de cada botón */
+            display: flex !important;
+            justify-content: center !important;
+        }}
+        
+        /* OPCIONES DE ANCHO DE BOTONES:
+           width: 70% → Botones muy estrechos
+           width: 85% → Botones medianos (actual)
+           width: 100% → Botones ancho completo
+        */
     </style>
     """, unsafe_allow_html=True)

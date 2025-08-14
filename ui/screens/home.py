@@ -9,15 +9,15 @@ def pantalla_seleccion_metodo():
         # Limpiar el mensaje después de mostrarlo
         st.session_state.mensaje_inicio = None
     
-    # Título centrado - SIN ESPACIO EXTRA
+    # Título centrado - TEXTO MODIFICADO
     st.markdown("""
-    <div style="text-align: center; margin-bottom: 2rem;">
-        <h3 style="margin-bottom: 0;">📸 ¿Cómo quieres agregar tu planta?</h3>
+    <div style="text-align: center; margin-bottom: 1rem;">
+        <h4 style="margin-bottom: 0; font-size: 1.25rem;">¿Cómo quieres agregar tu planta?</h4>
     </div>
     """, unsafe_allow_html=True)
     
-    # Botones centrados - SIN ESPACIOS EXTRA
-    col1, col2, col3 = st.columns([1, 2, 1])
+    # Botones centrados - ANCHO REDUCIDO
+    col1, col2, col3 = st.columns([1.5, 1.5, 1.5])  # Columnas más estrechas
     
     with col2:
         # Botón 1: Subir archivo
@@ -30,8 +30,13 @@ def pantalla_seleccion_metodo():
             st.session_state.metodo_seleccionado = "archivo"
             st.rerun()
         
-        # Pequeño espaciado entre botones
-        st.markdown("<div style='margin: 1rem 0;'></div>", unsafe_allow_html=True)
+        # AQUÍ CAMBIAS EL ESPACIO ENTRE BOTONES:
+        st.markdown("<div style='margin: 0.5rem 0;'></div>", unsafe_allow_html=True)
+        # Opciones de espaciado:
+        # margin: 0.25rem 0;  → Poco espacio
+        # margin: 0.5rem 0;   → Espacio normal (actual)
+        # margin: 1rem 0;     → Más espacio
+        # margin: 1.5rem 0;   → Mucho espacio
         
         # Botón 2: Tomar foto
         if st.button(

@@ -40,8 +40,6 @@ def pantalla_splash():
     # Texto explicativo del proyecto - CON FONDO CONSISTENTE
     st.markdown("""
         <div style="
-            text-align: center;                    # ← AGREGAR ESTA LÍNEA (centrar texto)
-            max-width: 500px;                      # ← AGREGAR ESTA LÍNEA (hacer más pequeña)
             background: rgba(255, 243, 205, 0.95);
             padding: 0.75rem;
             border-radius: 8px;

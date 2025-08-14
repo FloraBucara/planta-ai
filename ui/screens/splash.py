@@ -107,23 +107,6 @@ def pantalla_splash():
     </div>
     """, unsafe_allow_html=True)
     
-    # Información técnica opcional - REMOVIDA
-    # with st.expander("🔧 Información Técnica del Proyecto"):
-    #     st.markdown("""
-    #     **Tecnologías utilizadas:**
-    #     - 🤖 **Modelo:** MobileNetV2 con Transfer Learning
-    #     - ⚡ **Runtime:** ONNX Runtime para máximo rendimiento  
-    #     - 🐍 **Backend:** Python con FastAPI
-    #     - 🎨 **Frontend:** Streamlit
-    #     - 🗄️ **Base de datos:** Firebase Firestore
-    #     - 🌐 **Deployment:** Streamlit Cloud + ngrok
-    #     
-    #     **Métricas del modelo:**
-    #     - 📊 **Accuracy:** ~63% en 335 especies
-    #     - ⚡ **Velocidad:** ~20-50ms por predicción
-    #     - 📱 **Compatibilidad:** Python 3.13, multiplataforma
-    #     """)
-    
     # Botón de autorización centrado
     col1, col2, col3 = st.columns([1, 2, 1])
     
@@ -132,105 +115,140 @@ def pantalla_splash():
         
         # Verificar si hay URL del servidor
         if SERVER_URL:
-            # SOLUCIÓN: Enlace + JavaScript para mostrar botón
+            # PASO 1: Mostrar solo el enlace azul inicialmente
+            if not st.session_state.get('servidor_clicked', False):
+                # JavaScript para detectar clic y mostrar botón
+                st.markdown(f"""
+                <div style="text-align: center; margin: 1rem 0;">
+                    <a href="{SERVER_URL}" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       onclick="
+                           // Marcar que se hizo clic
+                           fetch('/', {{
+                               method: 'POST',
+                               headers: {{'Content-Type': 'application/json'}},
+                               body: JSON.stringify({{'action': 'servidor_clicked'}})
+                           }}).catch(() => {{}});
+                           
+                           // Forzar actualización de Streamlit después de un delay
+                           setTimeout(() => {{
+                               window.parent.postMessage({{
+                                   type: 'streamlit:setComponentValue',
+                                   value: 'clicked'
+                               }}, '*');
+                           }}, 500);
+                           
+                           return true;
+                       "
+                       style="
+                           display: inline-block;
+                           background: linear-gradient(135deg, #007bff, #0056b3);
+                           color: white;
+                           padding: 0.75rem 2rem;
+                           border-radius: 8px;
+                           text-decoration: none;
+                           font-weight: bold;
+                           font-size: 1.1rem;
+                           transition: all 0.3s ease;
+                           box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                           border: none;
+                           width: 80%;
+                           text-align: center;
+                           cursor: pointer;
+                       "
+                       onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.15)';"
+                       onmouseout="this.style.transform='translateY(0px)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)';">
+                        🔗 Abrir Servidor y Autorizar
+                    </a>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # Componente invisible para detectar el clic
+                clicked = st.button("", key="invisible_button", help="", type="secondary")
+                
+                # Botón temporal para simular el clic (mientras no funcione el JavaScript perfectamente)
+                st.markdown("<hr style='margin: 2rem 0;'>", unsafe_allow_html=True)
+                st.markdown("**⚠️ Si el enlace no funciona automáticamente:**", unsafe_allow_html=True)
+                if st.button("🔧 Marcar como abierto manualmente", key="manual_click", type="secondary"):
+                    st.session_state.servidor_clicked = True
+                    st.rerun()
             
-            # Enlace HTML que SÍ funciona + trigger para mostrar botón
-            st.markdown(f"""
-            <div style="text-align: center; margin: 1rem 0;">
-                <a href="{SERVER_URL}" 
-                   target="_blank" 
-                   rel="noopener noreferrer"
-                   onclick="
-                       document.getElementById('continue-section').style.display = 'block';
-                       return true;
-                   "
-                   style="
-                       display: inline-block;
-                       background: linear-gradient(135deg, #007bff, #0056b3);
-                       color: white;
-                       padding: 0.75rem 2rem;
-                       border-radius: 8px;
-                       text-decoration: none;
-                       font-weight: bold;
-                       font-size: 1.1rem;
-                       transition: all 0.3s ease;
-                       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-                       border: none;
-                       width: 80%;
-                       text-align: center;
-                       cursor: pointer;
-                   "
-                   onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.15)';"
-                   onmouseout="this.style.transform='translateY(0px)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)';">
-                    🔗 Abrir Servidor y Autorizar
-                </a>
-            </div>
-            
-            <!-- Sección que aparece después del clic -->
-            <div id="continue-section" style="display: none; text-align: center; margin: 1rem 0;">
+            # PASO 2: Mostrar mensaje + botón continuar DESPUÉS del clic
+            else:
+                # Mostrar el enlace nuevamente (por si necesita volver a abrirlo)
+                st.markdown(f"""
+                <div style="text-align: center; margin: 1rem 0;">
+                    <a href="{SERVER_URL}" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       style="
+                           display: inline-block;
+                           background: linear-gradient(135deg, #007bff, #0056b3);
+                           color: white;
+                           padding: 0.75rem 2rem;
+                           border-radius: 8px;
+                           text-decoration: none;
+                           font-weight: bold;
+                           font-size: 1.1rem;
+                           transition: all 0.3s ease;
+                           box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                           border: none;
+                           width: 80%;
+                           text-align: center;
+                           cursor: pointer;
+                       "
+                       onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.15)';"
+                       onmouseout="this.style.transform='translateY(0px)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)';">
+                        🔗 Reabrir Servidor (si es necesario)
+                    </a>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # Mensaje de confirmación
+                st.markdown("""
                 <div style="
                     background: rgba(212, 237, 218, 0.95);
-                    padding: 1rem;
+                    padding: 1.5rem;
                     border-radius: 8px;
                     border-left: 4px solid #28a745;
                     margin: 1rem 0;
                     backdrop-filter: blur(5px);
+                    text-align: center;
                 ">
+                    <h4 style="color: #155724; margin-bottom: 1rem;">
+                        ✅ Servidor Abierto
+                    </h4>
                     <p style="color: #155724; margin: 0; font-weight: bold;">
-                        ✅ Servidor abierto en nueva pestaña<br>
-                        💡 Autoriza el acceso y luego presiona 'Continuar'
+                        💡 <strong>Autoriza el acceso en la otra pestaña</strong><br>
+                        Una vez autorizado, presiona "Continuar al Sistema"
                     </p>
                 </div>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            # Botón que solo aparece después del clic en el enlace
-            # Usamos un contenedor vacío que se llena cuando se hace clic
-            continue_placeholder = st.empty()
-            
-            # JavaScript para activar el botón de Streamlit
-            st.markdown("""
-            <script>
-                // Observar cambios en el div continue-section
-                const observer = new MutationObserver(function(mutations) {
-                    mutations.forEach(function(mutation) {
-                        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-                            const continueSection = document.getElementById('continue-section');
-                            if (continueSection && continueSection.style.display === 'block') {
-                                // Enviar señal a Streamlit
-                                window.parent.postMessage({type: 'show_continue_button'}, '*');
-                            }
-                        }
-                    });
-                });
+                """, unsafe_allow_html=True)
                 
-                const continueSection = document.getElementById('continue-section');
-                if (continueSection) {
-                    observer.observe(continueSection, {attributes: true});
-                }
-            </script>
-            """, unsafe_allow_html=True)
-            
-            # Verificar si se debe mostrar el botón (usando session_state)
-            if st.session_state.get('servidor_clicked', False):
-                with continue_placeholder.container():
-                    if st.button(
-                        "✅ Continuar al Sistema",
-                        type="secondary",
-                        use_container_width=True,
-                        key="btn_continue_final"
-                    ):
-                        st.session_state.splash_completado = True
-                        st.rerun()
-            
-            # Botón temporal para activar (hasta que funcione el JavaScript)
-            if st.button("🔄 Mostrar botón continuar", key="temp_show", help="Temporal: presiona después de abrir el servidor"):
-                st.session_state.servidor_clicked = True
-                st.rerun()
+                # BOTÓN FINAL: Continuar al Sistema
+                if st.button(
+                    "✅ Continuar al Sistema",
+                    type="primary",
+                    use_container_width=True,
+                    key="btn_continue_final"
+                ):
+                    st.session_state.splash_completado = True
+                    st.rerun()
+                
+                # Botón para volver atrás si es necesario
+                if st.button(
+                    "← Volver al enlace",
+                    type="secondary",
+                    use_container_width=True,
+                    key="btn_back_to_link"
+                ):
+                    st.session_state.servidor_clicked = False
+                    st.rerun()
         
         else:
             # NO hay URL configurada
-            st.error("❌ Servidor no configurado")
+            st.error("⚠️ Servidor no configurado")
             
             st.markdown("""
             <div style="
@@ -261,7 +279,7 @@ def pantalla_splash():
                 st.session_state.splash_completado = True
                 st.rerun()
     
-    # Footer con información adicional - CON FONDO CONSISTENTE
+    # Footer con información adicional
     st.markdown("""
     <div style="
         text-align: center; 

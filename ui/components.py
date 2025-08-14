@@ -14,8 +14,8 @@ def mostrar_header():
             logo_base64 = base64.b64encode(file.read()).decode()
         
         html_logo = f"""
-        <div style="display: flex; justify-content: center; align-items: center; margin: -0.5rem 0 0.25rem 0;">
-            <img src="data:image/png;base64,{logo_base64}" style="width: 400px; height: auto;" />
+        <div style="display: flex; justify-content: center; align-items: center; margin: -1.5rem 0 0.25rem 0;">
+            <img src="data:image/png;base64,{logo_base64}" style="width: 300px; height: auto;" />
         </div>
         """
         # ↑↑↑ AQUÍ CAMBIAS EL TAMAÑO: width: 400px ↑↑↑

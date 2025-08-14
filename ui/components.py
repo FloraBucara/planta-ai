@@ -6,7 +6,7 @@ def mostrar_header():
     # Intentar cargar logo local
     logo_path = Path("assets/logo.png")  # Ajusta el nombre si es diferente
     
-    col1, col2, col3 = st.columns([1, 2, 1])
+    col1, col2, col3 = st.columns([2, 1, 2])
     with col2:
         if logo_path.exists():
             # AQUÍ PUEDES CONTROLAR EL TAMAÑO DEL LOGO

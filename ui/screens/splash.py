@@ -132,44 +132,50 @@ def pantalla_splash():
         
         # Verificar si hay URL del servidor
         if SERVER_URL:
-            # Botón para abrir servidor
-            if st.button(
-                "🔗 Abrir Servidor y Autorizar",
-                type="primary",
-                use_container_width=True,
-                key="btn_open_server_link"
-            ):
-                # Marcar que se hizo clic en abrir servidor
-                st.session_state.servidor_abierto = True
-                
-                # Abrir en nueva pestaña usando HTML + JavaScript
-                st.markdown(f"""
-                <script>
-                    window.open('{SERVER_URL}', '_blank', 'noopener,noreferrer');
-                </script>
-                """, unsafe_allow_html=True)
-                
-                # Mostrar mensaje de confirmación
-                st.success("✅ Servidor abierto en nueva pestaña")
-                st.info("Autoriza el acceso en la nueva pestaña y luego presiona 'Continuar'")
-                
-                # Recargar para mostrar el botón continuar
-                st.rerun()
+            # SOLUCIÓN SIMPLE Y CONFIABLE
             
-            # Solo mostrar el botón continuar SI ya se abrió el servidor
-            if st.session_state.get('servidor_abierto', False):
-                # Pequeño espaciado
-                st.markdown("<div style='margin: 1rem 0;'></div>", unsafe_allow_html=True)
-                
-                # Botón para ir al home (solo aparece después de abrir servidor)
-                if st.button(
-                    "✅ Continuar al Sistema",
-                    type="secondary",
-                    use_container_width=True,
-                    key="btn_continue_home"
-                ):
-                    st.session_state.splash_completado = True
-                    st.rerun()
+            # Enlace HTML que SÍ funciona para abrir nueva pestaña
+            st.markdown(f"""
+            <div style="text-align: center; margin: 1rem 0;">
+                <a href="{SERVER_URL}" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   style="
+                       display: inline-block;
+                       background: linear-gradient(135deg, #007bff, #0056b3);
+                       color: white;
+                       padding: 0.75rem 2rem;
+                       border-radius: 8px;
+                       text-decoration: none;
+                       font-weight: bold;
+                       font-size: 1.1rem;
+                       transition: all 0.3s ease;
+                       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                       border: none;
+                       width: 80%;
+                       text-align: center;
+                       cursor: pointer;
+                   "
+                   onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.15)';"
+                   onmouseout="this.style.transform='translateY(0px)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)';">
+                    🔗 Abrir Servidor y Autorizar
+                </a>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Espaciado
+            st.markdown("<div style='margin: 1rem 0;'></div>", unsafe_allow_html=True)
+            
+            # Botón para marcar que ya se abrió el servidor
+            if st.button(
+                "✅ Ya abrí el servidor - Continuar",
+                type="secondary",
+                use_container_width=True,
+                key="btn_continue_after_open",
+                help="Presiona después de hacer clic en el enlace de arriba"
+            ):
+                st.session_state.splash_completado = True
+                st.rerun()
         
         else:
             # NO hay URL configurada

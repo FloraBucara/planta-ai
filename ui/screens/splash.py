@@ -81,8 +81,8 @@ def pantalla_splash():
                    rel="noopener noreferrer"
                    style="
                        display: inline-block;
-                       background: linear-gradient(135deg, #007bff, #28a745);
-                       color: white;
+                       background: rgba(255, 243, 205, 0.95);
+                       color: #856404;
                        padding: 0.75rem 1rem;
                        border-radius: 8px;
                        text-decoration: none;
@@ -96,8 +96,8 @@ def pantalla_splash():
                        text-align: center;
                        cursor: pointer;
                    "
-                   onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.15)';"
-                   onmouseout="this.style.transform='translateY(0px)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)';">
+                   onmouseover="this.style.background='rgba(255, 235, 180, 0.95)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.15)';"
+                   onmouseout="this.style.background='rgba(255, 243, 205, 0.95)'; this.style.transform='translateY(0px)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)';">
                     🔗 Abrir Servidor y Autorizar
                 </a>
             </div>

@@ -75,15 +75,56 @@ def pantalla_prediccion_feedback():
         else:
             st.error(f"❌ Confianza: {porcentaje}%")
         
-        # Descripción - simplificada para móviles
+        # Descripción - con estilo mejorado
         if datos.get('descripcion') and info_planta.get('fuente') == 'firestore':
+            # CSS para mejorar el estilo del expander
+            st.markdown("""
+            <style>
+            .streamlit-expanderHeader {
+                background: white !important;
+                border: 2px solid #e0e0e0 !important;
+                border-radius: 10px !important;
+                text-align: center !important;
+            }
+            .streamlit-expanderHeader p {
+                text-shadow: 
+                    2px 2px 0 white,
+                    -2px -2px 0 white,
+                    2px -2px 0 white,
+                    -2px 2px 0 white,
+                    0 2px 0 white,
+                    0 -2px 0 white,
+                    2px 0 0 white,
+                    -2px 0 0 white !important;
+                font-weight: bold !important;
+                color: #000000 !important;
+                margin: 0 !important;
+            }
+            .streamlit-expanderContent {
+                background: white !important;
+                border: 1px solid #e0e0e0 !important;
+                border-radius: 0 0 10px 10px !important;
+                padding: 20px !important;
+                text-align: center !important;
+            }
+            </style>
+            """, unsafe_allow_html=True)
+            
             with st.expander("📝 Descripción"):
-                st.write(datos.get('descripcion', ''))
+                st.markdown(f"""
+                <div style="text-align: center; background: white; padding: 10px;">
+                    {datos.get('descripcion', '')}
+                </div>
+                """, unsafe_allow_html=True)
         
-        # Información taxonómica - simplificada para móviles
+        # Información taxonómica - con estilo mejorado
         if datos.get('taxonomia') and info_planta.get('fuente') == 'firestore':
             taxonomia = datos.get('taxonomia', {})
             with st.expander("🧬 Clasificación Taxonómica"):
+                st.markdown("""
+                <div style="text-align: center; background: white; padding: 10px;">
+                """, unsafe_allow_html=True)
+                
                 col1, col2 = st.columns(2)
                 with col1:
                     st.write(f"**Reino:** {taxonomia.get('reino', 'N/A')}")
@@ -93,6 +134,8 @@ def pantalla_prediccion_feedback():
                     st.write(f"**Orden:** {taxonomia.get('orden', 'N/A')}")
                     st.write(f"**Familia:** {taxonomia.get('familia', 'N/A')}")
                     st.write(f"**Género:** {taxonomia.get('genero', 'N/A')}")
+                
+                st.markdown("</div>", unsafe_allow_html=True)
         
         # Cerrar contenedor
         st.markdown("</div>", unsafe_allow_html=True)

@@ -177,13 +177,13 @@ def pantalla_prediccion_feedback():
             </div>
             """, unsafe_allow_html=True)
         
-        # CSS FORZADO con JavaScript para expanders
+        # CSS FORZADO con JavaScript para expanders - TONOS VERDES
         st.markdown("""
         <style>
         /* CSS básico */
         div[data-testid="stExpander"] summary {
-            background: #e8f4fd !important;
-            border: 2px solid #2196F3 !important;
+            background: #e8f5e8 !important;
+            border: 2px solid #4CAF50 !important;
             border-radius: 10px !important;
             text-align: center !important;
             padding: 12px !important;
@@ -197,8 +197,8 @@ def pantalla_prediccion_feedback():
             expanders.forEach(function(expander) {
                 const header = expander.querySelector('summary') || expander.querySelector('div:first-child');
                 if (header) {
-                    header.style.background = '#e8f4fd';
-                    header.style.border = '2px solid #2196F3';
+                    header.style.background = '#e8f5e8';
+                    header.style.border = '2px solid #4CAF50';
                     header.style.borderRadius = '10px';
                     header.style.textAlign = 'center';
                     header.style.padding = '12px';
@@ -207,7 +207,7 @@ def pantalla_prediccion_feedback():
                 const content = expander.querySelector('div:last-child');
                 if (content) {
                     content.style.background = 'white';
-                    content.style.border = '1px solid #2196F3';
+                    content.style.border = '1px solid #4CAF50';
                     content.style.borderTop = 'none';
                     content.style.borderRadius = '0 0 10px 10px';
                     content.style.padding = '20px';

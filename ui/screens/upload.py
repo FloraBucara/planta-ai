@@ -13,7 +13,8 @@ def pantalla_upload_archivo():
         "Selecciona una imagen",
         type=STREAMLIT_CONFIG["allowed_extensions"],
         help="Formatos soportados: JPG, JPEG, PNG. Máximo 10MB.",
-        key="file_uploader"
+        key="file_uploader",
+        label_visibility="collapsed"
     )
     
     if uploaded_file is not None:

@@ -24,29 +24,6 @@ def pantalla_upload_archivo():
     </style>
     """, unsafe_allow_html=True)
     
-    # Título con el mismo estilo del título principal
-    st.markdown("""
-    <div style="text-align: center; margin-bottom: 1rem; margin-top: 1rem;">
-        <p style="
-            font-size: 1.1rem; 
-            color: #000000; 
-            margin: 0;
-            text-shadow: 
-                2px 2px 0 white,
-                -2px -2px 0 white,
-                2px -2px 0 white,
-                -2px 2px 0 white,
-                0 2px 0 white,
-                0 -2px 0 white,
-                2px 0 0 white,
-                -2px 0 0 white;
-            font-weight: bold;
-        ">
-            <strong>Subir imagen desde tu dispositivo</strong>
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-    
     uploaded_file = st.file_uploader(
         "Selecciona una imagen",
         type=STREAMLIT_CONFIG["allowed_extensions"],

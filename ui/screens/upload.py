@@ -10,10 +10,15 @@ def pantalla_upload_archivo():
     # CSS para ocultar el nombre del archivo
     st.markdown("""
     <style>
-    .uploadedFile {
+    /* Método más agresivo - ocultar todo excepto el área de drop */
+    div[data-testid="stFileUploader"] > div:not(:first-child) {
         display: none !important;
     }
-    div[data-testid="stFileUploader"] > div > div > div > div {
+    /* Ocultar específicamente elementos de archivo subido */
+    .uploadedFile, 
+    [data-testid="fileUploadedFileName"],
+    div[data-testid="stFileUploader"] li,
+    div[data-testid="stFileUploader"] ul {
         display: none !important;
     }
     </style>

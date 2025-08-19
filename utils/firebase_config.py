@@ -322,6 +322,7 @@ class FirestoreManager:
             "nombre_cientifico": data.get('nombre_cientifico', nombre_original),
             "nombre_comun": data.get('nombre_comun', 'Nombre no disponible'),
             "descripcion": data.get('descripcion', ''),
+            "cuidados": data.get('cuidados', ''),  # ← AGREGADO: Campo cuidados
             "fecha_observacion": str(data.get('fecha_observacion', '')),
             "fuente": data.get('fuente', ''),
             "imagen_referencia": imagen_url,

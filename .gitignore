@@ -37,6 +37,7 @@ ENV/
 *firebase*admin*.json
 *service*account*.json
 *credentials*.json
+proyecto-firebase-key.json
 
 # ==================== MODELO BACKUPS ====================
 model/*tensorflow*backup*

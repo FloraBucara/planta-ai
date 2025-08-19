@@ -45,7 +45,7 @@ RETRAINING_CONFIG = {
 FIREBASE_CONFIG = {
     # CONFIGURACIÓN ACTUALIZADA PARA FIRESTORE
     "project_id": "bucaraflora-f0161",
-    "service_account_path": "bucaraflora-f0161-firebase-adminsdk-fbsvc-be20c93d27.json",
+    "service_account_path": "proyecto-firebase-key.json",
     "database_type": "firestore",  # ← FIRESTORE, no Realtime Database
     
     # COLECCIONES DE FIRESTORE

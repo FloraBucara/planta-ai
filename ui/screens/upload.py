@@ -43,6 +43,14 @@ def pantalla_upload_archivo():
             mostrar_imagen_y_procesar(imagen, "archivo")
         except Exception as e:
             st.error(f"❌ Error cargando imagen: {e}")
+    
+    # Botón para regresar al final
+    st.markdown("<br>", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if st.button("← Regresar a selección de método", key="back_from_upload_main", use_container_width=True):
+            st.session_state.metodo_seleccionado = None
+            st.rerun()
 
 def mostrar_imagen_y_procesar(imagen, fuente):
     """Muestra imagen y botón para procesar"""

@@ -41,7 +41,6 @@ def mostrar_imagen_y_procesar(imagen, fuente):
     from utils.session_manager import session_manager
     
     # Botón de análisis PRIMERO - antes de la imagen
-    st.markdown("### ✅ Imagen cargada correctamente")
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button(
@@ -56,7 +55,6 @@ def mostrar_imagen_y_procesar(imagen, fuente):
     
     # Mostrar imagen DESPUÉS del botón
     st.markdown("---")
-    st.markdown("### 📷 Previsualización")
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.image(imagen, caption=f"Tu planta (desde {fuente})", use_container_width=True)

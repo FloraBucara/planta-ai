@@ -60,15 +60,6 @@ def pantalla_prediccion_feedback():
         with st.expander("Ver tu foto original"):
             st.image(st.session_state.imagen_actual, caption="Foto que subiste", use_container_width=True)
         
-        # PARTE INFERIOR: Información
-        st.markdown("""
-        <div style="
-            background: white;
-            padding: 2rem;
-            margin-top: -4px;
-        ">
-        """, unsafe_allow_html=True)
-        
         # Nombre de la planta (centrado)
         st.markdown(f"""
         <div style="text-align: center; margin-bottom: 2rem;">
@@ -159,8 +150,8 @@ def pantalla_prediccion_feedback():
             </div>
             """, unsafe_allow_html=True)
         
-        # Cerrar divs
-        st.markdown("</div></div>", unsafe_allow_html=True)
+        # Cerrar div principal del card
+        st.markdown("</div>", unsafe_allow_html=True)
     
     # Botones de feedback
     st.markdown("<br>", unsafe_allow_html=True)

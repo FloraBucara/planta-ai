@@ -58,23 +58,27 @@ def mostrar_imagen_y_procesar(imagen, fuente):
     with col_imagen:
         st.image(imagen, caption=f"Tu planta (desde {fuente})", width=200)
     
-    # Columna derecha: Botones
+    # Columna derecha: Botones más pequeños
     with col_botones:
-        # Botón de identificar
-        if st.button(
-            "🔍 Identificar Planta",
-            type="primary",
-            use_container_width=True,
-            key="btn_analyze"
-        ):
-            # Guardar imagen y procesar
-            st.session_state.temp_imagen = imagen
-            procesar_identificacion()
+        # Sub-columnas para hacer botones más pequeños
+        _, col_btn, _ = st.columns([0.2, 1, 0.2])
         
-        # Botón de regresar
-        if st.button("← Regresar a selección de método", key="back_from_image", use_container_width=True):
-            st.session_state.metodo_seleccionado = None
-            st.rerun()
+        with col_btn:
+            # Botón de identificar
+            if st.button(
+                "🔍 Identificar Planta",
+                type="primary",
+                use_container_width=True,
+                key="btn_analyze"
+            ):
+                # Guardar imagen y procesar
+                st.session_state.temp_imagen = imagen
+                procesar_identificacion()
+            
+            # Botón de regresar
+            if st.button("← Regresar a selección de método", key="back_from_image", use_container_width=True):
+                st.session_state.metodo_seleccionado = None
+                st.rerun()
 
 def procesar_identificacion():
     """Función separada para procesar la identificación"""

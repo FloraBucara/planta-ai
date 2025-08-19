@@ -51,65 +51,30 @@ def mostrar_imagen_y_procesar(imagen, fuente):
     # Importar aquí para evitar circular imports
     from utils.session_manager import session_manager
     
-    # CSS más específico para forzar layout horizontal en móviles
-    st.markdown("""
-    <style>
-    div[data-testid="column"] {
-        width: auto !important;
-        flex: none !important;
-    }
-    div[data-testid="column"]:first-child {
-        width: 35% !important;
-        min-width: 35% !important;
-        max-width: 35% !important;
-    }
-    div[data-testid="column"]:last-child {
-        width: 65% !important;
-        min-width: 65% !important;
-        max-width: 65% !important;
-    }
-    .element-container:has(.stColumns) {
-        display: flex !important;
-        flex-direction: row !important;
-        width: 100% !important;
-    }
-    @media (max-width: 768px) {
-        div[data-testid="column"] {
-            display: inline-block !important;
-            vertical-align: top !important;
-        }
-    }
-    </style>
-    """, unsafe_allow_html=True)
+    # Botón de análisis PRIMERO - antes de la imagen
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if st.button(
+            "🔍 Identificar Planta",
+            type="primary",
+            use_container_width=True,
+            key="btn_analyze"
+        ):
+            # Guardar imagen y procesar
+            st.session_state.temp_imagen = imagen
+            procesar_identificacion()
     
-    # Layout con imagen más pequeña (1/3) y botones (2/3)
-    col_imagen, col_botones = st.columns([1, 2])
+    # Mostrar imagen DESPUÉS del botón - sin separador
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.image(imagen, caption=f"Tu planta (desde {fuente})", use_container_width=True)
     
-    # Columna izquierda: Imagen más pequeña
-    with col_imagen:
-        st.image(imagen, caption=f"Tu planta (desde {fuente})", width=200)
-    
-    # Columna derecha: Botones más pequeños
-    with col_botones:
-        # Sub-columnas para hacer botones más pequeños
-        _, col_btn, _ = st.columns([0.5, 1, 0.5])
-        
-        with col_btn:
-            # Botón de identificar
-            if st.button(
-                "🔍 Identificar Planta",
-                type="primary",
-                use_container_width=True,
-                key="btn_analyze"
-            ):
-                # Guardar imagen y procesar
-                st.session_state.temp_imagen = imagen
-                procesar_identificacion()
-            
-            # Botón de regresar
-            if st.button("← Regresar a selección de método", key="back_from_image", use_container_width=True):
-                st.session_state.metodo_seleccionado = None
-                st.rerun()
+    # Botón para regresar pegado a la imagen
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if st.button("← Regresar a selección de método", key="back_from_image", use_container_width=True):
+            st.session_state.metodo_seleccionado = None
+            st.rerun()
 
 def procesar_identificacion():
     """Función separada para procesar la identificación"""

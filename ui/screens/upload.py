@@ -28,7 +28,7 @@ def pantalla_upload_archivo():
     st.markdown("""
     <div style="text-align: center; margin-bottom: 1rem; margin-top: 1rem;">
         <p style="
-            font-size: 1rem; 
+            font-size: 1.1rem; 
             color: #000000; 
             margin: 0;
             text-shadow: 

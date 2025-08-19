@@ -180,6 +180,39 @@ def pantalla_prediccion_feedback():
             </div>
             """, unsafe_allow_html=True)
         
+        # CSS para botones de expander con fondo sólido
+        st.markdown("""
+        <style>
+        .streamlit-expanderHeader {
+            background: #f0f8ff !important;
+            border: 2px solid #e0e0e0 !important;
+            border-radius: 10px !important;
+            text-align: center !important;
+        }
+        .streamlit-expanderHeader p {
+            text-shadow: 
+                2px 2px 0 white,
+                -2px -2px 0 white,
+                2px -2px 0 white,
+                -2px 2px 0 white,
+                0 2px 0 white,
+                0 -2px 0 white,
+                2px 0 0 white,
+                -2px 0 0 white !important;
+            font-weight: bold !important;
+            color: #000000 !important;
+            margin: 0 !important;
+        }
+        .streamlit-expanderContent {
+            background: white !important;
+            border: 1px solid #e0e0e0 !important;
+            border-radius: 0 0 10px 10px !important;
+            padding: 20px !important;
+            text-align: center !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
         # Cuidados - nueva sección antes de taxonomía
         if datos.get('cuidados') and info_planta.get('fuente') == 'firestore':
             with st.expander("🌱 Cuidados"):

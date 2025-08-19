@@ -64,14 +64,8 @@ def mostrar_imagen_y_procesar(imagen, fuente):
             st.session_state.temp_imagen = imagen
             procesar_identificacion()
     
-    # Crear contenedor centrado manualmente
-    st.markdown("""
-    <div style="display: flex; justify-content: center; width: 100%;">
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Usar columnas más amplias para forzar centrado
-    _, col_center, _ = st.columns([2, 1, 2])
+    # Usar columnas extremas para centrar mejor
+    _, _, col_center, _, _ = st.columns([1, 1, 1, 1, 1])
     with col_center:
         st.image(imagen, caption=f"Tu planta (desde {fuente})", width=250)
     

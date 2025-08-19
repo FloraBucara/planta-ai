@@ -64,7 +64,16 @@ def mostrar_imagen_y_procesar(imagen, fuente):
             st.session_state.temp_imagen = imagen
             procesar_identificacion()
     
-    # Mostrar imagen DESPUÉS del botón - sin separador
+    # Mostrar imagen DESPUÉS del botón - sin separador y centrada
+    st.markdown("""
+    <style>
+    .stImage {
+        display: flex;
+        justify-content: center;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.image(imagen, caption=f"Tu planta (desde {fuente})", width=250)

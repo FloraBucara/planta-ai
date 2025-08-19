@@ -40,12 +40,8 @@ def mostrar_imagen_y_procesar(imagen, fuente):
     # Importar aquí para evitar circular imports
     from utils.session_manager import session_manager
     
-    # Mostrar imagen centrada
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.image(imagen, caption=f"Tu planta (desde {fuente})", use_container_width=True)
-    
-    # Botón de análisis
+    # Botón de análisis PRIMERO - antes de la imagen
+    st.markdown("### ✅ Imagen cargada correctamente")
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button(
@@ -57,6 +53,13 @@ def mostrar_imagen_y_procesar(imagen, fuente):
             # Guardar imagen y procesar
             st.session_state.temp_imagen = imagen
             procesar_identificacion()
+    
+    # Mostrar imagen DESPUÉS del botón
+    st.markdown("---")
+    st.markdown("### 📷 Previsualización")
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.image(imagen, caption=f"Tu planta (desde {fuente})", use_container_width=True)
 
 def procesar_identificacion():
     """Función separada para procesar la identificación"""

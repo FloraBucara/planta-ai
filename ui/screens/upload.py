@@ -24,18 +24,26 @@ def pantalla_upload_archivo():
     </style>
     """, unsafe_allow_html=True)
     
-    # Título con estilo similar al de cámara
+    # Título con el mismo estilo del título principal
     st.markdown("""
-    <div style="
-        background: white;
-        border-radius: 15px;
-        padding: 10px 20px;
-        margin: 10px 0;
-        text-align: center;
-        border: 1px solid #e0e0e0;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    ">
-        <h4 style="margin: 0; color: #2e7d32;">Subir imagen desde tu dispositivo</h4>
+    <div style="text-align: center; margin-bottom: 1rem; margin-top: 1rem;">
+        <p style="
+            font-size: 1rem; 
+            color: #000000; 
+            margin: 0;
+            text-shadow: 
+                2px 2px 0 white,
+                -2px -2px 0 white,
+                2px -2px 0 white,
+                -2px 2px 0 white,
+                0 2px 0 white,
+                0 -2px 0 white,
+                2px 0 0 white,
+                -2px 0 0 white;
+            font-weight: bold;
+        ">
+            <strong>Subir imagen desde tu dispositivo</strong>
+        </p>
     </div>
     """, unsafe_allow_html=True)
     

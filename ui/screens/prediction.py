@@ -11,6 +11,9 @@ def pantalla_prediccion_feedback():
     info_planta = resultado.get("info_planta", {})
     datos = info_planta.get('datos', {})
     
+    # Debug - mostrar campos disponibles
+    st.write("DEBUG - Campos disponibles en datos:", list(datos.keys()) if datos else "No hay datos")
+    st.write("DEBUG - Fuente:", info_planta.get('fuente', 'No fuente'))
     
     # Crear un contenedor tipo card
     with st.container():

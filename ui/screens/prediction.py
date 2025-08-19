@@ -68,7 +68,7 @@ def pantalla_prediccion_feedback():
         st.markdown(f"""
         <div style="text-align: center; margin-bottom: 1rem; margin-top: 1rem;">
             <p style="
-                font-size: 1.2rem; 
+                font-size: 1.8rem; 
                 color: #000000; 
                 margin: 0;
                 text-shadow: 
@@ -228,7 +228,7 @@ def pantalla_prediccion_feedback():
     st.markdown("""
     <div style="text-align: center; margin-bottom: 1rem; margin-top: 1rem;">
         <p style="
-            font-size: 1.1rem; 
+            font-size: 1.6rem; 
             color: #000000; 
             margin: 0;
             text-shadow: 

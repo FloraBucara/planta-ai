@@ -177,49 +177,45 @@ def pantalla_prediccion_feedback():
             </div>
             """, unsafe_allow_html=True)
         
-        # CSS para botones de expander con fondo sólido - MÁS ESPECÍFICO
+        # CSS FORZADO con JavaScript para expanders
         st.markdown("""
         <style>
-        /* Estilos más específicos para expanders */
-        div[data-testid="stExpander"] > div:first-child {
+        /* CSS básico */
+        div[data-testid="stExpander"] summary {
             background: #e8f4fd !important;
             border: 2px solid #2196F3 !important;
             border-radius: 10px !important;
             text-align: center !important;
-            padding: 10px !important;
-        }
-        
-        div[data-testid="stExpander"] > div:first-child p {
-            text-shadow: 
-                2px 2px 0 white,
-                -2px -2px 0 white,
-                2px -2px 0 white,
-                -2px 2px 0 white,
-                0 2px 0 white,
-                0 -2px 0 white,
-                2px 0 0 white,
-                -2px 0 0 white !important;
-            font-weight: bold !important;
-            color: #000000 !important;
-            margin: 0 !important;
-        }
-        
-        div[data-testid="stExpander"] > div:last-child {
-            background: white !important;
-            border: 1px solid #2196F3 !important;
-            border-radius: 0 0 10px 10px !important;
-            border-top: none !important;
-            padding: 20px !important;
-            text-align: center !important;
-        }
-        
-        /* Alternativa con clases de streamlit */
-        .streamlit-expanderHeader,
-        [data-testid="stExpanderToggleIcon"] {
-            background: #e8f4fd !important;
-            border: 2px solid #2196F3 !important;
+            padding: 12px !important;
         }
         </style>
+        
+        <script>
+        setTimeout(function() {
+            // Buscar todos los expanders y aplicar estilos directamente
+            const expanders = document.querySelectorAll('[data-testid="stExpander"]');
+            expanders.forEach(function(expander) {
+                const header = expander.querySelector('summary') || expander.querySelector('div:first-child');
+                if (header) {
+                    header.style.background = '#e8f4fd';
+                    header.style.border = '2px solid #2196F3';
+                    header.style.borderRadius = '10px';
+                    header.style.textAlign = 'center';
+                    header.style.padding = '12px';
+                }
+                
+                const content = expander.querySelector('div:last-child');
+                if (content) {
+                    content.style.background = 'white';
+                    content.style.border = '1px solid #2196F3';
+                    content.style.borderTop = 'none';
+                    content.style.borderRadius = '0 0 10px 10px';
+                    content.style.padding = '20px';
+                    content.style.textAlign = 'center';
+                }
+            });
+        }, 100);
+        </script>
         """, unsafe_allow_html=True)
         
         # Cuidados - nueva sección antes de taxonomía

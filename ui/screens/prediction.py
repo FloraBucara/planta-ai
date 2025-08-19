@@ -204,21 +204,22 @@ def pantalla_prediccion_feedback():
         if datos.get('taxonomia') and info_planta.get('fuente') == 'firestore':
             taxonomia = datos.get('taxonomia', {})
             with st.expander("🧬 Clasificación Taxonómica"):
-                st.markdown("""
-                <div style="text-align: center; background: white; padding: 10px;">
+                st.markdown(f"""
+                <div style="text-align: center; background: white; padding: 20px; border-radius: 10px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div>
+                            <p><strong>Reino:</strong> {taxonomia.get('reino', 'N/A')}</p>
+                            <p><strong>Filo:</strong> {taxonomia.get('filo', 'N/A')}</p>
+                            <p><strong>Clase:</strong> {taxonomia.get('clase', 'N/A')}</p>
+                        </div>
+                        <div>
+                            <p><strong>Orden:</strong> {taxonomia.get('orden', 'N/A')}</p>
+                            <p><strong>Familia:</strong> {taxonomia.get('familia', 'N/A')}</p>
+                            <p><strong>Género:</strong> {taxonomia.get('genero', 'N/A')}</p>
+                        </div>
+                    </div>
+                </div>
                 """, unsafe_allow_html=True)
-                
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.write(f"**Reino:** {taxonomia.get('reino', 'N/A')}")
-                    st.write(f"**Filo:** {taxonomia.get('filo', 'N/A')}")
-                    st.write(f"**Clase:** {taxonomia.get('clase', 'N/A')}")
-                with col2:
-                    st.write(f"**Orden:** {taxonomia.get('orden', 'N/A')}")
-                    st.write(f"**Familia:** {taxonomia.get('familia', 'N/A')}")
-                    st.write(f"**Género:** {taxonomia.get('genero', 'N/A')}")
-                
-                st.markdown("</div>", unsafe_allow_html=True)
         
         # Cerrar contenedor
         st.markdown("</div>", unsafe_allow_html=True)

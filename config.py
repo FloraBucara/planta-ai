@@ -68,6 +68,7 @@ FIREBASE_CONFIG = {
             "nombre_cientifico",
             "nombre_comun", 
             "descripcion",
+            "cuidados",
             "imagen_url",
             "taxonomia"
         ],

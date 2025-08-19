@@ -60,9 +60,45 @@ def pantalla_prediccion_feedback():
         with st.expander("Ver tu foto original"):
             st.image(st.session_state.imagen_actual, caption="Foto que subiste", use_container_width=True)
         
-        # Nombre de la planta - simplificado para móviles
-        st.markdown(f"### 🌿 {datos.get('nombre_comun', 'Nombre no disponible')}")
-        st.markdown(f"*{datos.get('nombre_cientifico', 'N/A')}*")
+        # Nombre de la planta - con contorno blanco como el título principal
+        st.markdown(f"""
+        <div style="text-align: center; margin-bottom: 1rem;">
+            <h3 style="
+                color: #000000; 
+                margin: 0;
+                text-shadow: 
+                    2px 2px 0 white,
+                    -2px -2px 0 white,
+                    2px -2px 0 white,
+                    -2px 2px 0 white,
+                    0 2px 0 white,
+                    0 -2px 0 white,
+                    2px 0 0 white,
+                    -2px 0 0 white;
+                font-weight: bold;
+            ">
+                🌿 {datos.get('nombre_comun', 'Nombre no disponible')}
+            </h3>
+            <p style="
+                color: #000000; 
+                margin: 0.5rem 0;
+                font-size: 1.1rem;
+                font-style: italic;
+                text-shadow: 
+                    2px 2px 0 white,
+                    -2px -2px 0 white,
+                    2px -2px 0 white,
+                    -2px 2px 0 white,
+                    0 2px 0 white,
+                    0 -2px 0 white,
+                    2px 0 0 white,
+                    -2px 0 0 white;
+                font-weight: bold;
+            ">
+                {datos.get('nombre_cientifico', 'N/A')}
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
         
         # Indicador de confianza - simplificado para móviles
         confianza = resultado["confianza"]
@@ -140,10 +176,30 @@ def pantalla_prediccion_feedback():
         # Cerrar contenedor
         st.markdown("</div>", unsafe_allow_html=True)
     
-    # Botones de feedback - simplificados
-    st.markdown("### ¿Esta es tu planta?")
+    # Botones de feedback - con contorno blanco
+    st.markdown("""
+    <div style="text-align: center; margin: 1rem 0;">
+        <h3 style="
+            color: #000000; 
+            margin: 0;
+            text-shadow: 
+                2px 2px 0 white,
+                -2px -2px 0 white,
+                2px -2px 0 white,
+                -2px 2px 0 white,
+                0 2px 0 white,
+                0 -2px 0 white,
+                2px 0 0 white,
+                -2px 0 0 white;
+            font-weight: bold;
+        ">
+            ¿Esta es tu planta?
+        </h3>
+    </div>
+    """, unsafe_allow_html=True)
     
-    col1, col2 = st.columns(2)
+    # Centrar botones usando columnas más balanceadas
+    _, col1, col2, _ = st.columns([0.5, 1, 1, 0.5])
     
     with col1:
         if st.button(
@@ -152,10 +208,10 @@ def pantalla_prediccion_feedback():
                 use_container_width=True,
                 help="Confirmar que la identificación es correcta"
             ):
-                procesar_feedback_positivo(resultado)
-        
-        with col2:
-            if st.button(
+            procesar_feedback_positivo(resultado)
+    
+    with col2:
+        if st.button(
                 "❌ No, es incorrecta", 
                 type="secondary", 
                 use_container_width=True,

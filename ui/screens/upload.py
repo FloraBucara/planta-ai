@@ -107,7 +107,8 @@ def limpiar_sesion():
     
     # Limpiar todo de forma segura
     for key in ['session_id', 'imagen_actual', 'especies_descartadas', 
-                'intento_actual', 'resultado_actual', 'mostrar_top_especies']:
+                'intento_actual', 'resultado_actual', 'mostrar_top_especies',
+                'prediction_screen_loaded']:
         if key in st.session_state:
             if key == 'especies_descartadas':
                 st.session_state[key] = set()

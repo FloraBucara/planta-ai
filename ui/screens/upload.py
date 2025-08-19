@@ -61,7 +61,7 @@ def mostrar_imagen_y_procesar(imagen, fuente):
     # Columna derecha: Botones más pequeños
     with col_botones:
         # Sub-columnas para hacer botones más pequeños
-        _, col_btn, _ = st.columns([0.2, 1, 0.2])
+        _, col_btn, _ = st.columns([0.5, 1, 0.5])
         
         with col_btn:
             # Botón de identificar

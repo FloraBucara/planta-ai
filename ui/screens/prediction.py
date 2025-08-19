@@ -7,11 +7,25 @@ from urllib.parse import quote
 
 def pantalla_prediccion_feedback():
     """Pantalla de predicción con diseño tipo card moderno"""
-    # Forzar scroll hacia arriba al cargar la pantalla
+    # Forzar scroll hacia arriba usando componente Streamlit
+    if 'scroll_to_top' not in st.session_state:
+        st.session_state.scroll_to_top = True
+        st.rerun()
+    
+    # También intentar con HTML y CSS
     st.markdown(
         """
+        <style>
+        .main .block-container {
+            scroll-behavior: smooth;
+        }
+        </style>
+        <div id="top-anchor"></div>
         <script>
-        window.scrollTo(0, 0);
+        setTimeout(function() {
+            window.parent.document.querySelector('.main').scrollTop = 0;
+            document.getElementById('top-anchor').scrollIntoView();
+        }, 100);
         </script>
         """,
         unsafe_allow_html=True

@@ -180,16 +180,19 @@ def pantalla_prediccion_feedback():
             </div>
             """, unsafe_allow_html=True)
         
-        # CSS para botones de expander con fondo sólido
+        # CSS para botones de expander con fondo sólido - MÁS ESPECÍFICO
         st.markdown("""
         <style>
-        .streamlit-expanderHeader {
-            background: #f0f8ff !important;
-            border: 2px solid #e0e0e0 !important;
+        /* Estilos más específicos para expanders */
+        div[data-testid="stExpander"] > div:first-child {
+            background: #e8f4fd !important;
+            border: 2px solid #2196F3 !important;
             border-radius: 10px !important;
             text-align: center !important;
+            padding: 10px !important;
         }
-        .streamlit-expanderHeader p {
+        
+        div[data-testid="stExpander"] > div:first-child p {
             text-shadow: 
                 2px 2px 0 white,
                 -2px -2px 0 white,
@@ -203,12 +206,21 @@ def pantalla_prediccion_feedback():
             color: #000000 !important;
             margin: 0 !important;
         }
-        .streamlit-expanderContent {
+        
+        div[data-testid="stExpander"] > div:last-child {
             background: white !important;
-            border: 1px solid #e0e0e0 !important;
+            border: 1px solid #2196F3 !important;
             border-radius: 0 0 10px 10px !important;
+            border-top: none !important;
             padding: 20px !important;
             text-align: center !important;
+        }
+        
+        /* Alternativa con clases de streamlit */
+        .streamlit-expanderHeader,
+        [data-testid="stExpanderToggleIcon"] {
+            background: #e8f4fd !important;
+            border: 2px solid #2196F3 !important;
         }
         </style>
         """, unsafe_allow_html=True)

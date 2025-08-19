@@ -51,23 +51,33 @@ def mostrar_imagen_y_procesar(imagen, fuente):
     # Importar aquí para evitar circular imports
     from utils.session_manager import session_manager
     
-    # CSS para mantener layout horizontal en móviles
+    # CSS más específico para forzar layout horizontal en móviles
     st.markdown("""
     <style>
-    .stColumns {
-        display: flex !important;
-        flex-direction: row !important;
-    }
-    .stColumn {
+    div[data-testid="column"] {
+        width: auto !important;
         flex: none !important;
     }
-    .stColumn:first-child {
-        width: 33.33% !important;
-        max-width: 33.33% !important;
+    div[data-testid="column"]:first-child {
+        width: 35% !important;
+        min-width: 35% !important;
+        max-width: 35% !important;
     }
-    .stColumn:last-child {
-        width: 66.67% !important;
-        max-width: 66.67% !important;
+    div[data-testid="column"]:last-child {
+        width: 65% !important;
+        min-width: 65% !important;
+        max-width: 65% !important;
+    }
+    .element-container:has(.stColumns) {
+        display: flex !important;
+        flex-direction: row !important;
+        width: 100% !important;
+    }
+    @media (max-width: 768px) {
+        div[data-testid="column"] {
+            display: inline-block !important;
+            vertical-align: top !important;
+        }
     }
     </style>
     """, unsafe_allow_html=True)

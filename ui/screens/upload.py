@@ -69,7 +69,15 @@ def mostrar_imagen_y_procesar(imagen, fuente):
     with col2:
         st.image(imagen, caption=f"Tu planta (desde {fuente})", use_container_width=True)
     
-    # Botón para regresar pegado a la imagen
+    # Botón para regresar pegado a la imagen - con menos espacio
+    st.markdown("""
+    <style>
+    .stButton > button {
+        margin-top: -20px !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button("← Regresar a selección de método", key="back_from_image", use_container_width=True):

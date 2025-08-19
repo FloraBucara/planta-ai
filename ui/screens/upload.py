@@ -51,36 +51,69 @@ def mostrar_imagen_y_procesar(imagen, fuente):
     # Importar aquí para evitar circular imports
     from utils.session_manager import session_manager
     
-    # Layout horizontal: imagen a la izquierda, botones a la derecha
-    col_imagen, col_botones = st.columns([1, 1])
+    # CSS para layout horizontal responsive
+    st.markdown("""
+    <style>
+    .horizontal-layout {
+        display: flex !important;
+        gap: 20px;
+        align-items: flex-start;
+        flex-wrap: nowrap;
+    }
+    .image-container {
+        flex: 1;
+        max-width: 50%;
+    }
+    .buttons-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding-top: 20px;
+    }
+    @media (max-width: 768px) {
+        .horizontal-layout {
+            flex-wrap: nowrap !important;
+        }
+        .image-container {
+            max-width: 45%;
+        }
+        .buttons-container {
+            padding-top: 10px;
+        }
+    }
+    </style>
+    """, unsafe_allow_html=True)
     
-    # Columna izquierda: Imagen más pequeña
-    with col_imagen:
-        st.image(imagen, caption=f"Tu planta (desde {fuente})", use_container_width=True)
+    # Layout usando HTML personalizado para móviles
+    st.markdown('<div class="horizontal-layout">', unsafe_allow_html=True)
     
-    # Columna derecha: Botones apilados
-    with col_botones:
-        # Espacio para alinear con la imagen
-        st.markdown("<br>", unsafe_allow_html=True)
-        
-        # Botón de identificar
-        if st.button(
-            "🔍 Identificar Planta",
-            type="primary",
-            use_container_width=True,
-            key="btn_analyze"
-        ):
-            # Guardar imagen y procesar
-            st.session_state.temp_imagen = imagen
-            procesar_identificacion()
-        
-        # Espacio entre botones
-        st.markdown("<br>", unsafe_allow_html=True)
-        
-        # Botón de regresar
-        if st.button("← Regresar a selección de método", key="back_from_image", use_container_width=True):
-            st.session_state.metodo_seleccionado = None
-            st.rerun()
+    # Contenedor de imagen
+    st.markdown('<div class="image-container">', unsafe_allow_html=True)
+    st.image(imagen, caption=f"Tu planta (desde {fuente})", use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Contenedor de botones
+    st.markdown('<div class="buttons-container">', unsafe_allow_html=True)
+    
+    # Botón de identificar
+    if st.button(
+        "🔍 Identificar Planta",
+        type="primary",
+        use_container_width=True,
+        key="btn_analyze"
+    ):
+        # Guardar imagen y procesar
+        st.session_state.temp_imagen = imagen
+        procesar_identificacion()
+    
+    # Botón de regresar
+    if st.button("← Regresar a selección de método", key="back_from_image", use_container_width=True):
+        st.session_state.metodo_seleccionado = None
+        st.rerun()
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 def procesar_identificacion():
     """Función separada para procesar la identificación"""

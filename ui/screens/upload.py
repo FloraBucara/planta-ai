@@ -51,6 +51,27 @@ def mostrar_imagen_y_procesar(imagen, fuente):
     # Importar aquí para evitar circular imports
     from utils.session_manager import session_manager
     
+    # CSS para mantener layout horizontal en móviles
+    st.markdown("""
+    <style>
+    .stColumns {
+        display: flex !important;
+        flex-direction: row !important;
+    }
+    .stColumn {
+        flex: none !important;
+    }
+    .stColumn:first-child {
+        width: 33.33% !important;
+        max-width: 33.33% !important;
+    }
+    .stColumn:last-child {
+        width: 66.67% !important;
+        max-width: 66.67% !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
     # Layout con imagen más pequeña (1/3) y botones (2/3)
     col_imagen, col_botones = st.columns([1, 2])
     

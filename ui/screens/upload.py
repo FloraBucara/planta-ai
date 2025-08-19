@@ -64,10 +64,10 @@ def mostrar_imagen_y_procesar(imagen, fuente):
             st.session_state.temp_imagen = imagen
             procesar_identificacion()
     
-    # Usar columnas extremas para centrar mejor
-    _, _, col_center, _, _ = st.columns([1, 1, 1, 1, 1])
-    with col_center:
-        st.image(imagen, caption=f"Tu planta (desde {fuente})", width=250)
+    # Mostrar imagen DESPUÉS del botón - sin separador
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.image(imagen, caption=f"Tu planta (desde {fuente})", width=300)
     
     # Botón para regresar pegado a la imagen
     col1, col2, col3 = st.columns([1, 2, 1])

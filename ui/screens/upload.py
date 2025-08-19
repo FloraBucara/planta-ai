@@ -44,8 +44,7 @@ def pantalla_upload_archivo():
         except Exception as e:
             st.error(f"❌ Error cargando imagen: {e}")
     
-    # Botón para regresar al final
-    st.markdown("<br>", unsafe_allow_html=True)
+    # Botón para regresar - más arriba
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button("← Regresar a selección de método", key="back_from_upload_main", use_container_width=True):

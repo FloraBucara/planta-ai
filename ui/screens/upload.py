@@ -45,13 +45,6 @@ def pantalla_upload_archivo():
             mostrar_imagen_y_procesar(imagen, "archivo")
         except Exception as e:
             st.error(f"❌ Error cargando imagen: {e}")
-    
-    # Botón para regresar
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        if st.button("← Regresar a selección de método", key="back_from_upload", use_container_width=True):
-            st.session_state.metodo_seleccionado = None
-            st.rerun()
 
 def mostrar_imagen_y_procesar(imagen, fuente):
     """Muestra imagen y botón para procesar"""
@@ -75,6 +68,13 @@ def mostrar_imagen_y_procesar(imagen, fuente):
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.image(imagen, caption=f"Tu planta (desde {fuente})", use_container_width=True)
+    
+    # Botón para regresar pegado a la imagen
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if st.button("← Regresar a selección de método", key="back_from_image", use_container_width=True):
+            st.session_state.metodo_seleccionado = None
+            st.rerun()
 
 def procesar_identificacion():
     """Función separada para procesar la identificación"""

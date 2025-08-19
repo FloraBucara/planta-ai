@@ -11,6 +11,10 @@ def pantalla_prediccion_feedback():
     info_planta = resultado.get("info_planta", {})
     datos = info_planta.get('datos', {})
     
+    # Debug temporal - eliminar después
+    st.write("DEBUG - Campos disponibles en datos:", list(datos.keys()) if datos else "No hay datos")
+    st.write("DEBUG - Fuente:", info_planta.get('fuente', 'No fuente'))
+    
     # Crear un contenedor tipo card
     with st.container():
         # Card con bordes redondeados
@@ -187,8 +191,9 @@ def pantalla_prediccion_feedback():
                 </div>
                 """, unsafe_allow_html=True)
         
-        # Cuidados - nueva sección antes de taxonomía
-        if datos.get('cuidados') and info_planta.get('fuente') == 'firestore':
+        # Cuidados - nueva sección antes de taxonomía (debug)
+        st.write("DEBUG - Cuidados en datos:", datos.get('cuidados', 'NO ENCONTRADO'))
+        if datos.get('cuidados'):
             with st.expander("🌱 Cuidados"):
                 st.markdown(f"""
                 <div style="text-align: center; background: white; padding: 10px;">

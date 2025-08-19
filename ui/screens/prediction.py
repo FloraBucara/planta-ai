@@ -7,6 +7,16 @@ from urllib.parse import quote
 
 def pantalla_prediccion_feedback():
     """Pantalla de predicción con diseño tipo card moderno"""
+    # Forzar scroll hacia arriba al cargar la pantalla
+    st.markdown(
+        """
+        <script>
+        window.scrollTo(0, 0);
+        </script>
+        """,
+        unsafe_allow_html=True
+    )
+    
     resultado = st.session_state.resultado_actual
     info_planta = resultado.get("info_planta", {})
     datos = info_planta.get('datos', {})

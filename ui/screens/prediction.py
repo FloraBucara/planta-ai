@@ -149,47 +149,36 @@ def pantalla_prediccion_feedback():
         </div>
         """, unsafe_allow_html=True)
         
-        # Descripción - con estilo mejorado
+        # Descripción - fija (no desplegable)
         if datos.get('descripcion') and info_planta.get('fuente') == 'firestore':
-            # CSS para mejorar el estilo del expander
-            st.markdown("""
-            <style>
-            .streamlit-expanderHeader {
-                background: white !important;
-                border: 2px solid #e0e0e0 !important;
-                border-radius: 10px !important;
-                text-align: center !important;
-            }
-            .streamlit-expanderHeader p {
-                text-shadow: 
-                    2px 2px 0 white,
-                    -2px -2px 0 white,
-                    2px -2px 0 white,
-                    -2px 2px 0 white,
-                    0 2px 0 white,
-                    0 -2px 0 white,
-                    2px 0 0 white,
-                    -2px 0 0 white !important;
-                font-weight: bold !important;
-                color: #000000 !important;
-                margin: 0 !important;
-            }
-            .streamlit-expanderContent {
-                background: white !important;
-                border: 1px solid #e0e0e0 !important;
-                border-radius: 0 0 10px 10px !important;
-                padding: 20px !important;
-                text-align: center !important;
-            }
-            </style>
-            """, unsafe_allow_html=True)
-            
-            with st.expander("📝 Descripción"):
-                st.markdown(f"""
-                <div style="text-align: center; background: white; padding: 10px;">
+            st.markdown(f"""
+            <div style="
+                background: white; 
+                padding: 20px; 
+                margin: 15px 0; 
+                border-radius: 10px; 
+                border: 2px solid #e0e0e0;
+                text-align: center;
+            ">
+                <h4 style="
+                    color: #000000; 
+                    margin-bottom: 15px;
+                    text-shadow: 
+                        2px 2px 0 white,
+                        -2px -2px 0 white,
+                        2px -2px 0 white,
+                        -2px 2px 0 white,
+                        0 2px 0 white,
+                        0 -2px 0 white,
+                        2px 0 0 white,
+                        -2px 0 0 white;
+                    font-weight: bold;
+                ">📝 Descripción</h4>
+                <p style="color: #333333; line-height: 1.5; margin: 0;">
                     {datos.get('descripcion', '')}
-                </div>
-                """, unsafe_allow_html=True)
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
         
         # Cuidados - nueva sección antes de taxonomía
         if datos.get('cuidados') and info_planta.get('fuente') == 'firestore':

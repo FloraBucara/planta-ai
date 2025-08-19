@@ -7,6 +7,18 @@ def pantalla_upload_archivo():
     # Marcar pantalla actual
     st.session_state.current_screen = 'upload'
     
+    # CSS para ocultar el nombre del archivo
+    st.markdown("""
+    <style>
+    .uploadedFile {
+        display: none !important;
+    }
+    div[data-testid="stFileUploader"] > div > div > div > div {
+        display: none !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
     st.markdown("### 📁 Subir imagen desde tu dispositivo")
     
     uploaded_file = st.file_uploader(

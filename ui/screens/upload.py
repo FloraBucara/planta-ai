@@ -24,7 +24,20 @@ def pantalla_upload_archivo():
     </style>
     """, unsafe_allow_html=True)
     
-    st.markdown("### 📁 Subir imagen desde tu dispositivo")
+    # Título con estilo similar al de cámara
+    st.markdown("""
+    <div style="
+        background: white;
+        border-radius: 15px;
+        padding: 10px 20px;
+        margin: 10px 0;
+        text-align: center;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    ">
+        <h4 style="margin: 0; color: #2e7d32;">Subir imagen desde tu dispositivo</h4>
+    </div>
+    """, unsafe_allow_html=True)
     
     uploaded_file = st.file_uploader(
         "Selecciona una imagen",

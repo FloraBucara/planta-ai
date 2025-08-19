@@ -7,6 +7,28 @@ from urllib.parse import quote
 
 def pantalla_prediccion_feedback():
     """Pantalla de predicción con diseño tipo card moderno"""
+    # Detectar si es la primera vez que se carga esta pantalla
+    if 'current_screen' not in st.session_state or st.session_state.current_screen != 'prediction':
+        st.session_state.current_screen = 'prediction'
+        # Forzar JavaScript para scroll al inicio
+        st.markdown(
+            """
+            <script>
+                // Múltiples intentos para asegurar el scroll
+                setTimeout(() => {
+                    window.parent.document.querySelector('.main').scrollTop = 0;
+                    window.scrollTo(0, 0);
+                    document.body.scrollTop = 0;
+                    document.documentElement.scrollTop = 0;
+                }, 50);
+                setTimeout(() => {
+                    window.parent.document.querySelector('.main').scrollTop = 0;
+                }, 200);
+            </script>
+            """,
+            unsafe_allow_html=True
+        )
+    
     resultado = st.session_state.resultado_actual
     info_planta = resultado.get("info_planta", {})
     datos = info_planta.get('datos', {})

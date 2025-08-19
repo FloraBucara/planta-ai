@@ -7,6 +7,9 @@ from utils.session_manager import session_manager
 
 def pantalla_top_especies():
     """Pantalla de selección manual de las top 5 especies - VERSIÓN EXPANDIBLE"""
+    # Marcar pantalla actual
+    st.session_state.current_screen = 'selection'
+    
     st.markdown("### 🤔 ¿Tal vez sea una de estas?")
     st.info("Selecciona la especie correcta de las siguientes opciones:")
     

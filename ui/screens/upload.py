@@ -4,6 +4,9 @@ from config import STREAMLIT_CONFIG
 
 def pantalla_upload_archivo():
     """Pantalla específica para subir archivo"""
+    # Marcar pantalla actual
+    st.session_state.current_screen = 'upload'
+    
     st.markdown("### 📁 Subir imagen desde tu dispositivo")
     
     uploaded_file = st.file_uploader(

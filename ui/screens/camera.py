@@ -4,6 +4,9 @@ from ui.screens.upload import mostrar_imagen_y_procesar
 
 def pantalla_tomar_foto():
     """Pantalla específica para tomar foto"""
+    # Marcar pantalla actual
+    st.session_state.current_screen = 'camera'
+    
     st.markdown("### 📷 Tomar foto con la cámara")
     st.info("📱 **En móviles:** Esto abrirá la cámara directamente")
     

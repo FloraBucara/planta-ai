@@ -51,9 +51,19 @@ def mostrar_imagen_y_procesar(imagen, fuente):
     # Importar aquí para evitar circular imports
     from utils.session_manager import session_manager
     
-    # Botón de análisis PRIMERO - antes de la imagen
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
+    # Layout horizontal: imagen a la izquierda, botones a la derecha
+    col_imagen, col_botones = st.columns([1, 1])
+    
+    # Columna izquierda: Imagen más pequeña
+    with col_imagen:
+        st.image(imagen, caption=f"Tu planta (desde {fuente})", use_container_width=True)
+    
+    # Columna derecha: Botones apilados
+    with col_botones:
+        # Espacio para alinear con la imagen
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # Botón de identificar
         if st.button(
             "🔍 Identificar Planta",
             type="primary",
@@ -63,23 +73,11 @@ def mostrar_imagen_y_procesar(imagen, fuente):
             # Guardar imagen y procesar
             st.session_state.temp_imagen = imagen
             procesar_identificacion()
-    
-    # Mostrar imagen DESPUÉS del botón - sin separador
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.image(imagen, caption=f"Tu planta (desde {fuente})", use_container_width=True)
-    
-    # Botón para regresar pegado a la imagen - con menos espacio
-    st.markdown("""
-    <style>
-    .stButton > button {
-        margin-top: -20px !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
+        
+        # Espacio entre botones
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # Botón de regresar
         if st.button("← Regresar a selección de método", key="back_from_image", use_container_width=True):
             st.session_state.metodo_seleccionado = None
             st.rerun()

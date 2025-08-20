@@ -274,37 +274,27 @@ def pantalla_prediccion_feedback():
     </div>
     """, unsafe_allow_html=True)
     
-    # CSS para el botón con borde rojo
-    st.markdown("""
-    <style>
-    div.stButton > button[kind="secondary"] {
-        border: 2px solid #f44336 !important;
-        border-radius: 10px !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    
     # Primer botón
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button(
-                "✅ ¡Sí, es correcta!", 
-                type="primary", 
-                use_container_width=True,
-                help="Confirmar que la identificación es correcta"
-            ):
+        if st.button("✅ ¡Sí, es correcta!", type="primary", use_container_width=True):
             procesar_feedback_positivo(resultado)
     
-    # Segundo botón
+    # Segundo botón exactamente como en selection.py
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button(
-                "❌ No, es incorrecta", 
-                type="secondary", 
-                use_container_width=True,
-                help="Ver otras opciones posibles"
-            ):
-                procesar_feedback_negativo(resultado)
+        # CSS para el botón con borde rojo
+        st.markdown("""
+        <style>
+        div.stButton > button[kind="secondary"] {
+            border: 2px solid #f44336 !important;
+            border-radius: 10px !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
+        if st.button("❌ No, es incorrecta", type="secondary", use_container_width=True):
+            procesar_feedback_negativo(resultado)
 
 def procesar_feedback_positivo(resultado):
     """Procesa el feedback positivo del usuario"""

@@ -242,6 +242,15 @@ def mostrar_info_expandida(i, especie_data, datos, info_planta):
         </div>
         """, unsafe_allow_html=True)
     
+    # Cuidados - sección desplegable (antes de taxonomía)
+    if datos.get('cuidados') and info_planta.get('fuente') == 'firestore':
+        with st.expander("🌱 Cuidados"):
+            st.markdown(f"""
+            <div style="text-align: center; background: white; padding: 10px;">
+                {datos.get('cuidados', '')}
+            </div>
+            """, unsafe_allow_html=True)
+    
     # Taxonomía con estilo mejorado
     if datos.get('taxonomia') and info_planta.get('fuente') == 'firestore':
         taxonomia = datos['taxonomia']
@@ -276,37 +285,6 @@ def mostrar_info_expandida(i, especie_data, datos, info_planta):
                 </div>
             </div>
             """, unsafe_allow_html=True)
-    
-    # Cuidados - nueva sección
-    if datos.get('cuidados') and info_planta.get('fuente') == 'firestore':
-        st.markdown(f"""
-        <div style="
-            background: white; 
-            padding: 20px; 
-            margin: 15px 0; 
-            border-radius: 10px; 
-            border: 2px solid #4CAF50;
-            text-align: center;
-        ">
-            <h4 style="
-                color: #000000; 
-                margin-bottom: 15px;
-                text-shadow: 
-                    2px 2px 0 white,
-                    -2px -2px 0 white,
-                    2px -2px 0 white,
-                    -2px 2px 0 white,
-                    0 2px 0 white,
-                    0 -2px 0 white,
-                    2px 0 0 white,
-                    -2px 0 0 white;
-                font-weight: bold;
-            ">🌱 Cuidados</h4>
-            <p style="color: #333333; line-height: 1.5; margin: 0;">
-                {datos.get('cuidados', '')}
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
     
     # Información adicional                   
     if datos.get('fuente'):

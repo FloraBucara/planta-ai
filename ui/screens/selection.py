@@ -128,7 +128,7 @@ def pantalla_top_especies():
     # Mostrar imagen original
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        st.image(st.session_state.imagen_actual, caption="Tu planta", width=300)
+        st.image(st.session_state.imagen_actual, caption="Tu planta")
     
     st.markdown("---")
     
@@ -184,18 +184,8 @@ def mostrar_especie_opcion(i, especie_data):
             </p>
             """, unsafe_allow_html=True)
             
-            # Botón expandir/contraer información
-            expand_key = f"expand_{i}"
-            if st.button(
-                "▼ Ver información completa" if not st.session_state.get(expand_key, False) else "▲ Ocultar información",
-                key=f"toggle_{i}",
-                type="secondary"
-            ):
-                st.session_state[expand_key] = not st.session_state.get(expand_key, False)
-                st.rerun()
-            
-            # Mostrar información expandida si está activada
-            if st.session_state.get(expand_key, False):
+            # Información expandible usando expander
+            with st.expander("📋 Ver información completa"):
                 mostrar_info_expandida(i, especie_data, datos, info_planta)
     
     # Separador entre especies
@@ -211,7 +201,7 @@ def mostrar_info_expandida(i, especie_data, datos, info_planta):
     else:
         st.info("ℹ️ Información básica disponible")
     
-    # Descripción - fija (no desplegable)
+    # Descripción - fija (no desplegable) con borde verde
     if datos.get('descripcion'):
         st.markdown(f"""
         <div style="
@@ -219,7 +209,7 @@ def mostrar_info_expandida(i, especie_data, datos, info_planta):
             padding: 20px; 
             margin: 15px 0; 
             border-radius: 10px; 
-            border: 2px solid #e0e0e0;
+            border: 2px solid #4CAF50;
             text-align: center;
         ">
             <h4 style="
@@ -251,7 +241,7 @@ def mostrar_info_expandida(i, especie_data, datos, info_planta):
             </div>
             """, unsafe_allow_html=True)
     
-    # Taxonomía con estilo mejorado
+    # Taxonomía con estilo mejorado y borde verde
     if datos.get('taxonomia') and info_planta.get('fuente') == 'firestore':
         taxonomia = datos['taxonomia']
         if taxonomia:

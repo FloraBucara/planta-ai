@@ -130,8 +130,6 @@ def pantalla_top_especies():
     with col2:
         st.image(st.session_state.imagen_actual, caption="Tu planta")
     
-    st.markdown("---")
-    
     # Mostrar las 5 especies con información expandible
     for i, especie_data in enumerate(top_especies):
         mostrar_especie_opcion(i, especie_data)
@@ -187,13 +185,9 @@ def mostrar_especie_opcion(i, especie_data):
             # Información expandible usando expander
             with st.expander("📋 Ver información completa"):
                 mostrar_info_expandida(i, especie_data, datos, info_planta)
-    
-    # Separador entre especies
-    st.markdown("---")
 
 def mostrar_info_expandida(i, especie_data, datos, info_planta):
     """Muestra la información expandida de una especie"""
-    st.markdown("---")
     
     # Información detallada
     if info_planta.get('fuente') == 'firestore':
@@ -236,7 +230,7 @@ def mostrar_info_expandida(i, especie_data, datos, info_planta):
     if datos.get('cuidados') and info_planta.get('fuente') == 'firestore':
         with st.expander("🌱 Cuidados"):
             st.markdown(f"""
-            <div style="text-align: center; background: white; padding: 10px;">
+            <div style="text-align: center; background: white; padding: 20px; border-radius: 10px; border: 2px solid #4CAF50;">
                 {datos.get('cuidados', '')}
             </div>
             """, unsafe_allow_html=True)
@@ -265,9 +259,24 @@ def mostrar_info_expandida(i, especie_data, datos, info_planta):
     
     # Información adicional                   
     if datos.get('fuente'):
-        st.markdown(f"**📚 Fuente:** {datos['fuente']}")
-    
-    st.markdown("---")
+        st.markdown(f"""
+        <p style="
+            color: #000000; 
+            margin: 0;
+            text-shadow: 
+                2px 2px 0 white,
+                -2px -2px 0 white,
+                2px -2px 0 white,
+                -2px 2px 0 white,
+                0 2px 0 white,
+                0 -2px 0 white,
+                2px 0 0 white,
+                -2px 0 0 white;
+            font-weight: bold;
+        ">
+            <strong>Fuente: {datos['fuente']}</strong>
+        </p>
+        """, unsafe_allow_html=True)
     
     # BOTÓN "ES ESTA" AL FINAL DE LA INFORMACIÓN EXPANDIDA
     if st.button(

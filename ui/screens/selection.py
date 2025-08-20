@@ -10,8 +10,107 @@ def pantalla_top_especies():
     # Marcar pantalla actual
     st.session_state.current_screen = 'selection'
     
-    st.markdown("### 🤔 ¿Tal vez sea una de estas?")
-    st.info("Selecciona la especie correcta de las siguientes opciones:")
+    # Crear un contenedor tipo card con fondo blanco
+    with st.container():
+        # Card con bordes redondeados
+        st.markdown("""
+        <div style="
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin: 1rem 0;
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+        ">
+        """, unsafe_allow_html=True)
+        
+        # Título principal con estilo igual a prediction.py
+        st.markdown("""
+        <div style="text-align: center; margin-bottom: 1rem; margin-top: 1rem;">
+            <p style="
+                font-size: 1.6rem; 
+                color: #000000; 
+                margin: 0;
+                text-shadow: 
+                    2px 2px 0 white,
+                    -2px -2px 0 white,
+                    2px -2px 0 white,
+                    -2px 2px 0 white,
+                    0 2px 0 white,
+                    0 -2px 0 white,
+                    2px 0 0 white,
+                    -2px 0 0 white;
+                font-weight: bold;
+            ">
+                <strong>🤔 ¿Tal vez sea una de estas?</strong>
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Subtítulo con estilo
+        st.markdown("""
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <p style="
+                font-size: 1.1rem; 
+                color: #000000; 
+                margin: 0;
+                text-shadow: 
+                    2px 2px 0 white,
+                    -2px -2px 0 white,
+                    2px -2px 0 white,
+                    -2px 2px 0 white,
+                    0 2px 0 white,
+                    0 -2px 0 white,
+                    2px 0 0 white,
+                    -2px 0 0 white;
+                font-weight: bold;
+            ">
+                Selecciona la especie correcta de las siguientes opciones:
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # CSS FORZADO con JavaScript para expanders - TONOS VERDES
+        st.markdown("""
+        <style>
+        /* CSS básico */
+        div[data-testid="stExpander"] summary {
+            background: #e8f5e8 !important;
+            border: 2px solid #4CAF50 !important;
+            border-radius: 10px !important;
+            text-align: center !important;
+            padding: 12px !important;
+        }
+        </style>
+        
+        <script>
+        setTimeout(function() {
+            // Buscar todos los expanders y aplicar estilos directamente
+            const expanders = document.querySelectorAll('[data-testid="stExpander"]');
+            expanders.forEach(function(expander) {
+                const header = expander.querySelector('summary') || expander.querySelector('div:first-child');
+                if (header) {
+                    header.style.background = '#e8f5e8';
+                    header.style.border = '2px solid #4CAF50';
+                    header.style.borderRadius = '10px';
+                    header.style.textAlign = 'center';
+                    header.style.padding = '12px';
+                }
+                
+                const content = expander.querySelector('div:last-child');
+                if (content) {
+                    content.style.background = 'white';
+                    content.style.border = '1px solid #4CAF50';
+                    content.style.borderTop = 'none';
+                    content.style.borderRadius = '0 0 10px 10px';
+                    content.style.padding = '20px';
+                    content.style.textAlign = 'center';
+                }
+            });
+        }, 100);
+        </script>
+        """, unsafe_allow_html=True)
     
     # Obtener top 5 especies
     with st.spinner("🔍 Buscando especies similares..."):
@@ -29,7 +128,7 @@ def pantalla_top_especies():
     # Mostrar imagen original
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        st.image(st.session_state.imagen_actual, caption="Tu planta", use_container_width=True)
+        st.image(st.session_state.imagen_actual, caption="Tu planta", width=300)
     
     st.markdown("---")
     
@@ -47,6 +146,9 @@ def pantalla_top_especies():
             # Limpiar y volver al inicio
             limpiar_sesion()
             st.rerun()
+    
+    # Cerrar contenedor principal
+    st.markdown("</div>", unsafe_allow_html=True)
             
 def mostrar_especie_opcion(i, especie_data):
     """Muestra una opción de especie con información expandible"""
@@ -109,27 +211,102 @@ def mostrar_info_expandida(i, especie_data, datos, info_planta):
     else:
         st.info("ℹ️ Información básica disponible")
     
-    # Descripción
+    # Descripción - fija (no desplegable)
     if datos.get('descripcion'):
-        st.markdown("**📝 Descripción:**")
-        st.write(datos['descripcion'])
+        st.markdown(f"""
+        <div style="
+            background: white; 
+            padding: 20px; 
+            margin: 15px 0; 
+            border-radius: 10px; 
+            border: 2px solid #e0e0e0;
+            text-align: center;
+        ">
+            <h4 style="
+                color: #000000; 
+                margin-bottom: 15px;
+                text-shadow: 
+                    2px 2px 0 white,
+                    -2px -2px 0 white,
+                    2px -2px 0 white,
+                    -2px 2px 0 white,
+                    0 2px 0 white,
+                    0 -2px 0 white,
+                    2px 0 0 white,
+                    -2px 0 0 white;
+                font-weight: bold;
+            ">📝 Descripción</h4>
+            <p style="color: #333333; line-height: 1.5; margin: 0;">
+                {datos.get('descripcion', '')}
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
     
-    # Taxonomía
+    # Taxonomía con estilo mejorado
     if datos.get('taxonomia') and info_planta.get('fuente') == 'firestore':
         taxonomia = datos['taxonomia']
         if taxonomia:
-            st.markdown("**🧬 Clasificación Taxonómica:**")
-            col_tax1, col_tax2 = st.columns(2)
-            
-            with col_tax1:
-                st.write(f"• **Reino:** {taxonomia.get('reino', 'N/A')}")
-                st.write(f"• **Filo:** {taxonomia.get('filo', 'N/A')}")
-                st.write(f"• **Clase:** {taxonomia.get('clase', 'N/A')}")
-            
-            with col_tax2:
-                st.write(f"• **Orden:** {taxonomia.get('orden', 'N/A')}")
-                st.write(f"• **Familia:** {taxonomia.get('familia', 'N/A')}")
-                st.write(f"• **Género:** {taxonomia.get('genero', 'N/A')}")
+            st.markdown(f"""
+            <div style="text-align: center; background: white; padding: 20px; border-radius: 10px; border: 2px solid #4CAF50; margin: 15px 0;">
+                <h4 style="
+                    color: #000000; 
+                    margin-bottom: 15px;
+                    text-shadow: 
+                        2px 2px 0 white,
+                        -2px -2px 0 white,
+                        2px -2px 0 white,
+                        -2px 2px 0 white,
+                        0 2px 0 white,
+                        0 -2px 0 white,
+                        2px 0 0 white,
+                        -2px 0 0 white;
+                    font-weight: bold;
+                ">🧬 Clasificación Taxonómica</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <p><strong>Reino:</strong> {taxonomia.get('reino', 'N/A')}</p>
+                        <p><strong>Filo:</strong> {taxonomia.get('filo', 'N/A')}</p>
+                        <p><strong>Clase:</strong> {taxonomia.get('clase', 'N/A')}</p>
+                    </div>
+                    <div>
+                        <p><strong>Orden:</strong> {taxonomia.get('orden', 'N/A')}</p>
+                        <p><strong>Familia:</strong> {taxonomia.get('familia', 'N/A')}</p>
+                        <p><strong>Género:</strong> {taxonomia.get('genero', 'N/A')}</p>
+                    </div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+    
+    # Cuidados - nueva sección
+    if datos.get('cuidados') and info_planta.get('fuente') == 'firestore':
+        st.markdown(f"""
+        <div style="
+            background: white; 
+            padding: 20px; 
+            margin: 15px 0; 
+            border-radius: 10px; 
+            border: 2px solid #4CAF50;
+            text-align: center;
+        ">
+            <h4 style="
+                color: #000000; 
+                margin-bottom: 15px;
+                text-shadow: 
+                    2px 2px 0 white,
+                    -2px -2px 0 white,
+                    2px -2px 0 white,
+                    -2px 2px 0 white,
+                    0 2px 0 white,
+                    0 -2px 0 white,
+                    2px 0 0 white,
+                    -2px 0 0 white;
+                font-weight: bold;
+            ">🌱 Cuidados</h4>
+            <p style="color: #333333; line-height: 1.5; margin: 0;">
+                {datos.get('cuidados', '')}
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
     
     # Información adicional                   
     if datos.get('fuente'):

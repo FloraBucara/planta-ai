@@ -281,9 +281,15 @@ def pantalla_prediccion_feedback():
         border: 2px solid #f44336 !important;
         border-radius: 10px !important;
     }
-    div.stButton {
-        margin-bottom: 0.25rem !important;
-        margin-top: 0.25rem !important;
+    .stColumns {
+        gap: 0.5rem !important;
+    }
+    div[data-testid="column"] {
+        padding-top: 0.25rem !important;
+        padding-bottom: 0.25rem !important;
+    }
+    .element-container {
+        margin-bottom: 0.5rem !important;
     }
     </style>
     """, unsafe_allow_html=True)

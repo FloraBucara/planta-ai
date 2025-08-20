@@ -274,10 +274,19 @@ def pantalla_prediccion_feedback():
     </div>
     """, unsafe_allow_html=True)
     
-    # Centrar botones usando columnas como en selection.py
-    col1, col2, col3 = st.columns([1, 2, 1])
+    # CSS para el botón con borde rojo
+    st.markdown("""
+    <style>
+    div.stButton > button[kind="secondary"] {
+        border: 2px solid #f44336 !important;
+        border-radius: 10px !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
     
-    with col1:
+    # Primer botón
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
         if st.button(
                 "✅ ¡Sí, es correcta!", 
                 type="primary", 
@@ -286,17 +295,9 @@ def pantalla_prediccion_feedback():
             ):
             procesar_feedback_positivo(resultado)
     
+    # Segundo botón
+    col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        # CSS para el botón con borde rojo
-        st.markdown("""
-        <style>
-        div.stButton > button[kind="secondary"] {
-            border: 2px solid #f44336 !important;
-            border-radius: 10px !important;
-        }
-        </style>
-        """, unsafe_allow_html=True)
-        
         if st.button(
                 "❌ No, es incorrecta", 
                 type="secondary", 

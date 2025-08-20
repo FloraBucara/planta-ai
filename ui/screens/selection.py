@@ -10,20 +10,8 @@ def pantalla_top_especies():
     # Marcar pantalla actual
     st.session_state.current_screen = 'selection'
     
-    # Crear un contenedor tipo card con fondo blanco
+    # Crear un contenedor sin fondo
     with st.container():
-        # Card con bordes redondeados
-        st.markdown("""
-        <div style="
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin: 1rem 0;
-            border: 1px solid #e0e0e0;
-            padding: 20px;
-        ">
-        """, unsafe_allow_html=True)
         
         # Título principal con estilo igual a prediction.py
         st.markdown("""
@@ -145,8 +133,6 @@ def pantalla_top_especies():
             limpiar_sesion()
             st.rerun()
     
-    # Cerrar contenedor principal
-    st.markdown("</div>", unsafe_allow_html=True)
             
 def mostrar_especie_opcion(i, especie_data):
     """Muestra una opción de especie con información expandible"""
@@ -156,35 +142,27 @@ def mostrar_especie_opcion(i, especie_data):
     
     # Container para cada especie
     with st.container():
-        # Primera fila: Número y nombre común
-        col1, col2 = st.columns([1, 4])
-        
-        with col1:
-            # Número de opción
-            st.markdown(f"### {i+1}")
-        
-        with col2:
-            # Nombre común con estilo de fuente
-            st.markdown(f"""
-            <p style="
-                color: #000000; 
-                margin: 0;
-                text-shadow: 
-                    2px 2px 0 white,
-                    -2px -2px 0 white,
-                    2px -2px 0 white,
-                    -2px 2px 0 white,
-                    0 2px 0 white,
-                    0 -2px 0 white,
-                    2px 0 0 white,
-                    -2px 0 0 white;
-                font-weight: bold;
-                font-size: 1.2rem;
-                margin-top: 0.5rem;
-            ">
-                <strong>{datos.get('nombre_comun', 'Nombre no disponible')}</strong>
-            </p>
-            """, unsafe_allow_html=True)
+        # Título con número y nombre común juntos
+        st.markdown(f"""
+        <p style="
+            color: #000000; 
+            margin: 0;
+            text-shadow: 
+                2px 2px 0 white,
+                -2px -2px 0 white,
+                2px -2px 0 white,
+                -2px 2px 0 white,
+                0 2px 0 white,
+                0 -2px 0 white,
+                2px 0 0 white,
+                -2px 0 0 white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        ">
+            <strong>{i+1}. {datos.get('nombre_comun', 'Nombre no disponible')}</strong>
+        </p>
+        """, unsafe_allow_html=True)
         
         # Segunda fila: Imagen, nombre científico y confianza
         col1, col2, col3 = st.columns([1, 2, 3])
@@ -198,7 +176,8 @@ def mostrar_especie_opcion(i, especie_data):
             mostrar_imagen_referencia_sin_barra(especie_data["especie"])
         
         with col3:
-            # Nombre científico con estilo de fuente
+            # Nombre científico con estilo de fuente (sin guiones bajos)
+            nombre_cientifico = especie_data['especie'].replace('_', ' ')
             st.markdown(f"""
             <p style="
                 color: #000000; 
@@ -215,64 +194,38 @@ def mostrar_especie_opcion(i, especie_data):
                 font-weight: bold;
                 font-style: italic;
             ">
-                <strong>{especie_data['especie']}</strong>
+                <strong>{nombre_cientifico}</strong>
             </p>
             """, unsafe_allow_html=True)
             
-            # Círculo de confianza como en prediction.py
+            # Barra de confianza más ancha
             porcentaje = int(especie_data["confianza"] * 100)
             color = "#4caf50" if porcentaje > 70 else "#ff9800" if porcentaje > 40 else "#f44336"
             
             st.markdown(f"""
-            <div style="display: flex; justify-content: center; align-items: center; margin: 1rem 0;">
-                <div style="position: relative; width: 80px; height: 80px;">
-                    <svg width="80" height="80" style="transform: rotate(-90deg);">
-                        <circle cx="40" cy="40" r="30" 
-                                stroke="#e0e0e0" 
-                                stroke-width="6" 
-                                fill="none"/>
-                        <circle cx="40" cy="40" r="30" 
-                                stroke="{color}" 
-                                stroke-width="6" 
-                                fill="none"
-                                stroke-dasharray="{porcentaje * 1.88} 188"
-                                stroke-linecap="round"/>
-                    </svg>
-                    <div style="
-                        position: absolute;
-                        top: 50%;
-                        left: 50%;
-                        transform: translate(-50%, -50%);
-                        text-align: center;
-                    ">
-                        <div style="font-size: 1rem; font-weight: bold; color: {color};">
-                            {porcentaje}%
-                        </div>
-                    </div>
+            <div style="margin: 1rem 0;">
+                <div style="height: 20px; background: #e9ecef; border-radius: 10px; overflow: hidden;">
+                    <div style="background: linear-gradient(90deg, {color}, {color}); height: 100%; width: {porcentaje}%; transition: width 0.3s ease; border-radius: 10px;"></div>
                 </div>
+                <p style="
+                    text-align: center; 
+                    font-size: 0.9rem; 
+                    margin: 0.5rem 0 0 0;
+                    color: #000000; 
+                    text-shadow: 
+                        2px 2px 0 white,
+                        -2px -2px 0 white,
+                        2px -2px 0 white,
+                        -2px 2px 0 white,
+                        0 2px 0 white,
+                        0 -2px 0 white,
+                        2px 0 0 white,
+                        -2px 0 0 white;
+                    font-weight: bold;
+                ">
+                    <strong>Confianza: {porcentaje}%</strong>
+                </p>
             </div>
-            """, unsafe_allow_html=True)
-            
-            # Texto de confianza con estilo de fuente
-            st.markdown(f"""
-            <p style="
-                text-align: center;
-                color: #000000; 
-                margin: 0;
-                text-shadow: 
-                    2px 2px 0 white,
-                    -2px -2px 0 white,
-                    2px -2px 0 white,
-                    -2px 2px 0 white,
-                    0 2px 0 white,
-                    0 -2px 0 white,
-                    2px 0 0 white,
-                    -2px 0 0 white;
-                font-weight: bold;
-                font-size: 0.9rem;
-            ">
-                <strong>Confianza</strong>
-            </p>
             """, unsafe_allow_html=True)
             
             # Información expandible usando expander
@@ -281,12 +234,6 @@ def mostrar_especie_opcion(i, especie_data):
 
 def mostrar_info_expandida(i, especie_data, datos, info_planta):
     """Muestra la información expandida de una especie"""
-    
-    # Información detallada
-    if info_planta.get('fuente') == 'firestore':
-        st.markdown("*✅ Información verificada de la base de datos*")
-    else:
-        st.info("ℹ️ Información básica disponible")
     
     # Descripción - fija (no desplegable) con borde verde
     if datos.get('descripcion'):

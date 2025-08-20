@@ -253,7 +253,7 @@ def pantalla_prediccion_feedback():
     
     # Botones de feedback - EXACTAMENTE como el título principal
     st.markdown("""
-    <div style="text-align: center; margin-bottom: 1rem; margin-top: 1rem;">
+    <div style="text-align: center; margin-bottom:0rem; margin-top: 0rem>
         <p style="
             font-size: 1.6rem; 
             color: #000000; 
@@ -280,8 +280,10 @@ def pantalla_prediccion_feedback():
         if st.button("✅ ¡Sí, es correcta!", type="primary", use_container_width=True):
             procesar_feedback_positivo(resultado)
     
-    # Segundo botón con margen negativo
-    st.markdown('<div style="margin-top: -1rem;"></div>', unsafe_allow_html=True)
+    # Margen negativo para reducir espacio
+    st.markdown('<div style="margin-top: -1.5rem;"></div>', unsafe_allow_html=True)
+    
+    # Segundo botón
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button("❌ No, es incorrecta", type="secondary", use_container_width=True):

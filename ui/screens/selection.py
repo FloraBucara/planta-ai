@@ -125,6 +125,16 @@ def pantalla_top_especies():
     # Opción "No es ninguna de estas"
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
+        # CSS para el botón con borde rojo
+        st.markdown("""
+        <style>
+        div.stButton > button[kind="secondary"] {
+            border: 2px solid #f44336 !important;
+            border-radius: 10px !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
         if st.button("❌ No es ninguna de estas", type="secondary", use_container_width=True):
             # Establecer mensaje para mostrar en inicio
             st.session_state.mensaje_inicio = "no_identificada"
@@ -157,7 +167,7 @@ def mostrar_especie_opcion(i, especie_data):
                 2px 0 0 white,
                 -2px 0 0 white;
             font-weight: bold;
-            font-size: 1.2rem;
+            font-size: 1.6rem;
             margin-bottom: 1rem;
         ">
             <strong>{i+1}. {datos.get('nombre_comun', 'Nombre no disponible')}</strong>
@@ -182,6 +192,7 @@ def mostrar_especie_opcion(i, especie_data):
             <p style="
                 color: #000000; 
                 margin: 0;
+                text-align: center;
                 text-shadow: 
                     2px 2px 0 white,
                     -2px -2px 0 white,

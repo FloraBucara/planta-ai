@@ -274,12 +274,16 @@ def pantalla_prediccion_feedback():
     </div>
     """, unsafe_allow_html=True)
     
-    # CSS para el botón con borde rojo
+    # CSS para botones con espaciado reducido
     st.markdown("""
     <style>
     div.stButton > button[kind="secondary"] {
         border: 2px solid #f44336 !important;
         border-radius: 10px !important;
+    }
+    div.stButton {
+        margin-bottom: 0.25rem !important;
+        margin-top: 0.25rem !important;
     }
     </style>
     """, unsafe_allow_html=True)

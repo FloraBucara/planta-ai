@@ -291,7 +291,7 @@ def pantalla_prediccion_feedback():
             procesar_feedback_positivo(resultado)
     
     # Margen negativo para reducir espacio
-    st.markdown('<div style="margin-top: -5rem;"></div>', unsafe_allow_html=True)
+    st.markdown('<div style="margin-top: -20rem;"></div>', unsafe_allow_html=True)
     
     # Segundo botón
     col1, col2, col3 = st.columns([1, 2, 1])

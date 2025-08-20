@@ -274,6 +274,16 @@ def pantalla_prediccion_feedback():
     </div>
     """, unsafe_allow_html=True)
     
+    # CSS para el botón con borde rojo
+    st.markdown("""
+    <style>
+    div.stButton > button[kind="secondary"] {
+        border: 2px solid #f44336 !important;
+        border-radius: 10px !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
     # Primer botón
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
@@ -281,7 +291,7 @@ def pantalla_prediccion_feedback():
             procesar_feedback_positivo(resultado)
     
     # Margen negativo para reducir espacio
-    st.markdown('<div style="margin-top: -1.5rem;"></div>', unsafe_allow_html=True)
+    st.markdown('<div style="margin-top: 3rem;"></div>', unsafe_allow_html=True)
     
     # Segundo botón
     col1, col2, col3 = st.columns([1, 2, 1])

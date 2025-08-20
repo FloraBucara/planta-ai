@@ -303,6 +303,8 @@ def pantalla_prediccion_feedback():
     # Segundo botón
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
+        # Margen negativo arriba del botón
+        st.markdown('<div style="margin-top: -1rem;"></div>', unsafe_allow_html=True)
         if st.button("❌ No, es incorrecta", type="secondary", use_container_width=True):
             procesar_feedback_negativo(resultado)
 

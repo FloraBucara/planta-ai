@@ -154,7 +154,7 @@ def pantalla_prediccion_feedback():
                 padding: 20px; 
                 margin: 15px 0; 
                 border-radius: 10px; 
-                border: 2px solid #e0e0e0;
+                border: 2px solid #4CAF50;
                 text-align: center;
             ">
                 <h4 style="
@@ -222,7 +222,7 @@ def pantalla_prediccion_feedback():
         if datos.get('cuidados') and info_planta.get('fuente') == 'firestore':
             with st.expander("🌱 Cuidados"):
                 st.markdown(f"""
-                <div style="text-align: center; background: white; padding: 10px;">
+                <div style="text-align: center; background: white; padding: 20px; border-radius: 10px; border: 2px solid #4CAF50;">
                     {datos.get('cuidados', '')}
                 </div>
                 """, unsafe_allow_html=True)
@@ -232,7 +232,7 @@ def pantalla_prediccion_feedback():
             taxonomia = datos.get('taxonomia', {})
             with st.expander("🧬 Clasificación Taxonómica"):
                 st.markdown(f"""
-                <div style="text-align: center; background: white; padding: 20px; border-radius: 10px;">
+                <div style="text-align: center; background: white; padding: 20px; border-radius: 10px; border: 2px solid #4CAF50;">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                         <div>
                             <p><strong>Reino:</strong> {taxonomia.get('reino', 'N/A')}</p>
@@ -274,15 +274,12 @@ def pantalla_prediccion_feedback():
     </div>
     """, unsafe_allow_html=True)
     
-    # CSS para botones
+    # CSS para el botón con borde rojo
     st.markdown("""
     <style>
     div.stButton > button[kind="secondary"] {
         border: 2px solid #f44336 !important;
         border-radius: 10px !important;
-    }
-    div.stButton > button[kind="primary"] {
-        margin-bottom: 0 !important;
     }
     </style>
     """, unsafe_allow_html=True)

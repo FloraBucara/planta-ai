@@ -280,6 +280,9 @@ def pantalla_prediccion_feedback():
         if st.button("✅ ¡Sí, es correcta!", type="primary", use_container_width=True):
             procesar_feedback_positivo(resultado)
     
+    # Reducir espacio entre botones
+    st.markdown('<div style="margin-top: -1rem;"></div>', unsafe_allow_html=True)
+    
     # Segundo botón exactamente como en selection.py
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:

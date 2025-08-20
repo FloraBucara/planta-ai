@@ -232,7 +232,7 @@ def mostrar_info_expandida(i, especie_data, datos, info_planta):
         </div>
         """, unsafe_allow_html=True)
     
-    # Cuidados - sección desplegable (antes de taxonomía)
+    # Cuidados - sección desplegable
     if datos.get('cuidados') and info_planta.get('fuente') == 'firestore':
         with st.expander("🌱 Cuidados"):
             st.markdown(f"""
@@ -241,40 +241,27 @@ def mostrar_info_expandida(i, especie_data, datos, info_planta):
             </div>
             """, unsafe_allow_html=True)
     
-    # Taxonomía con estilo mejorado y borde verde
+    # Taxonomía - sección desplegable con borde verde
     if datos.get('taxonomia') and info_planta.get('fuente') == 'firestore':
         taxonomia = datos['taxonomia']
         if taxonomia:
-            st.markdown(f"""
-            <div style="text-align: center; background: white; padding: 20px; border-radius: 10px; border: 2px solid #4CAF50; margin: 15px 0;">
-                <h4 style="
-                    color: #000000; 
-                    margin-bottom: 15px;
-                    text-shadow: 
-                        2px 2px 0 white,
-                        -2px -2px 0 white,
-                        2px -2px 0 white,
-                        -2px 2px 0 white,
-                        0 2px 0 white,
-                        0 -2px 0 white,
-                        2px 0 0 white,
-                        -2px 0 0 white;
-                    font-weight: bold;
-                ">🧬 Clasificación Taxonómica</h4>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <div>
-                        <p><strong>Reino:</strong> {taxonomia.get('reino', 'N/A')}</p>
-                        <p><strong>Filo:</strong> {taxonomia.get('filo', 'N/A')}</p>
-                        <p><strong>Clase:</strong> {taxonomia.get('clase', 'N/A')}</p>
-                    </div>
-                    <div>
-                        <p><strong>Orden:</strong> {taxonomia.get('orden', 'N/A')}</p>
-                        <p><strong>Familia:</strong> {taxonomia.get('familia', 'N/A')}</p>
-                        <p><strong>Género:</strong> {taxonomia.get('genero', 'N/A')}</p>
+            with st.expander("🧬 Clasificación Taxonómica"):
+                st.markdown(f"""
+                <div style="text-align: center; background: white; padding: 20px; border-radius: 10px; border: 2px solid #4CAF50;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div>
+                            <p><strong>Reino:</strong> {taxonomia.get('reino', 'N/A')}</p>
+                            <p><strong>Filo:</strong> {taxonomia.get('filo', 'N/A')}</p>
+                            <p><strong>Clase:</strong> {taxonomia.get('clase', 'N/A')}</p>
+                        </div>
+                        <div>
+                            <p><strong>Orden:</strong> {taxonomia.get('orden', 'N/A')}</p>
+                            <p><strong>Familia:</strong> {taxonomia.get('familia', 'N/A')}</p>
+                            <p><strong>Género:</strong> {taxonomia.get('genero', 'N/A')}</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            """, unsafe_allow_html=True)
+                """, unsafe_allow_html=True)
     
     # Información adicional                   
     if datos.get('fuente'):

@@ -274,37 +274,16 @@ def pantalla_prediccion_feedback():
     </div>
     """, unsafe_allow_html=True)
     
-    # CSS para botones con espaciado reducido
-    st.markdown("""
-    <style>
-    div.stButton > button[kind="secondary"] {
-        border: 2px solid #f44336 !important;
-        border-radius: 10px !important;
-    }
-    .stColumns {
-        gap: 0.5rem !important;
-    }
-    div[data-testid="column"] {
-        padding-top: 0.25rem !important;
-        padding-bottom: 0.25rem !important;
-    }
-    .element-container {
-        margin-bottom: 0.5rem !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    
     # Primer botón
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button("✅ ¡Sí, es correcta!", type="primary", use_container_width=True):
             procesar_feedback_positivo(resultado)
     
-    # Segundo botón
+    # Segundo botón con margen negativo
+    st.markdown('<div style="margin-top: -1rem;"></div>', unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        # Margen negativo arriba del botón
-        st.markdown('<div style="margin-top: -1rem;"></div>', unsafe_allow_html=True)
         if st.button("❌ No, es incorrecta", type="secondary", use_container_width=True):
             procesar_feedback_negativo(resultado)
 

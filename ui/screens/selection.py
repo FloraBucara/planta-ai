@@ -139,10 +139,17 @@ def pantalla_top_especies():
             # Establecer mensaje para mostrar en inicio
             st.session_state.mensaje_inicio = "no_identificada"
             
-            # Limpiar y volver al inicio, pero mantener especies descartadas
-            print(f"DEBUG - Antes de limpiar_sesion: {st.session_state.especies_descartadas}")
-            limpiar_sesion(mantener_especies_descartadas=True)
-            print(f"DEBUG - Después de limpiar_sesion: {st.session_state.get('especies_descartadas', 'NO_EXISTE')}")
+            # GUARDAR especies descartadas antes de limpiar
+            especies_guardadas = st.session_state.especies_descartadas.copy()
+            print(f"DEBUG - Guardando especies: {especies_guardadas}")
+            
+            # Limpiar sesión
+            limpiar_sesion()
+            
+            # RESTAURAR especies descartadas
+            st.session_state.especies_descartadas = especies_guardadas
+            print(f"DEBUG - Especies restauradas: {st.session_state.especies_descartadas}")
+            
             # Asegurar que regrese a home
             if 'metodo_seleccionado' in st.session_state:
                 del st.session_state['metodo_seleccionado']

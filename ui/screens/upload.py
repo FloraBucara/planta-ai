@@ -104,6 +104,8 @@ def procesar_identificacion():
             
             # Hacer predicción - Pasar especies descartadas si existen
             especies_excluir = list(st.session_state.especies_descartadas) if st.session_state.especies_descartadas else None
+            print(f"DEBUG - Especies descartadas en session_state: {st.session_state.especies_descartadas}")
+            print(f"DEBUG - especies_excluir que se pasará: {especies_excluir}")
             resultado = hacer_prediccion_con_info(imagen, especies_excluir)
             
             if resultado.get("exito"):
@@ -163,6 +165,7 @@ def hacer_prediccion_con_info(imagen, especies_excluir=None):
     from datetime import datetime
     
     try:
+        print(f"DEBUG - hacer_prediccion_con_info recibió especies_excluir: {especies_excluir}")
         # Hacer predicción con el modelo
         resultado = session_manager.predictor.predecir_planta(imagen, especies_excluir)
         

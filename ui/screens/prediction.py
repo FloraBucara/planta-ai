@@ -335,6 +335,8 @@ def procesar_feedback_negativo(resultado):
     """Procesa el feedback negativo del usuario"""
     especie_rechazada = resultado["especie_predicha"]
     st.session_state.especies_descartadas.add(especie_rechazada)
+    print(f"DEBUG - Especie agregada a descartadas: {especie_rechazada}")
+    print(f"DEBUG - Lista actual de descartadas: {st.session_state.especies_descartadas}")
     st.session_state.intento_actual += 1
     st.session_state.mostrar_top_especies = True
     st.rerun()

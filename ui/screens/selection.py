@@ -136,6 +136,7 @@ def pantalla_top_especies():
         """, unsafe_allow_html=True)
         
         if st.button("❌ No es ninguna de estas", type="secondary", use_container_width=True):
+            print("DEBUG - BOTON PRESIONADO - CODIGO ACTUALIZADO")
             # GUARDAR especies descartadas PRIMERO
             especies_guardadas = st.session_state.especies_descartadas.copy()
             print(f"DEBUG - Guardando especies para mantener: {especies_guardadas}")

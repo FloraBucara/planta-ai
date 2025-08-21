@@ -136,27 +136,14 @@ def pantalla_top_especies():
         """, unsafe_allow_html=True)
         
         if st.button("❌ No es ninguna de estas", type="secondary", use_container_width=True):
-            print("DEBUG - BOTON PRESIONADO - CODIGO ACTUALIZADO")
-            # GUARDAR especies descartadas PRIMERO
-            especies_guardadas = st.session_state.especies_descartadas.copy()
-            print(f"DEBUG - Guardando especies para mantener: {especies_guardadas}")
-            
-            # Limpiar SOLO lo necesario para cambiar pantalla (NO toda la sesión)
-            st.session_state.mostrar_top_especies = False
-            st.session_state.resultado_actual = None
-            
-            # RESTAURAR especies descartadas inmediatamente
-            st.session_state.especies_descartadas = especies_guardadas
-            print(f"DEBUG - Especies mantenidas: {st.session_state.especies_descartadas}")
-            
             # Establecer mensaje para mostrar en inicio
             st.session_state.mensaje_inicio = "no_identificada"
             
-            # Regresar a home SIN limpiar la sesión completa
+            # Limpiar y volver al inicio
+            limpiar_sesion()
+            # Asegurar que regrese a home
             if 'metodo_seleccionado' in st.session_state:
                 del st.session_state['metodo_seleccionado']
-            
-            print(f"DEBUG - Regresando a inicio con especies descartadas: {st.session_state.especies_descartadas}")
             st.rerun()
     
             

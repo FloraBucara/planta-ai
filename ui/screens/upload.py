@@ -102,11 +102,8 @@ def procesar_identificacion():
             if 'especies_descartadas' not in st.session_state:
                 st.session_state.especies_descartadas = set()
             
-            # Hacer predicción - Pasar especies descartadas si existen
-            especies_excluir = list(st.session_state.especies_descartadas) if st.session_state.especies_descartadas else None
-            print(f"DEBUG - Especies descartadas en session_state: {st.session_state.especies_descartadas}")
-            print(f"DEBUG - especies_excluir que se pasará: {especies_excluir}")
-            resultado = hacer_prediccion_con_info(imagen, especies_excluir)
+            # Hacer predicción
+            resultado = hacer_prediccion_con_info(imagen, None)
             
             if resultado.get("exito"):
                 st.session_state.resultado_actual = resultado
@@ -140,10 +137,7 @@ def limpiar_sesion(mantener_especies_descartadas=False):
         if key in st.session_state:
             if key == 'especies_descartadas':
                 if not mantener_especies_descartadas:
-                    print(f"DEBUG - Limpiando especies_descartadas (era: {st.session_state[key]})")
                     st.session_state[key] = set()
-                else:
-                    print(f"DEBUG - MANTENIENDO especies_descartadas: {st.session_state[key]}")
                 # Si mantener_especies_descartadas=True, no modificar
             elif key == 'intento_actual':
                 st.session_state[key] = 1
@@ -168,7 +162,6 @@ def hacer_prediccion_con_info(imagen, especies_excluir=None):
     from datetime import datetime
     
     try:
-        print(f"DEBUG - hacer_prediccion_con_info recibió especies_excluir: {especies_excluir}")
         # Hacer predicción con el modelo
         resultado = session_manager.predictor.predecir_planta(imagen, especies_excluir)
         

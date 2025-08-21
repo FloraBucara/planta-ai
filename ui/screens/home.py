@@ -4,8 +4,32 @@ def pantalla_seleccion_metodo():
     """Pantalla para seleccionar método de entrada - MEJORADA SIN ESPACIOS"""
     # Mostrar mensajes si existen
     if st.session_state.get('mensaje_inicio') == "no_identificada":
-        st.warning("😔 Lo sentimos, no pudimos identificar tu planta anterior.")
-        st.info("💡 **Sugerencia:** Intenta con otra foto desde un ángulo diferente, asegurándote de que se vean claramente las hojas o flores.")
+        # Mensaje de error con fondo sólido amarillo/naranja
+        st.markdown("""
+        <div style="
+            background-color: #FFF3CD;
+            border: 1px solid #FFECB5;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 10px 0;
+        ">
+            <p style="margin: 0; color: #856404;">😔 Lo sentimos, no pudimos identificar tu planta anterior.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Mensaje de sugerencia con fondo sólido azul claro
+        st.markdown("""
+        <div style="
+            background-color: #D1ECF1;
+            border: 1px solid #BEE5EB;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 10px 0;
+        ">
+            <p style="margin: 0; color: #0C5460;"><strong>💡 Sugerencia:</strong> Intenta con otra foto desde un ángulo diferente, asegurándote de que se vean claramente las hojas o flores.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
         # Limpiar el mensaje después de mostrarlo
         st.session_state.mensaje_inicio = None
     

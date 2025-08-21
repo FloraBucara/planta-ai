@@ -70,31 +70,74 @@ class FirestoreManager:
             print(f"❌ Error inicializando Firestore: {e}")
             return False
     
-    def _test_connection(self):
-        """Prueba la conexión con Firestore"""
+    def _test_connection(self, reintentos=3):
+        """Prueba la conexión con Firestore con reintentos automáticos"""
+        import time
+        
+        for intento in range(reintentos):
+            try:
+                print(f"🔍 Test de conexión Firestore (intento {intento + 1}/{reintentos})")
+                
+                # Test básico con documento temporal
+                sistema_ref = self.db.collection('sistema_test')
+                doc_ref = sistema_ref.document('conexion_test')
+                
+                doc_ref.set({
+                    'timestamp': datetime.now(),
+                    'mensaje': 'Conexión exitosa a Firestore',
+                    'version': '1.0_corregida',
+                    'intento': intento + 1
+                })
+                
+                # Leer el documento
+                doc = doc_ref.get()
+                if doc.exists:
+                    print("✅ Test de conexión Firestore exitoso")
+                    doc_ref.delete()  # Limpiar
+                    return True
+                else:
+                    print("⚠️ Conexión establecida pero no se pudo leer datos")
+                    
+            except Exception as e:
+                print(f"❌ Error en test de conexión Firestore (intento {intento + 1}): {e}")
+                
+                if intento < reintentos - 1:
+                    tiempo_espera = (intento + 1) * 2  # Backoff exponencial
+                    print(f"⏳ Esperando {tiempo_espera}s antes del siguiente intento...")
+                    time.sleep(tiempo_espera)
+                else:
+                    print(f"❌ Falló después de {reintentos} intentos")
+                    
+        return False
+    
+    def verificar_salud_conexion(self):
+        """Verifica si la conexión a Firestore está activa"""
+        if not self.initialized or not self.db:
+            return False
+            
         try:
-            # Test básico con documento temporal
-            sistema_ref = self.db.collection('sistema_test')
-            doc_ref = sistema_ref.document('conexion_test')
+            # Test rápido de conexión
+            self.db.collection('sistema_test').limit(1).get()
+            return True
+        except Exception as e:
+            print(f"⚠️ Conexión Firebase perdida: {e}")
+            return False
+    
+    def reconectar_firestore(self):
+        """Intenta reconectar a Firestore si la conexión se perdió"""
+        try:
+            print("🔄 Intentando reconectar a Firestore...")
             
-            doc_ref.set({
-                'timestamp': datetime.now(),
-                'mensaje': 'Conexión exitosa a Firestore',
-                'version': '1.0_corregida'
-            })
-            
-            # Leer el documento
-            doc = doc_ref.get()
-            if doc.exists:
-                print("✅ Test de conexión Firestore exitoso")
-                doc_ref.delete()  # Limpiar
+            # Reinicializar conexión
+            if self.initialize_firestore():
+                print("✅ Reconexión exitosa")
                 return True
             else:
-                print("⚠️ Conexión establecida pero no se pudo leer datos")
+                print("❌ Falló la reconexión")
                 return False
                 
         except Exception as e:
-            print(f"❌ Error en test de conexión Firestore: {e}")
+            print(f"❌ Error durante reconexión: {e}")
             return False
     
     # ==================== NUEVAS FUNCIONES DE NORMALIZACIÓN ====================
@@ -187,7 +230,7 @@ class FirestoreManager:
     
     def obtener_info_especie_basica(self, nombre_cientifico: str) -> Dict[str, Any]:
         """
-        Búsqueda básica con normalización de nombres - VERSION CORREGIDA
+        Búsqueda básica con normalización de nombres y reconexión automática
         
         Args:
             nombre_cientifico: Nombre científico de la especie (formato del modelo)
@@ -196,53 +239,73 @@ class FirestoreManager:
             dict: Información básica de la especie
         """
         try:
-            if not self.initialized:
-                print("⚠️ Firestore no inicializado")
-                return self._generar_info_no_encontrada(nombre_cientifico)
+            # Verificar salud de conexión antes de buscar
+            if not self.initialized or not self.verificar_salud_conexion():
+                print("⚠️ Firestore no disponible, intentando reconectar...")
+                if not self.reconectar_firestore():
+                    print("❌ No se pudo reconectar a Firestore")
+                    return self._generar_info_error(nombre_cientifico, "Conexión a Firebase perdida")
             
             print(f"🔍 Búsqueda con normalización para: {nombre_cientifico}")
             
-            # 1. Buscar en cache primero
-            if nombre_cientifico in self._nombre_cache:
-                nombre_firestore = self._nombre_cache[nombre_cientifico]
-                print(f"💨 Encontrado en cache: {nombre_firestore}")
-                return self._buscar_por_nombre_exacto(nombre_firestore, nombre_cientifico)
-            
-            # 2. Generar variaciones de nombres para Firestore
-            variaciones = self._normalizar_nombre_a_firestore(nombre_cientifico)
-            print(f"🔄 Probando variaciones: {variaciones}")
-            
-            plantas_ref = self.db.collection(self.collections["plantas"])
-            
-            # 3. Buscar cada variación
-            for variacion in variaciones:
-                query = plantas_ref.where('nombre_cientifico', '==', variacion).limit(1)
-                docs = list(query.stream())
-                
-                if docs:
-                    print(f"✅ Encontrado con variación: '{variacion}'")
+            # Intentar búsqueda con reintento automático en caso de fallo
+            for intento in range(2):  # 2 intentos
+                try:
+                    return self._ejecutar_busqueda(nombre_cientifico)
+                except Exception as e:
+                    print(f"❌ Error en búsqueda (intento {intento + 1}): {e}")
                     
-                    # Agregar al cache
-                    self._nombre_cache[nombre_cientifico] = variacion
+                    if intento == 0:  # Solo reconectar en el primer fallo
+                        print("🔄 Intentando reconectar...")
+                        if self.reconectar_firestore():
+                            continue  # Reintentar
                     
-                    # Procesar y retornar datos
-                    data = docs[0].to_dict()
-                    return self._procesar_datos_firestore(data, nombre_cientifico)
-            
-            # 4. Búsqueda parcial como último recurso
-            print(f"🔍 Búsqueda parcial para: {nombre_cientifico}")
-            resultado_parcial = self._busqueda_parcial_inteligente(nombre_cientifico)
-            
-            if resultado_parcial:
-                return resultado_parcial
-            
-            # 5. No encontrado
-            print(f"❌ No encontrado en Firestore: {nombre_cientifico}")
-            return self._generar_info_no_encontrada(nombre_cientifico)
-                
+                    # Si llega aquí, falló definitivamente
+                    return self._generar_info_error(nombre_cientifico, str(e))
+                    
         except Exception as e:
-            print(f"❌ Error en búsqueda básica: {e}")
+            print(f"❌ Error general en búsqueda: {e}")
             return self._generar_info_error(nombre_cientifico, str(e))
+    
+    def _ejecutar_busqueda(self, nombre_cientifico: str) -> Dict[str, Any]:
+        """Ejecuta la búsqueda principal sin manejo de errores de conexión"""
+        # 1. Buscar en cache primero
+        if nombre_cientifico in self._nombre_cache:
+            nombre_firestore = self._nombre_cache[nombre_cientifico]
+            print(f"💨 Encontrado en cache: {nombre_firestore}")
+            return self._buscar_por_nombre_exacto(nombre_firestore, nombre_cientifico)
+        
+        # 2. Generar variaciones de nombres para Firestore
+        variaciones = self._normalizar_nombre_a_firestore(nombre_cientifico)
+        print(f"🔄 Probando variaciones: {variaciones}")
+        
+        plantas_ref = self.db.collection(self.collections["plantas"])
+        
+        # 3. Buscar cada variación
+        for variacion in variaciones:
+            query = plantas_ref.where('nombre_cientifico', '==', variacion).limit(1)
+            docs = list(query.stream())
+            
+            if docs:
+                print(f"✅ Encontrado con variación: '{variacion}'")
+                
+                # Agregar al cache
+                self._nombre_cache[nombre_cientifico] = variacion
+                
+                # Procesar y retornar datos
+                data = docs[0].to_dict()
+                return self._procesar_datos_firestore(data, nombre_cientifico)
+        
+        # 4. Búsqueda parcial como último recurso
+        print(f"🔍 Búsqueda parcial para: {nombre_cientifico}")
+        resultado_parcial = self._busqueda_parcial_inteligente(nombre_cientifico)
+        
+        if resultado_parcial:
+            return resultado_parcial
+        
+        # 5. No encontrado
+        print(f"❌ No encontrado en Firestore: {nombre_cientifico}")
+        return self._generar_info_no_encontrada(nombre_cientifico)
     
     def _buscar_por_nombre_exacto(self, nombre_firestore: str, nombre_original: str) -> Dict[str, Any]:
         """Busca por nombre exacto en Firestore"""

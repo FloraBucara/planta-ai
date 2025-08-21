@@ -33,7 +33,7 @@ st.set_page_config(
 
 @st.cache_resource
 def inicializar_firestore_app():
-    """Inicializa Firestore una sola vez usando cache"""
+    """Inicializa Firestore una sola vez usando cache con reconexión automática"""
     try:
         print("🔥 Inicializando Firestore...")
         
@@ -42,23 +42,46 @@ def inicializar_firestore_app():
             import firebase_admin
             from firebase_admin import credentials, firestore
             
-            # Verificar si ya está inicializado
-            if not firebase_admin._apps:
-                # Convertir secrets a diccionario
+            # Limpiar apps existentes si hay problemas de conexión
+            try:
+                if firebase_admin._apps:
+                    # Verificar si la conexión existente funciona
+                    test_db = firestore.client()
+                    test_db.collection('test').limit(1).get()
+                    print("✅ Conexión Firebase existente válida")
+                    
+                    firestore_manager.db = test_db
+                    firestore_manager.initialized = True
+                    return True
+            except Exception as conn_error:
+                print(f"⚠️ Conexión existente inválida, reinicializando: {conn_error}")
+                # Limpiar apps para reinicializar
+                firebase_admin._apps.clear()
+            
+            # Inicializar nueva conexión
+            try:
                 firebase_creds = dict(st.secrets["firebase"])
                 cred = credentials.Certificate(firebase_creds)
-                firebase_admin.initialize_app(cred)
-            
-            firestore_manager.db = firestore.client()
-            firestore_manager.initialized = True
-            print("✅ Firestore inicializado desde secrets")
-            return True
+                app = firebase_admin.initialize_app(cred)
+                
+                db = firestore.client()
+                # Test de conexión
+                db.collection('sistema_test').limit(1).get()
+                
+                firestore_manager.db = db
+                firestore_manager.initialized = True
+                print("✅ Firestore reinicializado exitosamente desde secrets")
+                return True
+                
+            except Exception as init_error:
+                print(f"❌ Error reinicializando Firebase: {init_error}")
+                return False
         else:
             print("❌ No se encontraron secrets de Firebase")
             return False
             
     except Exception as e:
-        print(f"❌ Excepción inicializando Firestore: {e}")
+        print(f"❌ Excepción general inicializando Firestore: {e}")
         return False
 
 def inicializar_estado():

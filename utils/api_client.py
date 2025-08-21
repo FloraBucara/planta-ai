@@ -10,7 +10,7 @@ from datetime import datetime
 
 
 # Configuración del servidor
-SERVER_URL = ""  # Cambiar a ngrok cuando lo tengamos
+SERVER_URL = "https://61d90a9903a6.ngrok-free.app"  # Cambiar a ngrok cuando lo tengamos
 
 def verificar_servidor():
     """Verifica si el servidor está disponible"""

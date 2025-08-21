@@ -139,8 +139,8 @@ def pantalla_top_especies():
             # Establecer mensaje para mostrar en inicio
             st.session_state.mensaje_inicio = "no_identificada"
             
-            # Limpiar y volver al inicio
-            limpiar_sesion()
+            # Limpiar y volver al inicio, pero mantener especies descartadas
+            limpiar_sesion(mantener_especies_descartadas=True)
             # Asegurar que regrese a home
             if 'metodo_seleccionado' in st.session_state:
                 del st.session_state['metodo_seleccionado']

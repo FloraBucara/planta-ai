@@ -97,10 +97,14 @@ def procesar_identificacion():
             st.session_state.session_id = sesion.session_id
             st.session_state.imagen_actual = imagen
             st.session_state.intento_actual = 1
-            st.session_state.especies_descartadas = set()
             
-            # Hacer predicción
-            resultado = hacer_prediccion_con_info(imagen, None)
+            # Solo limpiar especies descartadas si no existen (primera vez)
+            if 'especies_descartadas' not in st.session_state:
+                st.session_state.especies_descartadas = set()
+            
+            # Hacer predicción - Pasar especies descartadas si existen
+            especies_excluir = list(st.session_state.especies_descartadas) if st.session_state.especies_descartadas else None
+            resultado = hacer_prediccion_con_info(imagen, especies_excluir)
             
             if resultado.get("exito"):
                 st.session_state.resultado_actual = resultado
@@ -116,8 +120,13 @@ def procesar_identificacion():
         except Exception as e:
             st.error(f"❌ Error en la predicción: {e}")
 
-def limpiar_sesion():
-    """Limpia la sesión actual completamente"""
+def limpiar_sesion(mantener_especies_descartadas=False):
+    """
+    Limpia la sesión actual completamente
+    
+    Args:
+        mantener_especies_descartadas: Si True, no limpia la lista de especies descartadas
+    """
     # Importar aquí para evitar problemas
     # Guardar mensaje si existe
     mensaje_temp = st.session_state.get('mensaje_inicio', None)
@@ -128,7 +137,9 @@ def limpiar_sesion():
                 'prediction_screen_loaded']:
         if key in st.session_state:
             if key == 'especies_descartadas':
-                st.session_state[key] = set()
+                if not mantener_especies_descartadas:
+                    st.session_state[key] = set()
+                # Si mantener_especies_descartadas=True, no modificar
             elif key == 'intento_actual':
                 st.session_state[key] = 1
             else:

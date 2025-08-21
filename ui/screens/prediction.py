@@ -326,6 +326,9 @@ def procesar_feedback_positivo(resultado):
         st.balloons()
         time.sleep(2)
         limpiar_sesion()
+        # Asegurar que regrese a home
+        if 'metodo_seleccionado' in st.session_state:
+            del st.session_state['metodo_seleccionado']
         st.rerun()
 
 def procesar_feedback_negativo(resultado):

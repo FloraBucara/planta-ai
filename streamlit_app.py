@@ -70,7 +70,7 @@ def inicializar_firestore_app():
                 
                 firestore_manager.db = db
                 firestore_manager.initialized = True
-                print("✅ Firestore reinicializado exitosamente desde secrets")
+                print("✅ firestore reinicializado exitosamente desde secrets")
                 return True
                 
             except Exception as init_error:

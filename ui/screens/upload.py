@@ -140,7 +140,10 @@ def limpiar_sesion(mantener_especies_descartadas=False):
         if key in st.session_state:
             if key == 'especies_descartadas':
                 if not mantener_especies_descartadas:
+                    print(f"DEBUG - Limpiando especies_descartadas (era: {st.session_state[key]})")
                     st.session_state[key] = set()
+                else:
+                    print(f"DEBUG - MANTENIENDO especies_descartadas: {st.session_state[key]}")
                 # Si mantener_especies_descartadas=True, no modificar
             elif key == 'intento_actual':
                 st.session_state[key] = 1

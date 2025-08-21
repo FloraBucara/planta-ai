@@ -107,23 +107,25 @@ class ModelUtils:
                 if suma_predicciones > 0:
                     predicciones = predicciones / suma_predicciones
             
-            # Obtener predicción principal
-            idx_prediccion = np.argmax(predicciones)
-            confianza = float(predicciones[idx_prediccion])
-            especie_predicha = self.species_names[idx_prediccion]
+            # Obtener predicción principal usando predicciones originales
+            indices_ordenados = np.argsort(predicciones_originales)[::-1]
             
-            # Verificar que no esté en especies excluidas
-            if especies_excluir and especie_predicha in especies_excluir:
-                # Buscar la siguiente mejor
-                indices_ordenados = np.argsort(predicciones)[::-1]
-                
-                for idx in indices_ordenados:
-                    especie_candidata = self.species_names[idx]
-                    if especies_excluir is None or especie_candidata not in especies_excluir:
-                        idx_prediccion = idx
-                        confianza = float(predicciones[idx])
-                        especie_predicha = especie_candidata
-                        break
+            # Buscar la primera especie que NO esté excluida
+            idx_prediccion = None
+            for idx in indices_ordenados:
+                especie_candidata = self.species_names[idx]
+                if especies_excluir is None or especie_candidata not in especies_excluir:
+                    idx_prediccion = idx
+                    confianza = float(predicciones_originales[idx])
+                    especie_predicha = especie_candidata
+                    break
+            
+            # Fallback si todas están excluidas (no debería pasar)
+            if idx_prediccion is None:
+                idx_prediccion = indices_ordenados[0]
+                confianza = float(predicciones_originales[idx_prediccion])
+                especie_predicha = self.species_names[idx_prediccion]
+                print(f"⚠️ Todas las especies están excluidas, usando: {especie_predicha}")
             
             # Obtener top predicciones
             top_indices = np.argsort(predicciones_originales)[::-1]

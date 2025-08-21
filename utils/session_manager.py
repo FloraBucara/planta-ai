@@ -403,6 +403,19 @@ class PlantPredictor:
                 print(f"🚫 Predictor: Excluyendo {len(especies_excluir)} especies: {list(especies_excluir)[:3]}...")
             
             # Hacer predicción
+            # TAMBIÉN aplicar exclusiones en la predicción principal
+            import streamlit as st
+            if especies_excluir is None:
+                especies_excluir = list(st.session_state.get('especies_descartadas', set()))
+            else:
+                # Combinar exclusiones pasadas con las de la sesión
+                especies_sesion = st.session_state.get('especies_descartadas', set())
+                especies_excluir.extend(especies_sesion)
+                especies_excluir = list(set(especies_excluir))  # Eliminar duplicados
+            
+            if especies_excluir:
+                print(f"🚫 Predictor PRINCIPAL: Excluyendo {len(especies_excluir)} especies: {especies_excluir}")
+            
             resultado = self.model_utils.predecir_especie(imagen_procesada, especies_excluir)
             
             if "error" in resultado:

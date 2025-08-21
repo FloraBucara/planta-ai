@@ -124,16 +124,38 @@ class FirestoreManager:
             return False
     
     def reconectar_firestore(self):
-        """Intenta reconectar a Firestore si la conexión se perdió"""
+        """Intenta reconectar a Firestore si la conexión se perdió - usa Streamlit secrets"""
         try:
             print("🔄 Intentando reconectar a Firestore...")
             
-            # Reinicializar conexión
-            if self.initialize_firestore():
-                print("✅ Reconexión exitosa")
-                return True
+            # Para aplicaciones Streamlit, usar la función del streamlit_app
+            import streamlit as st
+            
+            if "firebase" in st.secrets:
+                import firebase_admin
+                from firebase_admin import credentials, firestore
+                
+                # Limpiar apps existentes
+                if firebase_admin._apps:
+                    firebase_admin._apps.clear()
+                
+                # Inicializar nueva conexión con secrets
+                firebase_creds = dict(st.secrets["firebase"])
+                cred = credentials.Certificate(firebase_creds)
+                firebase_admin.initialize_app(cred)
+                
+                self.db = firestore.client()
+                self.initialized = True
+                
+                # Test rápido
+                if self._test_connection(reintentos=1):
+                    print("✅ Reconexión exitosa usando secrets")
+                    return True
+                else:
+                    print("❌ Test de reconexión falló")
+                    return False
             else:
-                print("❌ Falló la reconexión")
+                print("❌ No se encontraron secrets de Firebase para reconexión")
                 return False
                 
         except Exception as e:

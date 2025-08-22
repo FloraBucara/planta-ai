@@ -9,7 +9,7 @@ import streamlit as st
 from datetime import datetime
 
 
-SERVER_URL = "https://2702c98d5b17.ngrok-free.app"
+SERVER_URL = "https://b07da61aba3c.ngrok-free.app"
 
 def verificar_servidor():
     """Verifica la disponibilidad del servidor realizando una petición de salud."""

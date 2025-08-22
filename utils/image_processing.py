@@ -70,13 +70,18 @@ class ImageProcessor:
             imagen: Imagen en cualquier formato soportado
         
         Returns:
-            numpy array con shape (1, 224, 224, 3)
+            numpy array con shape (1, 3, 224, 224) para ONNX
         """
         img_procesada = self.cargar_y_procesar_imagen(imagen)
         
         if img_procesada is not None:
-            # Agregar dimensión batch
-            return np.expand_dims(img_procesada, axis=0)
+            # Agregar dimensión batch: (224, 224, 3) -> (1, 224, 224, 3)
+            img_batch = np.expand_dims(img_procesada, axis=0)
+            
+            # Convertir de NHWC a NCHW para ONNX: (1, 224, 224, 3) -> (1, 3, 224, 224)
+            img_onnx = np.transpose(img_batch, (0, 3, 1, 2))
+            
+            return img_onnx
         
         return None
     

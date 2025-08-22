@@ -10,15 +10,12 @@ def mostrar_sidebar(estado_sistema):
         st.markdown(f"🌿 **Especies:** {estado_sistema.get('especies', 'N/A')}")
         st.markdown(f"⏱️ **Actualización:** {datetime.now().strftime('%H:%M:%S')}")
         
-        # Estado de servicios
         st.markdown("---")
         st.markdown("### 🔌 Estado de Servicios")
         
-        # Estado del sistema (simplificado)
         if st.session_state.get('firestore_initialized', False):
             st.success("✅ Sistema: Completamente funcional")
     
-            # Mostrar estadísticas solo si el servidor está disponible
             if servidor_disponible():
                 stats = obtener_estadisticas()
                 if stats:
@@ -28,13 +25,11 @@ def mostrar_sidebar(estado_sistema):
         else:
             st.info("ℹ️ Sistema funcionando en modo básico")
     
-        # Botón de reset
         st.markdown("---")
         if st.button("🔄 Nueva Consulta", use_container_width=True):
             limpiar_sesion()
             st.rerun()
         
-        # Debug info
         with st.expander("🔧 Debug Info"):
             st.write(f"**Session ID:** {st.session_state.get('session_id', 'None')}")
             st.write(f"**Intento:** {st.session_state.get('intento_actual', 0)}")

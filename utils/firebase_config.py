@@ -1,5 +1,3 @@
-# utils/firebase_config.py - VERSION CORREGIDA CON NORMALIZACIÓN DE NOMBRES
-
 import firebase_admin
 from firebase_admin import credentials, firestore
 import json
@@ -10,7 +8,6 @@ from pathlib import Path
 import sys
 from typing import Dict, List, Optional, Any
 
-# Agregar directorio padre al path
 sys.path.append(str(Path(__file__).parent.parent))
 from config import FIREBASE_CONFIG, API_CONFIG
 
@@ -24,29 +21,25 @@ class FirestoreManager:
         self.collections = FIREBASE_CONFIG["collections"]
         self.plantas_schema = FIREBASE_CONFIG["plantas_schema"]
         
-        # Cache para mapeo de nombres (mejora rendimiento)
         self._nombre_cache = {}
         
     def initialize_firestore(self, service_account_path=None):
-        """Inicializa Firestore con las credenciales reales"""
+        """Inicializa la conexión con Firestore usando credenciales de servicio."""
         try:
             if service_account_path is None:
                 service_account_path = FIREBASE_CONFIG["service_account_path"]
             
-            # Verificar que existe el archivo de credenciales
             cred_path = Path(service_account_path)
             if not cred_path.exists():
                 print(f"❌ Archivo de credenciales no encontrado: {cred_path}")
                 return False
             
-            # Verificar que no esté ya inicializado
             if firebase_admin._apps:
                 print("✅ Firebase ya está inicializado")
                 self.initialized = True
                 self.db = firestore.client()
                 return True
             
-            # Inicializar Firebase para Firestore
             cred = credentials.Certificate(str(cred_path))
             firebase_admin.initialize_app(cred, {
                 'projectId': FIREBASE_CONFIG["project_id"]
@@ -59,7 +52,6 @@ class FirestoreManager:
             print(f"📊 Proyecto: {FIREBASE_CONFIG['project_id']}")
             print(f"📋 Colección plantas: {self.collections['plantas']}")
             
-            # Verificar conexión y cargar cache de nombres
             if self._test_connection():
                 self._cargar_cache_nombres()
                 return True
@@ -71,14 +63,13 @@ class FirestoreManager:
             return False
     
     def _test_connection(self, reintentos=3):
-        """Prueba la conexión con Firestore con reintentos automáticos"""
+        """Prueba la conexión con Firestore realizando un test de escritura y lectura."""
         import time
         
         for intento in range(reintentos):
             try:
                 print(f"🔍 Test de conexión Firestore (intento {intento + 1}/{reintentos})")
                 
-                # Test básico con documento temporal
                 sistema_ref = self.db.collection('sistema_test')
                 doc_ref = sistema_ref.document('conexion_test')
                 
@@ -89,11 +80,10 @@ class FirestoreManager:
                     'intento': intento + 1
                 })
                 
-                # Leer el documento
                 doc = doc_ref.get()
                 if doc.exists:
                     print("✅ Test de conexión Firestore exitoso")
-                    doc_ref.delete()  # Limpiar
+                    doc_ref.delete()
                     return True
                 else:
                     print("⚠️ Conexión establecida pero no se pudo leer datos")
@@ -102,7 +92,7 @@ class FirestoreManager:
                 print(f"❌ Error en test de conexión Firestore (intento {intento + 1}): {e}")
                 
                 if intento < reintentos - 1:
-                    tiempo_espera = (intento + 1) * 2  # Backoff exponencial
+                    tiempo_espera = (intento + 1) * 2
                     print(f"⏳ Esperando {tiempo_espera}s antes del siguiente intento...")
                     time.sleep(tiempo_espera)
                 else:
@@ -111,12 +101,11 @@ class FirestoreManager:
         return False
     
     def verificar_salud_conexion(self):
-        """Verifica si la conexión a Firestore está activa"""
+        """Verifica si la conexión con Firestore está activa y responde correctamente."""
         if not self.initialized or not self.db:
             return False
             
         try:
-            # Test rápido de conexión
             self.db.collection('sistema_test').limit(1).get()
             return True
         except Exception as e:
@@ -124,22 +113,19 @@ class FirestoreManager:
             return False
     
     def reconectar_firestore(self):
-        """Intenta reconectar a Firestore si la conexión se perdió - usa Streamlit secrets"""
+        """Intenta reconectar a Firestore usando configuración de Streamlit secrets."""
         try:
             print("🔄 Intentando reconectar a Firestore...")
             
-            # Para aplicaciones Streamlit, usar la función del streamlit_app
             import streamlit as st
             
             if "firebase" in st.secrets:
                 import firebase_admin
                 from firebase_admin import credentials, firestore
                 
-                # Limpiar apps existentes
                 if firebase_admin._apps:
                     firebase_admin._apps.clear()
                 
-                # Inicializar nueva conexión con secrets
                 firebase_creds = dict(st.secrets["firebase"])
                 cred = credentials.Certificate(firebase_creds)
                 firebase_admin.initialize_app(cred)
@@ -147,7 +133,6 @@ class FirestoreManager:
                 self.db = firestore.client()
                 self.initialized = True
                 
-                # Test rápido
                 if self._test_connection(reintentos=1):
                     print("✅ Reconexión exitosa usando secrets")
                     return True
@@ -162,9 +147,8 @@ class FirestoreManager:
             print(f"❌ Error durante reconexión: {e}")
             return False
     
-    # ==================== NUEVAS FUNCIONES DE NORMALIZACIÓN ====================
-    
     def _normalizar_nombre_a_firestore(self, nombre_modelo: str) -> List[str]:
+        """Convierte nombre del modelo al formato de nombres en Firestore."""
         """
         Convierte nombre del modelo al formato de Firestore
         
@@ -176,20 +160,15 @@ class FirestoreManager:
         """
         variaciones = []
         
-        # Conversión básica: guiones bajos a espacios
         nombre_espacios = nombre_modelo.replace('_', ' ')
         variaciones.append(nombre_espacios)
         
-        # Con punto al final
         if not nombre_espacios.endswith('.'):
             variaciones.append(nombre_espacios + '.')
         
-        # Sin punto al final
         if nombre_espacios.endswith('.'):
             variaciones.append(nombre_espacios[:-1])
         
-        # Variaciones con paréntesis (común en nombres científicos)
-        # Ejemplo: "Agave_americana_(L.)_Oerst" -> "Agave americana (L.) Oerst."
         if '(' in nombre_modelo:
             nombre_parentesis = re.sub(r'_\(', ' (', nombre_modelo)
             nombre_parentesis = re.sub(r'\)_', ') ', nombre_parentesis)
@@ -198,7 +177,6 @@ class FirestoreManager:
             if not nombre_parentesis.endswith('.'):
                 variaciones.append(nombre_parentesis + '.')
         
-        # Remover duplicados manteniendo orden
         variaciones_unicas = []
         for var in variaciones:
             if var not in variaciones_unicas:
@@ -207,6 +185,7 @@ class FirestoreManager:
         return variaciones_unicas
     
     def _normalizar_nombre_a_modelo(self, nombre_firestore: str) -> str:
+        """Convierte nombre de Firestore al formato esperado por el modelo."""
         """
         Convierte nombre de Firestore al formato del modelo
         
@@ -216,25 +195,22 @@ class FirestoreManager:
         Returns:
             str: "Agave_americana_L" (formato del modelo)
         """
-        # Remover punto final si existe
         nombre = nombre_firestore.rstrip('.')
         
-        # Reemplazar espacios con guiones bajos
         nombre = nombre.replace(' ', '_')
         
-        # Manejar paréntesis
         nombre = re.sub(r' \(', '_(', nombre)
         nombre = re.sub(r'\) ', ')_', nombre)
         
         return nombre
     
     def _cargar_cache_nombres(self):
-        """Carga un cache de nombres para búsquedas más rápidas"""
+        """Carga un cache de nombres científicos para acelerar búsquedas futuras."""
         try:
             print("📋 Cargando cache de nombres científicos...")
             
             plantas_ref = self.db.collection(self.collections["plantas"])
-            docs = plantas_ref.limit(50).stream()  # Cargar primeros 50 para cache inicial
+            docs = plantas_ref.limit(50).stream()
             
             for doc in docs:
                 data = doc.to_dict()
@@ -248,9 +224,8 @@ class FirestoreManager:
         except Exception as e:
             print(f"⚠️ Error cargando cache de nombres: {e}")
     
-    # ==================== FUNCIÓN PRINCIPAL CORREGIDA ====================
-    
     def obtener_info_especie_basica(self, nombre_cientifico: str) -> Dict[str, Any]:
+        """Obtiene información básica de una especie con normalización de nombres y reconexiones automáticas."""
         """
         Búsqueda básica con normalización de nombres y reconexión automática
         
@@ -261,7 +236,6 @@ class FirestoreManager:
             dict: Información básica de la especie
         """
         try:
-            # Verificar salud de conexión antes de buscar
             if not self.initialized or not self.verificar_salud_conexion():
                 print("⚠️ Firestore no disponible, intentando reconectar...")
                 if not self.reconectar_firestore():
@@ -270,19 +244,17 @@ class FirestoreManager:
             
             print(f"🔍 Búsqueda con normalización para: {nombre_cientifico}")
             
-            # Intentar búsqueda con reintento automático en caso de fallo
-            for intento in range(2):  # 2 intentos
+            for intento in range(2):
                 try:
                     return self._ejecutar_busqueda(nombre_cientifico)
                 except Exception as e:
                     print(f"❌ Error en búsqueda (intento {intento + 1}): {e}")
                     
-                    if intento == 0:  # Solo reconectar en el primer fallo
+                    if intento == 0:
                         print("🔄 Intentando reconectar...")
                         if self.reconectar_firestore():
-                            continue  # Reintentar
+                            continue
                     
-                    # Si llega aquí, falló definitivamente
                     return self._generar_info_error(nombre_cientifico, str(e))
                     
         except Exception as e:
@@ -290,20 +262,17 @@ class FirestoreManager:
             return self._generar_info_error(nombre_cientifico, str(e))
     
     def _ejecutar_busqueda(self, nombre_cientifico: str) -> Dict[str, Any]:
-        """Ejecuta la búsqueda principal sin manejo de errores de conexión"""
-        # 1. Buscar en cache primero
+        """Ejecuta la búsqueda principal de especies en Firestore con normalización de nombres."""
         if nombre_cientifico in self._nombre_cache:
             nombre_firestore = self._nombre_cache[nombre_cientifico]
             print(f"💨 Encontrado en cache: {nombre_firestore}")
             return self._buscar_por_nombre_exacto(nombre_firestore, nombre_cientifico)
         
-        # 2. Generar variaciones de nombres para Firestore
         variaciones = self._normalizar_nombre_a_firestore(nombre_cientifico)
         print(f"🔄 Probando variaciones: {variaciones}")
         
         plantas_ref = self.db.collection(self.collections["plantas"])
         
-        # 3. Buscar cada variación
         for variacion in variaciones:
             query = plantas_ref.where('nombre_cientifico', '==', variacion).limit(1)
             docs = list(query.stream())
@@ -311,26 +280,22 @@ class FirestoreManager:
             if docs:
                 print(f"✅ Encontrado con variación: '{variacion}'")
                 
-                # Agregar al cache
                 self._nombre_cache[nombre_cientifico] = variacion
                 
-                # Procesar y retornar datos
                 data = docs[0].to_dict()
                 return self._procesar_datos_firestore(data, nombre_cientifico)
         
-        # 4. Búsqueda parcial como último recurso
         print(f"🔍 Búsqueda parcial para: {nombre_cientifico}")
         resultado_parcial = self._busqueda_parcial_inteligente(nombre_cientifico)
         
         if resultado_parcial:
             return resultado_parcial
         
-        # 5. No encontrado
         print(f"❌ No encontrado en Firestore: {nombre_cientifico}")
         return self._generar_info_no_encontrada(nombre_cientifico)
     
     def _buscar_por_nombre_exacto(self, nombre_firestore: str, nombre_original: str) -> Dict[str, Any]:
-        """Busca por nombre exacto en Firestore"""
+        """Realiza búsqueda exacta por nombre científico en Firestore."""
         try:
             plantas_ref = self.db.collection(self.collections["plantas"])
             query = plantas_ref.where('nombre_cientifico', '==', nombre_firestore).limit(1)
@@ -346,9 +311,8 @@ class FirestoreManager:
             return self._generar_info_error(nombre_original, str(e))
     
     def _busqueda_parcial_inteligente(self, nombre_cientifico: str) -> Optional[Dict[str, Any]]:
-        """Búsqueda parcial más inteligente"""
+        """Realiza búsqueda parcial por género y especie cuando no se encuentra coincidencia exacta."""
         try:
-            # Extraer género y especie
             partes = nombre_cientifico.replace('_', ' ').split()
             
             if len(partes) >= 2:
@@ -359,18 +323,15 @@ class FirestoreManager:
                 
                 plantas_ref = self.db.collection(self.collections["plantas"])
                 
-                # Buscar documentos que contengan el género en el nombre científico
                 docs = plantas_ref.limit(50).stream()
                 
                 for doc in docs:
                     data = doc.to_dict()
                     nombre_doc = data.get('nombre_cientifico', '').lower()
                     
-                    # Verificar si contiene género y especie
                     if genero.lower() in nombre_doc and especie.lower() in nombre_doc:
                         print(f"🎯 Coincidencia parcial encontrada: {data.get('nombre_cientifico')}")
                         
-                        # Agregar al cache
                         self._nombre_cache[nombre_cientifico] = data.get('nombre_cientifico')
                         
                         return self._procesar_datos_firestore(data, nombre_cientifico)
@@ -382,40 +343,33 @@ class FirestoreManager:
             return None
     
     def _procesar_datos_firestore(self, data: Dict[str, Any], nombre_original: str) -> Dict[str, Any]:
-        """Procesa datos obtenidos de Firestore"""
+        """Procesa y formatea los datos obtenidos de Firestore para presentación."""
         
-        # Procesar imagen URL - ahora usando el campo 'imagenes' que encontramos
         imagen_url = ""
         if 'imagenes' in data and data['imagenes']:
             if isinstance(data['imagenes'], list) and len(data['imagenes']) > 0:
-                imagen_url = data['imagenes'][0]  # Tomar primera imagen
+                imagen_url = data['imagenes'][0]
             elif isinstance(data['imagenes'], str):
                 imagen_url = data['imagenes']
         
-        # Si no hay imagen en Firestore, usar API local
         if not imagen_url:
             imagen_url = self._generar_url_imagen_referencia(nombre_original)
         
-        # Procesar taxonomía
         taxonomia = data.get('taxonomia', {})
         if isinstance(taxonomia, list):
-            # Convertir lista a dict si es necesario
             taxonomia = {}
         
-        # Información procesada
         info_procesada = {
             "nombre_cientifico": data.get('nombre_cientifico', nombre_original),
             "nombre_comun": data.get('nombre_comun', 'Nombre no disponible'),
             "descripcion": data.get('descripcion', ''),
-            "cuidados": data.get('cuidados', ''),  # ← AGREGADO: Campo cuidados
+            "cuidados": data.get('cuidados', ''),
             "fecha_observacion": str(data.get('fecha_observacion', '')),
             "fuente": data.get('fuente', ''),
             "imagen_referencia": imagen_url,
             
-            # Taxonomía
             "taxonomia": taxonomia,
             
-            # Metadatos
             "fuente_datos": "firestore",
             "timestamp_consulta": datetime.now().isoformat(),
             "nombre_original_buscado": nombre_original
@@ -423,10 +377,8 @@ class FirestoreManager:
         
         return info_procesada
     
-    # ==================== FUNCIONES DE INFORMACIÓN NO ENCONTRADA/ERROR ====================
-    
     def _generar_info_no_encontrada(self, nombre_cientifico: str) -> Dict[str, Any]:
-        """Genera información cuando no se encuentra la especie"""
+        """Genera información de respuesta cuando no se encuentra la especie en la base de datos."""
         return {
             "nombre_cientifico": nombre_cientifico,
             "nombre_comun": "Especie no encontrada en la base de datos",
@@ -440,7 +392,7 @@ class FirestoreManager:
         }
     
     def _generar_info_error(self, nombre_cientifico: str, error_msg: str) -> Dict[str, Any]:
-        """Genera información cuando hay error de conexión"""
+        """Genera información de respuesta cuando ocurre un error de conexión."""
         return {
             "nombre_cientifico": nombre_cientifico,
             "nombre_comun": "Error de conexión",
@@ -453,10 +405,8 @@ class FirestoreManager:
             "timestamp_consulta": datetime.now().isoformat()
         }
     
-    # ==================== FUNCIONES AUXILIARES EXISTENTES ====================
-    
     def _generar_url_imagen_referencia(self, nombre_especie: str) -> str:
-        """Genera URL para imagen de referencia usando la API"""
+        """Genera URL para obtener imagen de referencia desde la API local."""
         try:
             if self._api_base_url:
                 base_url = self._api_base_url
@@ -470,18 +420,16 @@ class FirestoreManager:
             return ""
     
     def establecer_url_api(self, url_api: str):
-        """Establece la URL base de la API para generar URLs de imágenes"""
+        """Establece la URL base de la API para generar URLs de imágenes de referencia."""
         self._api_base_url = url_api
         print(f"🔗 URL de API establecida para Firestore: {url_api}")
     
-    # ==================== FUNCIONES EXISTENTES (MANTENIDAS) ====================
-    
     def obtener_info_especie(self, nombre_cientifico: str) -> Dict[str, Any]:
-        """Función original mantenida para compatibilidad"""
+        """Función original mantenida para compatibilidad con código existente."""
         return self.obtener_info_especie_basica(nombre_cientifico)
     
     def guardar_analisis_usuario(self, datos_analisis: Dict[str, Any]) -> Dict[str, str]:
-        """Guarda un análisis de usuario en Firestore"""
+        """Guarda los datos de análisis de un usuario en la colección de Firestore."""
         if not self.initialized:
             print("⚠️ Firestore no inicializado")
             return {"status": "error", "mensaje": "Firestore no inicializado"}
@@ -506,7 +454,7 @@ class FirestoreManager:
             return {"status": "error", "mensaje": str(e)}
     
     def listar_todas_especies(self, limite: int = 100) -> List[Dict[str, Any]]:
-        """Lista todas las especies disponibles en Firestore"""
+        """Obtiene una lista de todas las especies disponibles en la base de datos."""
         try:
             if not self.initialized:
                 return []
@@ -531,36 +479,32 @@ class FirestoreManager:
             print(f"❌ Error listando especies: {e}")
             return []
 
-# ==================== INSTANCIA GLOBAL Y FUNCIONES DE CONVENIENCIA ====================
-
-# Instancia global con la nueva versión corregida
 firestore_manager = FirestoreManager()
 
 def inicializar_firestore():
-    """Función de conveniencia para inicializar Firestore"""
+    """Función de conveniencia para inicializar la conexión con Firestore."""
     return firestore_manager.initialize_firestore()
 
 def obtener_info_planta_basica(nombre_especie):
-    """Función de conveniencia para obtener info básica de planta - CORREGIDA"""
+    """Función de conveniencia para obtener información básica de una planta."""
     return firestore_manager.obtener_info_especie_basica(nombre_especie)
 
 def obtener_info_planta(nombre_especie):
-    """Función de conveniencia para obtener info de planta"""
+    """Función de conveniencia para obtener información completa de una planta."""
     return firestore_manager.obtener_info_especie_basica(nombre_especie)
 
 def guardar_analisis(datos):
-    """Función de conveniencia para guardar análisis"""
+    """Función de conveniencia para guardar datos de análisis en Firestore."""
     return firestore_manager.guardar_analisis_usuario(datos)
 
 def establecer_url_api_global(url_api):
-    """Establece la URL de la API globalmente"""
+    """Función de conveniencia para establecer la URL de la API globalmente."""
     firestore_manager.establecer_url_api(url_api)
 
 def listar_especies_disponibles(limite=100):
-    """Función de conveniencia para listar especies"""
+    """Función de conveniencia para listar especies disponibles en la base de datos."""
     return firestore_manager.listar_todas_especies(limite)
 
-# Compatibilidad con código anterior
 firebase_manager = firestore_manager
 
 if __name__ == "__main__":

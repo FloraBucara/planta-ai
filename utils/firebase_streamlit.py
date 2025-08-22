@@ -1,4 +1,3 @@
-# utils/firebase_streamlit.py - FIREBASE OPTIMIZADO PARA STREAMLIT
 import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, firestore
@@ -6,27 +5,23 @@ import json
 from pathlib import Path
 import sys
 
-# Agregar directorio padre al path
 sys.path.append(str(Path(__file__).parent.parent))
 from config import FIREBASE_CONFIG
 
 @st.cache_resource
 def initialize_firebase():
-    """Inicializa Firebase una sola vez para toda la aplicación Streamlit"""
+    """Inicializa Firebase una sola vez para toda la aplicación Streamlit usando cache."""
     try:
-        # Verificar si ya está inicializado
         if firebase_admin._apps:
             print("🔥 Firebase ya inicializado")
             return firestore.client()
         
-        # Ruta del archivo de credenciales
         cred_path = Path(FIREBASE_CONFIG["service_account_path"])
         
         if not cred_path.exists():
             print(f"❌ Archivo de credenciales no encontrado: {cred_path}")
             return None
         
-        # Inicializar Firebase
         cred = credentials.Certificate(str(cred_path))
         firebase_admin.initialize_app(cred, {
             'projectId': FIREBASE_CONFIG["project_id"]
@@ -40,21 +35,18 @@ def initialize_firebase():
         print(f"❌ Error inicializando Firebase: {e}")
         return None
 
-@st.cache_data(ttl=600)  # Cache por 10 minutos
+@st.cache_data(ttl=600)
 def get_plant_from_firestore(species_name):
-    """Obtiene información de planta desde Firestore con cache"""
+    """Obtiene información de planta desde Firestore con cache optimizado para Streamlit."""
     try:
-        # Obtener conexión
         db = initialize_firebase()
         
         if not db:
             return None
         
-        # Buscar en la colección 'planta'
         collection_name = FIREBASE_CONFIG["collections"]["plantas"]
         plantas_ref = db.collection(collection_name)
         
-        # Normalizar nombre para búsqueda
         search_variations = [
             species_name,
             species_name.replace('_', ' '),
@@ -62,7 +54,6 @@ def get_plant_from_firestore(species_name):
             species_name.replace('_', ' ').replace('(', ' (').replace(')', ') ')
         ]
         
-        # Probar cada variación
         for variation in search_variations:
             query = plantas_ref.where('nombre_cientifico', '==', variation).limit(1)
             docs = list(query.stream())
@@ -84,7 +75,6 @@ def get_plant_from_firestore(species_name):
                     "fuente_datos": "Firebase Firestore"
                 }
         
-        # No encontrado
         print(f"❌ No encontrado en Firestore: {species_name}")
         return None
         
@@ -93,15 +83,13 @@ def get_plant_from_firestore(species_name):
         return None
 
 def get_plant_info_complete(species_name):
-    """Función principal para obtener información completa de planta"""
+    """Función principal para obtener información completa de planta con fallback."""
     try:
-        # Intentar obtener desde Firestore
         firestore_data = get_plant_from_firestore(species_name)
         
         if firestore_data and firestore_data.get("found"):
             return firestore_data
         
-        # Fallback: información básica
         return {
             "found": False,
             "nombre_comun": "Especie identificada",
@@ -131,14 +119,13 @@ def get_plant_info_complete(species_name):
         }
 
 def test_firebase_connection():
-    """Función para probar la conexión desde Streamlit"""
+    """Función para probar la conexión con Firebase desde Streamlit."""
     try:
         db = initialize_firebase()
         
         if not db:
             return {"success": False, "error": "No se pudo inicializar Firebase"}
         
-        # Test con una especie conocida
         test_result = get_plant_from_firestore("Agave_americana_L")
         
         if test_result and test_result.get("found"):
@@ -156,7 +143,6 @@ def test_firebase_connection():
     except Exception as e:
         return {"success": False, "error": str(e)}
 
-# Test para verificar que funciona
 if __name__ == "__main__":
     print("🧪 Testing Firebase para Streamlit...")
     result = test_firebase_connection()

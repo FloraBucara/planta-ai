@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
-# Script para probar la carga del modelo ONNX
 
 import sys
 from pathlib import Path
 
-# Agregar directorio padre al path
 sys.path.append(str(Path(__file__).parent))
 
 try:
     print("Verificando modelo ONNX...")
     print("=" * 50)
     
-    # Test 1: Importar configuración
     try:
         from config import PATHS, MODEL_CONFIG
         print("OK - Configuración importada correctamente")
@@ -21,7 +18,6 @@ try:
         print(f"ERROR - Error importando configuración: {e}")
         exit(1)
     
-    # Test 2: Verificar archivos
     model_file = PATHS["model_file"].parent / "plant_classifier.onnx"
     metadata_file = PATHS["model_file"].parent / "model_metadata.json"
     species_file = PATHS["species_list_file"]
@@ -35,13 +31,11 @@ try:
         print("ERROR - ARCHIVO ONNX NO ENCONTRADO")
         exit(1)
     
-    # Test 3: Cargar modelo con ONNX Runtime
     try:
         import onnxruntime as ort
         session = ort.InferenceSession(str(model_file))
         print(f"OK - Modelo ONNX cargado correctamente")
         
-        # Verificar inputs/outputs
         input_info = session.get_inputs()[0]
         output_info = session.get_outputs()[0]
         print(f"   Input: {input_info.name} {input_info.shape}")
@@ -51,7 +45,6 @@ try:
         print(f"ERROR - Error cargando modelo ONNX: {e}")
         exit(1)
     
-    # Test 4: Cargar metadatos
     try:
         import json
         if metadata_file.exists():
@@ -71,7 +64,6 @@ try:
         print(f"ERROR - Error cargando metadatos: {e}")
         exit(1)
     
-    # Test 5: Usar ModelUtils
     try:
         from model.model_utils import ModelUtils
         model_utils = ModelUtils()
@@ -80,7 +72,6 @@ try:
         if resultado:
             print(f"OK - ModelUtils cargado: {model_utils.num_classes} especies")
             
-            # Test de predicción
             import numpy as np
             test_image = np.random.random((1, 224, 224, 3)).astype(np.float32)
             prediccion = model_utils.predecir_especie(test_image)

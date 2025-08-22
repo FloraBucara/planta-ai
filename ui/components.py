@@ -1,15 +1,12 @@
 import streamlit as st
 from pathlib import Path
-import base64  # Agregado para la opción de centrado con CSS
+import base64
 
 def mostrar_header():
-    """Muestra el header principal de la aplicación con logo - CORREGIDO"""
-    # Intentar cargar logo local
+    """Muestra el header principal de la aplicación con logo centrado y texto descriptivo."""
     logo_path = Path("assets/logo.png")
     
-    # Logo centrado
     if logo_path.exists():
-        # Opción con CSS - Centrado perfecto
         with open(logo_path, "rb") as file:
             logo_base64 = base64.b64encode(file.read()).decode()
         
@@ -18,10 +15,8 @@ def mostrar_header():
             <img src="data:image/png;base64,{logo_base64}" style="width: 300px; height: auto;" />
         </div>
         """
-        # ↑↑↑ AQUÍ CAMBIAS EL TAMAÑO: width: 300px ↑↑↑
         st.markdown(html_logo, unsafe_allow_html=True)
     else:
-        # Fallback: Título con texto si no hay logo
         html_titulo = """
         <div style="text-align: center; margin: -0.5rem 0 0.25rem 0;">
             <h1 style="background: linear-gradient(90deg, #2E8B57, #98FB98); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 2.5rem; font-weight: bold; margin: 0;">
@@ -31,7 +26,6 @@ def mostrar_header():
         """
         st.markdown(html_titulo, unsafe_allow_html=True)
     
-    # Texto descriptivo centrado - CONTORNO GRUESO
     html_descripcion = """
     <div style="text-align: center; margin-bottom: 1rem; margin-top: 1rem;">
         <p style="
@@ -56,20 +50,16 @@ def mostrar_header():
     st.markdown(html_descripcion, unsafe_allow_html=True)
         
 def mostrar_info_planta_completa(info_planta):
-    """
-    Muestra la información completa de la planta de forma visualmente atractiva
-    """
+    """Muestra información completa de una planta con formato visualmente atractivo y organizado."""
     datos = info_planta.get('datos', {})
     fuente = info_planta.get('fuente', 'desconocido')
     
     col1, col2 = st.columns([2, 1])
     
     with col1:
-        # Nombre común y científico
         st.markdown(f"### 🌿 {datos.get('nombre_comun', 'Nombre no disponible')}")
         st.markdown(f"**Nombre científico:** *{datos.get('nombre_cientifico', 'N/A')}*")
         
-        # Descripción
         descripcion = datos.get('descripcion', '')
         if descripcion and fuente == 'firestore':
             st.markdown("#### 📝 Descripción")
@@ -79,10 +69,8 @@ def mostrar_info_planta_completa(info_planta):
             st.markdown(f"**📚 Fuente:** {datos.get('fuente')}")
     
     with col2:
-        # Imagen desde servidor
         mostrar_imagen_referencia(datos.get('nombre_cientifico', ''))
 
-    # Información taxonómica
     if datos.get('taxonomia') and fuente == 'firestore':
         with st.expander("🧬 Ver Clasificación Taxonómica"):
             taxonomia = datos.get('taxonomia', {})
@@ -103,7 +91,7 @@ def mostrar_info_planta_completa(info_planta):
                 st.write(f"• **Especie:** {taxonomia.get('especie', 'N/A')}")
 
 def mostrar_imagen_referencia(nombre_cientifico):
-    """Muestra la primera imagen disponible de la especie desde el servidor"""
+    """Muestra la primera imagen disponible de la especie desde el servidor API."""
     try:
         from utils.api_client import SERVER_URL
         from urllib.parse import quote
@@ -111,14 +99,11 @@ def mostrar_imagen_referencia(nombre_cientifico):
         if not SERVER_URL:
             return
         
-        # Convertir a formato de carpeta
         nombre_carpeta = nombre_cientifico.replace(' ', '_')
         
-        # Codificar URL
         especie_encoded = quote(nombre_carpeta)
         imagen_url = f"{SERVER_URL}/api/image-referencia/{especie_encoded}"
         
-        # Mostrar imagen directamente
         try:
             st.image(
                 imagen_url,
@@ -132,7 +117,7 @@ def mostrar_imagen_referencia(nombre_cientifico):
         pass
 
 def mostrar_imagen_referencia_sin_barra(nombre_cientifico):
-    """Muestra imagen de referencia SIN la barra superior molesta"""
+    """Muestra imagen de referencia sin la barra superior de Streamlit para mejor presentación."""
     try:
         from utils.api_client import SERVER_URL
         from urllib.parse import quote
@@ -140,18 +125,15 @@ def mostrar_imagen_referencia_sin_barra(nombre_cientifico):
         if not SERVER_URL:
             return
         
-        # Convertir a formato de carpeta
         nombre_carpeta = nombre_cientifico.replace(' ', '_')
         especie_encoded = quote(nombre_carpeta)
         imagen_url = f"{SERVER_URL}/api/image-referencia/{especie_encoded}"
         
-        # Mostrar imagen SIN caption para evitar barra
         try:
             st.image(
                 imagen_url,
                 use_container_width=True
             )
-            # Caption manual sin barra
             st.markdown(
                 '<p style="text-align: center; color: gray; font-size: 0.8em; margin-top: 0.5rem;">Imagen de referencia</p>',
                 unsafe_allow_html=True

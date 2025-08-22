@@ -9,11 +9,10 @@ import streamlit as st
 from datetime import datetime
 
 
-# Configuración del servidor
-SERVER_URL = "https://2702c98d5b17.ngrok-free.app"  # Cambiar a ngrok cuando lo tengamos
+SERVER_URL = "https://2702c98d5b17.ngrok-free.app"
 
 def verificar_servidor():
-    """Verifica si el servidor está disponible"""
+    """Verifica la disponibilidad del servidor realizando una petición de salud."""
     try:
         response = requests.get(f"{SERVER_URL}/health", timeout=3)
         return response.status_code == 200
@@ -22,27 +21,12 @@ def verificar_servidor():
 
 def enviar_feedback(imagen_pil, session_id, especie_predicha, confianza, 
                    feedback_tipo, especie_correcta):
-    """
-    Envía feedback al servidor
-    
-    Args:
-        imagen_pil: Imagen PIL
-        session_id: ID de la sesión
-        especie_predicha: Especie que predijo el modelo
-        confianza: Confianza de la predicción
-        feedback_tipo: 'correcto', 'corregido'
-        especie_correcta: Especie correcta según el usuario
-    
-    Returns:
-        dict: Respuesta del servidor
-    """
+    """Envía feedback de usuario sobre predicciones del modelo al servidor."""
     try:
-        # Convertir imagen a base64
         buffered = BytesIO()
         imagen_pil.save(buffered, format="JPEG", quality=85)
         img_base64 = base64.b64encode(buffered.getvalue()).decode()
         
-        # Preparar datos
         data = {
             "imagen_base64": img_base64,
             "session_id": session_id,
@@ -52,7 +36,6 @@ def enviar_feedback(imagen_pil, session_id, especie_predicha, confianza,
             "especie_correcta": especie_correcta
         }
         
-        # Enviar al servidor
         response = requests.post(
             f"{SERVER_URL}/api/feedback/guardar_base64",
             data=data,
@@ -79,17 +62,7 @@ def enviar_feedback(imagen_pil, session_id, especie_predicha, confianza,
         }
 
 def obtener_estadisticas():
-    """Obtiene estadísticas del servidor"""
-    try:
-        response = requests.get(f"{SERVER_URL}/api/feedback/estadisticas", timeout=5)
-        if response.status_code == 200:
-            return response.json()
-        return None
-    except:
-        return None
-
-def obtener_estadisticas():
-    """Obtiene estadísticas del servidor"""
+    """Obtiene estadísticas generales del servidor y el sistema de feedback."""
     try:
         response = requests.get(f"{SERVER_URL}/api/feedback/estadisticas", timeout=5)
         if response.status_code == 200:
@@ -99,7 +72,7 @@ def obtener_estadisticas():
         return None
 
 def obtener_estado_reentrenamiento():
-    """Obtiene el estado del reentrenamiento"""
+    """Consulta el estado actual del proceso de reentrenamiento del modelo."""
     try:
         response = requests.get(f"{SERVER_URL}/api/reentrenamiento/estado", timeout=5)
         if response.status_code == 200:
@@ -108,8 +81,7 @@ def obtener_estado_reentrenamiento():
     except:
         return None
 
-# Cache para verificar servidor
-@st.cache_data(ttl=60)  # Cache por 1 minuto
+@st.cache_data(ttl=60)
 def servidor_disponible():
-    """Verifica disponibilidad del servidor con cache"""
+    """Verifica la disponibilidad del servidor utilizando cache para optimizar peticiones."""
     return verificar_servidor()

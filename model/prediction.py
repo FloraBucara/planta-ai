@@ -5,7 +5,6 @@ from datetime import datetime
 import requests
 import json
 
-# Agregar directorio padre al path
 sys.path.append(str(Path(__file__).parent.parent))
 
 from config import RETRAINING_CONFIG, API_CONFIG
@@ -59,7 +58,6 @@ class PlantPredictor:
             }
         
         try:
-            # Procesar imagen
             imagen_procesada = procesar_imagen_simple(imagen)
             
             if imagen_procesada is None:
@@ -68,22 +66,19 @@ class PlantPredictor:
                     "mensaje": "No se pudo procesar la imagen"
                 }
             
-            # Hacer predicción
             resultado = self.model_utils.predecir_especie(imagen_procesada, especies_excluir)
             
             if "error" in resultado:
                 return resultado
             
-            # Obtener información adicional de la especie
             info_especie = obtener_info_planta(resultado["especie_predicha"])
             
-            # Preparar respuesta completa
             respuesta = {
                 "exito": True,
                 "especie_predicha": resultado["especie_predicha"],
                 "confianza": resultado["confianza"],
                 "info_especie": info_especie,
-                "top_predicciones": resultado["top_predicciones"][:5],  # Top 5
+                "top_predicciones": resultado["top_predicciones"][:5],
                 "timestamp": datetime.now().isoformat()
             }
             
@@ -111,18 +106,15 @@ class PlantPredictor:
             return []
         
         try:
-            # Procesar imagen
             imagen_procesada = procesar_imagen_simple(imagen)
             
             if imagen_procesada is None:
                 return []
             
-            # Obtener top especies
             top_especies = self.model_utils.obtener_top_especies(
                 imagen_procesada, cantidad, especies_excluir
             )
             
-            # Agregar información completa de cada especie
             especies_completas = []
             
             for especie_data in top_especies:
@@ -158,7 +150,6 @@ class PlantPredictor:
             dict: Resultado del guardado
         """
         try:
-            # Guardar análisis en Firebase
             datos_analisis = {
                 "especie_final": especie_final,
                 "session_id": session_id,
@@ -169,7 +160,6 @@ class PlantPredictor:
             
             guardar_analisis(datos_analisis)
             
-            # Enviar imagen a API para guardado local (vía Ngrok)
             resultado_api = self._enviar_imagen_a_api(
                 imagen, especie_final, session_id, correcto, metodo
             )
@@ -189,12 +179,10 @@ class PlantPredictor:
     def _enviar_imagen_a_api(self, imagen, especie, session_id, correcto, metodo):
         """Envía imagen a la API para guardado (vía Ngrok)"""
         try:
-            # Convertir imagen a base64
             import base64
             import io
             from PIL import Image
             
-            # Asegurar que es PIL Image
             if not isinstance(imagen, Image.Image):
                 if isinstance(imagen, np.ndarray):
                     imagen = Image.fromarray((imagen * 255).astype(np.uint8))
@@ -206,7 +194,6 @@ class PlantPredictor:
             imagen.save(img_buffer, format='JPEG', quality=85)
             img_str = base64.b64encode(img_buffer.getvalue()).decode()
             
-            # Preparar datos para API
             api_data = {
                 "image_data": img_str,
                 "especie": especie,
@@ -215,8 +202,6 @@ class PlantPredictor:
                 "metodo": metodo
             }
             
-            # Intentar enviar a API (esto funcionará cuando tengas Ngrok corriendo)
-            # Por ahora, simular el envío
             print(f"📤 Simulando envío a API: {especie} ({'correcto' if correcto else 'corregido'})")
             
             return {
@@ -224,10 +209,6 @@ class PlantPredictor:
                 "mensaje": "Imagen enviada a API (simulado)"
             }
             
-            # Cuando tengas Ngrok funcionando, usa esto:
-            # api_url = "URL_DE_NGROK/api/save_image"
-            # response = requests.post(api_url, json=api_data, timeout=10)
-            # return response.json()
             
         except Exception as e:
             return {"error": f"Error enviando a API: {e}"}

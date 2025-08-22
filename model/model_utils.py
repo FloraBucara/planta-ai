@@ -5,7 +5,6 @@ import sys
 from pathlib import Path
 from datetime import datetime
 
-# Agregar el directorio padre al path
 sys.path.append(str(Path(__file__).parent.parent))
 from config import PATHS, RETRAINING_CONFIG
 
@@ -19,25 +18,17 @@ class ModelUtils:
         self.metadata = None
     
     def cargar_modelo(self):
-        """
-        Carga el modelo ONNX y sus metadatos
-        
-        Returns:
-            bool: True si se cargó exitosamente
-        """
+        """Carga el modelo ONNX desde archivo y sus metadatos asociados."""
         try:
-            # Buscar archivo ONNX
             model_file = PATHS["model_file"].parent / "plant_classifier.onnx"
             
             if not model_file.exists():
                 print(f"❌ Modelo ONNX no encontrado: {model_file}")
                 return False
             
-            # Cargar modelo ONNX
             self.session = ort.InferenceSession(str(model_file))
             print(f"✅ Modelo ONNX cargado: {model_file}")
             
-            # Cargar metadatos
             metadata_file = PATHS["model_file"].parent / "model_metadata.json"
             if metadata_file.exists():
                 with open(metadata_file, 'r', encoding='utf-8') as f:
@@ -48,7 +39,6 @@ class ModelUtils:
                 
                 print(f"✅ Metadatos cargados: {len(self.species_names)} especies")
             else:
-                # Intentar cargar desde species_list.json como backup
                 if PATHS["species_list_file"].exists():
                     with open(PATHS["species_list_file"], 'r', encoding='utf-8') as f:
                         self.species_names = json.load(f)
@@ -65,36 +55,23 @@ class ModelUtils:
             return False
     
     def predecir_especie(self, imagen_procesada, especies_excluir=None):
-        """
-        Predice la especie de una imagen usando ONNX
-        
-        Args:
-            imagen_procesada: Imagen ya procesada (numpy array con batch dimension)
-            especies_excluir: Lista de especies a excluir de la predicción
-        
-        Returns:
-            dict: Información de la predicción
-        """
+        """Predice la especie de planta a partir de una imagen procesada usando el modelo ONNX."""
         if self.session is None:
             return {"error": "Modelo no cargado"}
         
         try:
-            # Asegurar que la imagen tiene el formato correcto
             if imagen_procesada.dtype != np.float32:
                 imagen_procesada = imagen_procesada.astype(np.float32)
             
-            # Hacer predicción con ONNX
             input_name = self.session.get_inputs()[0].name
             output = self.session.run(None, {input_name: imagen_procesada})
             
             logits = output[0][0]  # Primer output, primera muestra
             
-            # Aplicar softmax para convertir logits a probabilidades
-            exp_logits = np.exp(logits - np.max(logits))  # Estabilidad numérica
+            exp_logits = np.exp(logits - np.max(logits))
             predicciones = exp_logits / np.sum(exp_logits)
             predicciones_originales = predicciones.copy()
             
-            # Aplicar exclusiones si se especifican
             if especies_excluir:
                 print(f"🚫 ModelUtils: Excluyendo {len(especies_excluir)} especies")
                 especies_excluidas_indices = []
@@ -106,15 +83,12 @@ class ModelUtils:
                         predicciones[idx] = 1e-10
                         print(f"   🚫 Excluida: {especie} (índice {idx})")
                 
-                # Re-normalizar probabilidades
                 suma_predicciones = np.sum(predicciones)
                 if suma_predicciones > 0:
                     predicciones = predicciones / suma_predicciones
             
-            # Obtener predicción principal usando predicciones originales
             indices_ordenados = np.argsort(predicciones_originales)[::-1]
             
-            # Buscar la primera especie que NO esté excluida
             idx_prediccion = None
             for idx in indices_ordenados:
                 especie_candidata = self.species_names[idx]
@@ -124,14 +98,12 @@ class ModelUtils:
                     especie_predicha = especie_candidata
                     break
             
-            # Fallback si todas están excluidas (no debería pasar)
             if idx_prediccion is None:
                 idx_prediccion = indices_ordenados[0]
                 confianza = float(predicciones_originales[idx_prediccion])
                 especie_predicha = self.species_names[idx_prediccion]
                 print(f"⚠️ Todas las especies están excluidas, usando: {especie_predicha}")
             
-            # Obtener top predicciones
             top_indices = np.argsort(predicciones_originales)[::-1]
             top_predicciones = []
             
@@ -161,23 +133,18 @@ class ModelUtils:
             return {"error": f"Error en predicción: {e}"}
     
     def obtener_top_especies(self, imagen_procesada, top_k=6, especies_excluir=None):
-        """
-        Obtiene las top-K especies más probables
-        """
+        """Obtiene las K especies con mayor probabilidad de predicción."""
         prediccion = self.predecir_especie(imagen_procesada, especies_excluir)
         
         if "error" in prediccion:
             print(f"❌ Error en obtener_top_especies: {prediccion['error']}")
             return []
         
-        # Retornar solo las primeras top_k
         top_especies = prediccion["top_predicciones"][:top_k]
         return top_especies
     
     def validar_modelo_entrenado(self):
-        """
-        Valida que el modelo esté correctamente cargado
-        """
+        """Valida que el modelo esté correctamente cargado y funcional."""
         validacion = {
             "modelo_cargado": self.session is not None,
             "metadatos_disponibles": self.metadata is not None,
@@ -191,9 +158,7 @@ class ModelUtils:
             validacion["errores"].append("Modelo ONNX no cargado")
             return validacion
         
-        # Verificar que se puede hacer una predicción de prueba
         try:
-            # Crear imagen de prueba
             test_image = np.random.random((1, 224, 224, 3)).astype(np.float32)
             
             input_name = self.session.get_inputs()[0].name
@@ -211,9 +176,7 @@ class ModelUtils:
         return validacion
     
     def obtener_info_modelo(self):
-        """
-        Obtiene información completa del modelo
-        """
+        """Retorna información detallada sobre el modelo cargado."""
         if self.session is None:
             return {"error": "Modelo no cargado"}
         
@@ -236,26 +199,20 @@ class ModelUtils:
         return info
     
     def verificar_necesidad_reentrenamiento(self):
-        """
-        Verifica si es necesario reentrenar el modelo
-        """
+        """Evalua si el modelo necesita ser reentrenado basándose en criterios configurados."""
         from utils.image_processing import obtener_estadisticas_dataset
         
-        # Obtener estadísticas actuales
         stats = obtener_estadisticas_dataset()
         nuevas = stats["imagenes_nuevas"]
         
-        # Criterios de reentrenamiento
         criterios = RETRAINING_CONFIG
         
         total_nuevas = nuevas["total"]
         especies_con_nuevas = nuevas["especies_afectadas"]
         
-        # Verificar criterios
         cumple_total = total_nuevas >= criterios["min_images_total"]
         cumple_especies = especies_con_nuevas >= criterios["min_species_with_new_images"]
         
-        # Verificar último reentrenamiento
         ultimo_entrenamiento = "N/A"
         if self.metadata:
             ultimo_entrenamiento = self.metadata.get("timestamp", "N/A")
@@ -281,14 +238,11 @@ class ModelUtils:
         return resultado
     
     def obtener_especies_similares(self, especie_objetivo, cantidad=5):
-        """
-        Obtiene especies similares basándose en el nombre
-        """
+        """Encuentra especies similares a la especie objetivo basándose en taxonomía."""
         if not self.species_names or especie_objetivo not in self.species_names:
             return []
         
         try:
-            # Por ahora, retornar especies del mismo género
             genero_objetivo = especie_objetivo.split('_')[0]
             
             especies_similares = []
@@ -306,9 +260,7 @@ class ModelUtils:
             return []
 
 def cargar_modelo_global():
-    """
-    Función de conveniencia para cargar el modelo globalmente
-    """
+    """Carga el modelo ONNX y lo retorna listo para usar."""
     model_utils = ModelUtils()
     
     if model_utils.cargar_modelo():
@@ -317,9 +269,7 @@ def cargar_modelo_global():
         return None
 
 def verificar_estado_modelo():
-    """
-    Función para verificar rápidamente el estado del modelo
-    """
+    """Verifica el estado actual del modelo y retorna información de diagnóstico."""
     model_utils = ModelUtils()
     
     if not model_utils.cargar_modelo():
@@ -341,7 +291,6 @@ def verificar_estado_modelo():
     }
 
 if __name__ == "__main__":
-    # Test del modelo ONNX
     print("🤖 INFORMACIÓN DEL MODELO ONNX")
     print("=" * 50)
     

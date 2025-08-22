@@ -7,7 +7,6 @@ from pathlib import Path
 from datetime import datetime
 import sys
 
-# Agregar el directorio padre al path para importar config
 sys.path.append(str(Path(__file__).parent.parent))
 from config import MODEL_CONFIG, PLANTAS_DIR, PATHS
 
@@ -19,19 +18,9 @@ class ImageProcessor:
         self.input_shape = MODEL_CONFIG["input_shape"]
     
     def cargar_y_procesar_imagen(self, ruta_imagen):
-        """
-        Carga y procesa una imagen para el modelo
-        
-        Args:
-            ruta_imagen: Ruta a la imagen, PIL Image, o numpy array
-        
-        Returns:
-            numpy array procesado o None si hay error
-        """
+        """Carga y procesa una imagen desde múltiples formatos preparándola para el modelo."""
         try:
-            # Determinar el tipo de entrada y cargar
             if isinstance(ruta_imagen, (str, Path)):
-                # Es una ruta de archivo
                 imagen = cv2.imread(str(ruta_imagen))
                 if imagen is None:
                     print(f"❌ Error: No se pudo cargar la imagen {ruta_imagen}")
@@ -39,21 +28,17 @@ class ImageProcessor:
                 imagen = cv2.cvtColor(imagen, cv2.COLOR_BGR2RGB)
                 
             elif isinstance(ruta_imagen, Image.Image):
-                # Es una imagen PIL (desde Streamlit)
                 imagen = np.array(ruta_imagen.convert('RGB'))
                 
             elif isinstance(ruta_imagen, np.ndarray):
-                # Ya es un numpy array
                 imagen = ruta_imagen.copy()
                 
             else:
                 print(f"❌ Tipo de imagen no soportado: {type(ruta_imagen)}")
                 return None
             
-            # Redimensionar manteniendo aspecto
             imagen_redim = self._redimensionar_con_aspecto(imagen)
             
-            # Normalizar valores (0-1)
             imagen_norm = imagen_redim.astype(np.float32) / 255.0
             
             return imagen_norm
@@ -63,22 +48,12 @@ class ImageProcessor:
             return None
     
     def procesar_para_prediccion(self, imagen):
-        """
-        Procesa una imagen para hacer predicción (agrega dimensión batch)
-        
-        Args:
-            imagen: Imagen en cualquier formato soportado
-        
-        Returns:
-            numpy array con shape (1, 3, 224, 224) para ONNX
-        """
+        """Procesa una imagen agregando dimensión batch y convirtiendo al formato ONNX."""
         img_procesada = self.cargar_y_procesar_imagen(imagen)
         
         if img_procesada is not None:
-            # Agregar dimensión batch: (224, 224, 3) -> (1, 224, 224, 3)
             img_batch = np.expand_dims(img_procesada, axis=0)
             
-            # Convertir de NHWC a NCHW para ONNX: (1, 224, 224, 3) -> (1, 3, 224, 224)
             img_onnx = np.transpose(img_batch, (0, 3, 1, 2))
             
             return img_onnx
@@ -86,26 +61,19 @@ class ImageProcessor:
         return None
     
     def _redimensionar_con_aspecto(self, imagen):
-        """
-        Redimensiona manteniendo la relación de aspecto y rellenando con padding
-        """
+        """Redimensiona la imagen manteniendo relación de aspecto y agregando padding necesario."""
         h, w = imagen.shape[:2]
         target_h, target_w = self.target_size
         
-        # Calcular escala para mantener aspecto
         escala = min(target_w / w, target_h / h)
         
-        # Nuevo tamaño
         nuevo_w = int(w * escala)
         nuevo_h = int(h * escala)
         
-        # Redimensionar
         imagen_redim = cv2.resize(imagen, (nuevo_w, nuevo_h))
         
-        # Crear imagen final con padding negro
         imagen_final = np.zeros((target_h, target_w, 3), dtype=imagen.dtype)
         
-        # Centrar la imagen redimensionada
         y_offset = (target_h - nuevo_h) // 2
         x_offset = (target_w - nuevo_w) // 2
         
@@ -121,15 +89,7 @@ class DatasetManager:
         self.processor = ImageProcessor()
     
     def cargar_dataset_completo(self, incluir_augmentation=False):
-        """
-        Carga todo el dataset desde las carpetas
-        
-        Args:
-            incluir_augmentation: Si aplicar data augmentation
-        
-        Returns:
-            tuple: (imagenes, etiquetas, nombres_especies)
-        """
+        """Carga todo el dataset de imágenes desde las carpetas organizadas por especies."""
         print("🔍 Cargando dataset completo...")
         
         if not self.plantas_dir.exists():
@@ -139,14 +99,12 @@ class DatasetManager:
         etiquetas = []
         nombres_especies = []
         
-        # Obtener carpetas de especies (ordenadas para consistencia)
         carpetas_especies = sorted([d for d in self.plantas_dir.iterdir() if d.is_dir()])
         
         for idx, carpeta_especie in enumerate(carpetas_especies):
             nombre_especie = carpeta_especie.name
             nombres_especies.append(nombre_especie)
             
-            # Obtener imágenes de esta especie
             imagenes_especie = self._obtener_imagenes_carpeta(carpeta_especie)
             
             print(f"📁 {nombre_especie}: {len(imagenes_especie)} imágenes")
@@ -158,7 +116,6 @@ class DatasetManager:
                     imagenes.append(img_procesada)
                     etiquetas.append(idx)
                     
-                    # Aplicar data augmentation si se solicita
                     if incluir_augmentation:
                         img_aug = self._aplicar_augmentation(img_procesada)
                         imagenes.append(img_aug)
@@ -166,13 +123,12 @@ class DatasetManager:
         
         print(f"✅ Dataset cargado: {len(imagenes)} imágenes de {len(nombres_especies)} especies")
         
-        # Guardar lista de especies para uso posterior
         self._guardar_lista_especies(nombres_especies)
         
         return np.array(imagenes), np.array(etiquetas), nombres_especies
     
     def _obtener_imagenes_carpeta(self, carpeta):
-        """Obtiene todas las imágenes de una carpeta"""
+        """Extrae todas las imágenes válidas de una carpeta específica."""
         extensiones = ['.jpg', '.jpeg', '.png', '.JPG', '.JPEG', '.PNG']
         
         imagenes = [archivo for archivo in carpeta.iterdir() 
@@ -181,10 +137,9 @@ class DatasetManager:
         return sorted(imagenes)
     
     def _aplicar_augmentation(self, imagen):
-        """Aplica transformaciones de data augmentation"""
+        """Aplica transformaciones aleatorias de aumento de datos a una imagen."""
         img_aug = imagen.copy()
         
-        # Rotación aleatoria (-15 a +15 grados)
         if np.random.random() > 0.5:
             angulo = np.random.uniform(-15, 15)
             h, w = img_aug.shape[:2]
@@ -192,16 +147,13 @@ class DatasetManager:
             matriz_rot = cv2.getRotationMatrix2D(centro, angulo, 1.0)
             img_aug = cv2.warpAffine(img_aug, matriz_rot, (w, h))
         
-        # Flip horizontal
         if np.random.random() > 0.5:
             img_aug = cv2.flip(img_aug, 1)
         
-        # Ajuste de brillo
         if np.random.random() > 0.5:
             factor = np.random.uniform(0.8, 1.2)
             img_aug = np.clip(img_aug * factor, 0, 1)
         
-        # Ruido gaussiano leve
         if np.random.random() > 0.7:
             ruido = np.random.normal(0, 0.02, img_aug.shape)
             img_aug = np.clip(img_aug + ruido, 0, 1)
@@ -209,7 +161,7 @@ class DatasetManager:
         return img_aug
     
     def _guardar_lista_especies(self, nombres_especies):
-        """Guarda la lista de especies en un archivo JSON"""
+        """Almacena la lista de nombres de especies en un archivo JSON."""
         try:
             with open(PATHS["species_list_file"], 'w', encoding='utf-8') as f:
                 json.dump(nombres_especies, f, ensure_ascii=False, indent=2)
@@ -218,7 +170,7 @@ class DatasetManager:
             print(f"❌ Error guardando lista de especies: {e}")
     
     def cargar_lista_especies(self):
-        """Carga la lista de especies desde el archivo JSON"""
+        """Carga la lista de nombres de especies desde el archivo JSON."""
         try:
             if PATHS["species_list_file"].exists():
                 with open(PATHS["species_list_file"], 'r', encoding='utf-8') as f:
@@ -231,7 +183,7 @@ class DatasetManager:
             return None
     
     def contar_imagenes_por_especie(self):
-        """Cuenta las imágenes por cada especie"""
+        """Genera un conteo de imágenes organizadas por nombre de especie."""
         conteo = {}
         
         if not self.plantas_dir.exists():
@@ -245,12 +197,7 @@ class DatasetManager:
         return conteo
     
     def contar_imagenes_nuevas(self):
-        """
-        Cuenta imágenes nuevas (que contienen 'user_' en el nombre)
-        
-        Returns:
-            tuple: (total_nuevas, especies_con_nuevas, detalle_por_especie)
-        """
+        """Cuenta las imágenes validadas por usuarios identificándolas por prefijo 'user_'."""
         total_nuevas = 0
         especies_con_nuevas = set()
         detalle = {}
@@ -268,42 +215,26 @@ class DatasetManager:
         return total_nuevas, len(especies_con_nuevas), detalle
     
     def guardar_imagen_validada(self, imagen, nombre_especie, session_id, correcto=True):
-        """
-        Guarda una imagen validada por el usuario
-        
-        Args:
-            imagen: Imagen a guardar (PIL, numpy, etc.)
-            nombre_especie: Nombre de la especie
-            session_id: ID de la sesión del usuario
-            correcto: Si la predicción fue correcta
-        
-        Returns:
-            dict: Información sobre el guardado
-        """
+        """Almacena una imagen validada por el usuario en la estructura del dataset."""
         try:
-            # Crear directorio de la especie si no existe
             carpeta_especie = self.plantas_dir / nombre_especie
             carpeta_especie.mkdir(exist_ok=True)
             
-            # Generar nombre único para la imagen
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             status = "correct" if correcto else "corrected"
             nombre_archivo = f"user_{session_id}_{timestamp}_{status}.jpg"
             
             ruta_archivo = carpeta_especie / nombre_archivo
             
-            # Convertir imagen a formato guardable
             if isinstance(imagen, Image.Image):
                 imagen_pil = imagen
             elif isinstance(imagen, np.ndarray):
-                # Convertir de numpy a PIL
                 if imagen.dtype == np.float32 or imagen.dtype == np.float64:
                     imagen = (imagen * 255).astype(np.uint8)
                 imagen_pil = Image.fromarray(imagen)
             else:
                 raise ValueError(f"Tipo de imagen no soportado: {type(imagen)}")
             
-            # Guardar imagen
             imagen_pil.save(ruta_archivo, "JPEG", quality=MODEL_CONFIG.get("image_quality", 85))
             
             resultado = {
@@ -322,12 +253,7 @@ class DatasetManager:
             return {"status": "error", "mensaje": str(e)}
     
     def validar_estructura_dataset(self):
-        """
-        Valida que la estructura del dataset sea correcta
-        
-        Returns:
-            dict: Información detallada sobre la validación
-        """
+        """Verifica la integridad y estructura correcta del dataset de plantas."""
         validacion = {
             "es_valido": True,
             "errores": [],
@@ -360,14 +286,12 @@ class DatasetManager:
             elif len(imagenes) == 1:
                 especies_pocas_imagenes.append(carpeta.name)
         
-        # Registrar problemas
         if especies_sin_imagenes:
             validacion["advertencias"].extend([f"Sin imágenes: {esp}" for esp in especies_sin_imagenes])
         
         if especies_pocas_imagenes:
             validacion["advertencias"].extend([f"Solo 1 imagen: {esp}" for esp in especies_pocas_imagenes])
         
-        # Estadísticas
         validacion["estadisticas"] = {
             "total_especies": len(carpetas),
             "total_imagenes": total_imagenes,
@@ -378,23 +302,19 @@ class DatasetManager:
         
         return validacion
 
-# Funciones de conveniencia para usar desde otros módulos
 def procesar_imagen_simple(imagen):
-    """Función simple para procesar una imagen"""
+    """Función utilitaria para procesar una imagen de forma rápida y sencilla."""
     processor = ImageProcessor()
     return processor.procesar_para_prediccion(imagen)
 
 def obtener_estadisticas_dataset():
-    """Función simple para obtener estadísticas del dataset"""
+    """Función utilitaria para obtener estadísticas completas del dataset."""
     dataset_manager = DatasetManager()
     
-    # Validar estructura
     validacion = dataset_manager.validar_estructura_dataset()
     
-    # Contar imágenes nuevas
     nuevas_total, especies_nuevas, detalle_nuevas = dataset_manager.contar_imagenes_nuevas()
     
-    # Contar por especie
     conteo_especies = dataset_manager.contar_imagenes_por_especie()
     
     return {
@@ -408,7 +328,6 @@ def obtener_estadisticas_dataset():
     }
 
 if __name__ == "__main__":
-    # Si ejecutas este archivo directamente, muestra estadísticas
     print("🔍 ANÁLISIS DEL DATASET")
     print("=" * 50)
     

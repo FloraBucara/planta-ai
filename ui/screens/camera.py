@@ -4,7 +4,6 @@ from ui.screens.upload import mostrar_imagen_y_procesar
 
 def pantalla_tomar_foto():
     """Pantalla específica para tomar foto"""
-    # Marcar pantalla actual
     st.session_state.current_screen = 'camera'
     
     st.markdown("### 📷 Tomar foto con la cámara")
@@ -23,7 +22,6 @@ def pantalla_tomar_foto():
         except Exception as e:
             st.error(f"❌ Error procesando foto: {e}")
     
-    # Botón para regresar
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button("← Regresar a selección de método", key="back_from_camera", use_container_width=True):

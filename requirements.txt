@@ -5,8 +5,8 @@
 streamlit>=1.39.0
 
 # ==================== ONNX RUNTIME (Compatible con Python 3.13) ====================
-onnxruntime>=1.22.1
-# Nota: ONNX Runtime 1.22.1 es compatible con Python 3.13
+onnxruntime>=1.19.0
+# Nota: Versión estable para Streamlit Cloud
 
 # ==================== PROCESAMIENTO DE IMÁGENES ====================
 pillow>=10.4.0

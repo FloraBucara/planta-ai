@@ -1,6 +1,7 @@
 # 🌱 BucaraFlora - Identificador de Plantas con IA
 
 ## 🚀 Proyecto Optimizado con ONNX Runtime
+*Última actualización del modelo: 2025-08-21*
 
 **BucaraFlora** es un sistema de identificación de plantas usando Inteligencia Artificial, optimizado para máximo rendimiento con ONNX Runtime.
 

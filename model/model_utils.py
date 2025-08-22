@@ -87,7 +87,11 @@ class ModelUtils:
             input_name = self.session.get_inputs()[0].name
             output = self.session.run(None, {input_name: imagen_procesada})
             
-            predicciones = output[0][0]  # Primer output, primera muestra
+            logits = output[0][0]  # Primer output, primera muestra
+            
+            # Aplicar softmax para convertir logits a probabilidades
+            exp_logits = np.exp(logits - np.max(logits))  # Estabilidad numérica
+            predicciones = exp_logits / np.sum(exp_logits)
             predicciones_originales = predicciones.copy()
             
             # Aplicar exclusiones si se especifican

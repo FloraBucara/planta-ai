@@ -12,5 +12,6 @@ def mostrar_sidebar(estado_sistema):
         
         st.markdown("---")
         st.markdown("### 🔌 Esta pagina web " \
-        "es un proyecto de grado")
+        "  es un proyecto de grado para" \
+        "  el titulo profesional")
         

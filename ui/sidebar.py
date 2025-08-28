@@ -15,5 +15,5 @@ def mostrar_sidebar(estado_sistema):
         st.markdown("<div style='text-align: center'>Creado por:</div>", unsafe_allow_html=True)
         st.markdown("<div style='text-align: center'>Brandon Lizarralde Y Angie Padilla</div>", unsafe_allow_html=True)
         st.markdown("<div style='text-align: center'>Directora de proyecto:</div>", unsafe_allow_html=True)
-        "<div style='text-align: center'>Yuli Alvarez</div>", unsafe_allow_html=True
+        st.markdown("<div style='text-align: center'>Yuli Alvarez</div>", unsafe_allow_html=True)
         

@@ -11,28 +11,6 @@ def mostrar_sidebar(estado_sistema):
         st.markdown(f"⏱️ **Actualización:** {datetime.now().strftime('%H:%M:%S')}")
         
         st.markdown("---")
-        st.markdown("### 🔌 Estado de Servicios")
+        st.markdown("### 🔌 Esta pagina web " \
+        "es un proyecto de grado")
         
-        if st.session_state.get('firestore_initialized', False):
-            st.success("✅ Sistema: Completamente funcional")
-    
-            if servidor_disponible():
-                stats = obtener_estadisticas()
-                if stats:
-                    st.markdown("📊 **Estadísticas del sistema:**")
-                    st.write(f"• Feedback total: {stats.get('feedback_total', 0)}")
-                    st.write(f"• Imágenes procesadas: {stats.get('imagenes_guardadas', 0)}")
-        else:
-            st.info("ℹ️ Sistema funcionando en modo básico")
-    
-        st.markdown("---")
-        if st.button("🔄 Nueva Consulta", use_container_width=True):
-            limpiar_sesion()
-            st.rerun()
-        
-        with st.expander("🔧 Debug Info"):
-            st.write(f"**Session ID:** {st.session_state.get('session_id', 'None')}")
-            st.write(f"**Intento:** {st.session_state.get('intento_actual', 0)}")
-            st.write(f"**Descartadas:** {len(st.session_state.get('especies_descartadas', set()))}")
-            if st.session_state.get('resultado_actual'):
-                st.write(f"**Especie actual:** {st.session_state.resultado_actual.get('especie_predicha')}")

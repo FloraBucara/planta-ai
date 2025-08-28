@@ -11,9 +11,10 @@ def mostrar_sidebar(estado_sistema):
         st.markdown(f"⏱️ **Actualización:** {datetime.now().strftime('%H:%M:%S')}")
         
         st.markdown("---")
-        st.markdown("<div style='text-align: center'>### 🔌 Esta pagina web es un proyecto de grado para el titulo profesional</div>", unsafe_allow_html=True)
+        st.markdown("### 🔌 Esta pagina web es un proyecto de grado para el titulo profesional</div>")
         st.markdown("<div style='text-align: center'>Creado por:</div>", unsafe_allow_html=True)
-        st.markdown("<div style='text-align: center'>Brandon Lizarralde Y Angie Padilla</div>", unsafe_allow_html=True)
+        st.markdown("<div style='text-align: center'>Brandon Lizarralde " \
+        "Angie Padilla</div>", unsafe_allow_html=True)
         st.markdown("<div style='text-align: center'>Directora de proyecto:</div>", unsafe_allow_html=True)
         st.markdown("<div style='text-align: center'>Yuli Alvarez</div>", unsafe_allow_html=True)
         

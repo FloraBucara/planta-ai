@@ -14,7 +14,8 @@ def mostrar_sidebar(estado_sistema):
         st.markdown("### 🔌 Esta pagina web " \
         "  es un proyecto de grado para" \
         "  el titulo profesional")
-        st.markdown("---")
-        st.markdown("Creado por Brando Lizarralde Y Angie Padilla")
-        st.markdown("Directora de proyecto: Yuli Alvarez")
+        st.markdown("Creado por:" \
+        " Brando Lizarralde Y Angie Padilla")
+        st.markdown("Directora de proyecto:" \
+        " Yuli Alvarez")
         

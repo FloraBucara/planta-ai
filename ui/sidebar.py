@@ -13,8 +13,8 @@ def mostrar_sidebar(estado_sistema):
         st.markdown("---")
         st.markdown("### 🔌 Esta pagina web es un proyecto de grado para el titulo profesional</div>")
         st.markdown("<div style='text-align: center'>Creado por:</div>", unsafe_allow_html=True)
-        st.markdown("<div style='text-align: center'>Brandon Lizarralde " \
-        "Angie Padilla</div>", unsafe_allow_html=True)
+        st.markdown("<div style='text-align: center'>Brandon Lizarralde</div>", unsafe_allow_html=True)
+        st.markdown("<div style='text-align: center'>Angie Padilla</div>", unsafe_allow_html=True)
         st.markdown("<div style='text-align: center'>Directora de proyecto:</div>", unsafe_allow_html=True)
         st.markdown("<div style='text-align: center'>Yuli Alvarez</div>", unsafe_allow_html=True)
         

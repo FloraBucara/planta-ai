@@ -5,7 +5,7 @@ from pathlib import Path
 import sys
 import numpy as np
 sys.path.append(str(Path(__file__).parent.parent))
-from config import PATHS, RETRAINING_CONFIG
+from config import PATHS
 
 class SesionPrediccion:
     """Clase para manejar una sesión individual de predicción"""
@@ -14,7 +14,7 @@ class SesionPrediccion:
         self.session_id = str(uuid.uuid4())[:8]
         self.imagen_original = imagen_original
         self.intento_actual = 1
-        self.max_intentos = RETRAINING_CONFIG["max_attempts_per_prediction"]
+        self.max_intentos = 3
         self.predicciones_anteriores = []
         self.especies_descartadas = set()
         self.timestamp_inicio = datetime.now()
@@ -583,7 +583,7 @@ class EnhancedSessionManager:
     
     def obtener_top_especies_para_seleccion(self, sesion):
         """Obtiene las especies principales para selección manual del usuario."""
-        cantidad = RETRAINING_CONFIG["top_species_to_show"]
+        cantidad = 6
         
         print(f"🔍 SessionManager: Obteniendo {cantidad} especies, excluyendo: {list(sesion.especies_descartadas)}")
         

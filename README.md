@@ -83,29 +83,9 @@ planta_ai/
 
 ---
 
-## 🔄 Proceso de migración TensorFlow → ONNX
+## 🔄 Migración TensorFlow → ONNX
 
-Este proyecto fue migrado exitosamente de TensorFlow a ONNX Runtime:
-
-### Paso 1: Instalación de dependencias
-```bash
-python step1_install_conversion.py
-```
-
-### Paso 2: Conversión del modelo
-```bash
-python step2_convert_model.py
-```
-
-### Paso 3: Actualización del código
-```bash
-python step3_update_streamlit.py
-```
-
-### Paso 4: Preparación para deployment
-```bash
-python step4_requirements.py
-```
+Este proyecto fue migrado exitosamente de TensorFlow a ONNX Runtime, logrando una **mejora del 112x en velocidad** y **55% de reducción en tamaño del modelo**.
 
 ---
 
@@ -150,12 +130,12 @@ El modelo identifica **335 especies** de plantas colombianas, incluyendo:
 
 ## 📈 Performance
 
-### Benchmarks de velocidad
-- **Cold start:** 30-60 segundos
-- **Warm start:** 3-5 segundos
-- **Model loading:** 2-3 segundos
-- **Inference:** 20-50 milisegundos
-- **Total UX:** ~10 segundos hasta primera predicción
+### Rendimiento de velocidad
+- **Inicio en frío:** 30-60 segundos
+- **Inicio en caliente:** 3-5 segundos
+- **Carga del modelo:** 2-3 segundos
+- **Inferencia:** 20-50 milisegundos
+- **Experiencia total:** ~10 segundos hasta primera predicción
 
 ### Optimizaciones aplicadas
 ✅ Modelo convertido a ONNX (55% más pequeño)

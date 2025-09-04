@@ -37,17 +37,33 @@
 git clone https://github.com/tu-usuario/planta_ai.git
 cd planta_ai
 
-# 2. Crear entorno virtual
+# 2. Configurar cuenta de GitHub
+git config user.name "Tu Nombre"
+git config user.email "tu-email@ejemplo.com"
+
+# 3. Crear entorno virtual
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
 # ó venv\Scripts\activate  # Windows
 
-# 3. Instalar dependencias
+# 4. Instalar dependencias
 pip install -r requirements.txt
 
-# 4. Ejecutar aplicación
+# 5. Configurar llaves de Firebase
+# Coloca tu archivo proyecto-firebase-key.json en la raíz del proyecto
+
+# 6. Configurar Firebase (verificar archivo existe)
+# Asegúrate que proyecto-firebase-key.json tenga las credenciales correctas
+
+# 7. Ejecutar aplicación
 streamlit run streamlit_app.py
 ```
+
+#### 📝 Configuraciones importantes:
+- **🔗 URL dinámica:** Streamlit genera automáticamente la URL (ej: `http://localhost:8501`)
+- **🔥 Firebase:** Archivo `proyecto-firebase-key.json` en raíz del proyecto (línea 40 en `config.py`)
+- **🌐 Acceso remoto:** Usar `--server.address 0.0.0.0` para acceso desde otros dispositivos
+- **📱 Puerto personalizado:** Usar `--server.port XXXX` para cambiar puerto
 
 ---
 

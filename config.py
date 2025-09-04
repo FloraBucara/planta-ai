@@ -23,17 +23,6 @@ MODEL_CONFIG = {
     "image_quality": 85
 }
 
-RETRAINING_CONFIG = {
-    "min_images_total": 30,
-    "min_species_with_new_images": 10,
-    "min_images_per_species": 3,
-    "weekly_schedule_day": "sunday",
-    "weekly_schedule_time": "01:00",
-    "max_attempts_per_prediction": 3,
-    "top_species_to_show": 6,
-    "min_accuracy_to_replace": 0.80,
-    "accuracy_improvement_threshold": 0.95
-}
 
 FIREBASE_CONFIG = {
     "project_id": "bucaraflora-f0161",
@@ -149,8 +138,6 @@ def validate_config():
     if MODEL_CONFIG["input_shape"][0] != MODEL_CONFIG["input_shape"][1]:
         errors.append("Las dimensiones de entrada del modelo deben ser cuadradas")
     
-    if RETRAINING_CONFIG["min_images_total"] < 10:
-        errors.append("min_images_total debería ser al menos 10")
     
     firebase_path = Path(FIREBASE_CONFIG["service_account_path"])
     if not firebase_path.exists():
@@ -211,7 +198,3 @@ if __name__ == "__main__":
     print(f"   - Épocas: {MODEL_CONFIG['epochs']}")
     print(f"   - Batch size: {MODEL_CONFIG['batch_size']}")
     
-    print(f"\nCONFIGURACION RE-ENTRENAMIENTO:")
-    print(f"   - Mínimo imágenes: {RETRAINING_CONFIG['min_images_total']}")
-    print(f"   - Día programado: {RETRAINING_CONFIG['weekly_schedule_day']}")
-    print(f"   - Hora programada: {RETRAINING_CONFIG['weekly_schedule_time']}")

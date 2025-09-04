@@ -97,7 +97,9 @@ planta_ai/
 ├── logs/                        # 📝 Logs del sistema
 └── venv/                        # 🐍 Entorno virtual
 ```
-
+## 📂 Descargar servidor e instalarlo 
+leer manuales de instalacion 
+link:https://drive.google.com/drive/folders/19WcCv7Q1-IZnmXVZb1wB7IVskjZ_JwhL?usp=sharing
 ---
 
 ## 🔄 Migración TensorFlow → ONNX

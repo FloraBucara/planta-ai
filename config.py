@@ -64,11 +64,6 @@ API_CONFIG = {
     "admin_key": "bucaraflora_admin_2025_secret_key"
 }
 
-NGROK_CONFIG = {
-    "auth_token": "tu_ngrok_auth_token_aqui",
-    "region": "us",
-    "subdomain": None
-}
 
 STREAMLIT_CONFIG = {
     "page_title": "🌱 Plant.ai - Identificador de Plantas IA",

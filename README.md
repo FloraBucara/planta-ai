@@ -1,9 +1,9 @@
-# 🌱 PlantaAI - Identificador de Plantas con IA
+# 🌱 Planta.AI - Identificador de Plantas con IA
 
 ## 🚀 Proyecto Optimizado con ONNX Runtime
 *Última actualización del modelo: 2025-09-04*
 
-**PlantaAI** es un sistema de identificación de plantas usando Inteligencia Artificial, optimizado para máximo rendimiento con ONNX Runtime.
+**Planta.AI** es un sistema de identificación de plantas usando Inteligencia Artificial, optimizado para máximo rendimiento con ONNX Runtime.
 
 ### ⚡ Características principales:
 - 🤖 **IA Ultra-rápida:** Predicciones en 20-50ms (100x más rápido que TensorFlow)

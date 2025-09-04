@@ -6,7 +6,7 @@ from pathlib import Path
 from datetime import datetime
 
 sys.path.append(str(Path(__file__).parent.parent))
-from config import PATHS
+from config import PATHS, MODEL_DIR
 
 class ModelUtils:
     """Utilidades para cargar y usar el modelo ONNX"""
@@ -20,7 +20,7 @@ class ModelUtils:
     def cargar_modelo(self):
         """Carga el modelo ONNX desde archivo y sus metadatos asociados."""
         try:
-            model_file = PATHS["model_file"].parent / "plant_classifier.onnx"
+            model_file = PATHS["model_file"]
             
             if not model_file.exists():
                 print(f"❌ Modelo ONNX no encontrado: {model_file}")
@@ -29,7 +29,7 @@ class ModelUtils:
             self.session = ort.InferenceSession(str(model_file))
             print(f"✅ Modelo ONNX cargado: {model_file}")
             
-            metadata_file = PATHS["model_file"].parent / "model_metadata.json"
+            metadata_file = MODEL_DIR / "model_metadata.json"
             if metadata_file.exists():
                 with open(metadata_file, 'r', encoding='utf-8') as f:
                     self.metadata = json.load(f)

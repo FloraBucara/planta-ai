@@ -1,9 +1,9 @@
-# 🌱 Plant.AI - Identificador de Plantas con IA
+# 🌱 PlantaAI - Identificador de Plantas con IA
 
 ## 🚀 Proyecto Optimizado con ONNX Runtime
 *Última actualización del modelo: 2025-09-04*
 
-**Plant.AI** es un sistema de identificación de plantas usando Inteligencia Artificial, optimizado para máximo rendimiento con ONNX Runtime.
+**PlantaAI** es un sistema de identificación de plantas usando Inteligencia Artificial, optimizado para máximo rendimiento con ONNX Runtime.
 
 ### ⚡ Características principales:
 - 🤖 **IA Ultra-rápida:** Predicciones en 20-50ms (100x más rápido que TensorFlow)
@@ -43,8 +43,7 @@ git config user.email "tu-email@ejemplo.com"
 
 # 3. Crear entorno virtual
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# ó venv\Scripts\activate  # Windows
+venv\Scripts\activate  # Windows
 
 # 4. Instalar dependencias
 pip install -r requirements.txt

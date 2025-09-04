@@ -7,7 +7,7 @@ import json
 
 sys.path.append(str(Path(__file__).parent.parent))
 
-from config import RETRAINING_CONFIG, API_CONFIG
+from config import API_CONFIG
 from model.model_utils import ModelUtils
 from utils.image_processing import procesar_imagen_simple
 from utils.firebase_config import obtener_info_planta, guardar_analisis

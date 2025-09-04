@@ -6,7 +6,7 @@ from pathlib import Path
 from datetime import datetime
 
 sys.path.append(str(Path(__file__).parent.parent))
-from config import PATHS, RETRAINING_CONFIG
+from config import PATHS
 
 class ModelUtils:
     """Utilidades para cargar y usar el modelo ONNX"""
@@ -205,13 +205,12 @@ class ModelUtils:
         stats = obtener_estadisticas_dataset()
         nuevas = stats["imagenes_nuevas"]
         
-        criterios = RETRAINING_CONFIG
-        
+        # Criterios de reentrenamiento (manejado por servidor externo)
         total_nuevas = nuevas["total"]
         especies_con_nuevas = nuevas["especies_afectadas"]
         
-        cumple_total = total_nuevas >= criterios["min_images_total"]
-        cumple_especies = especies_con_nuevas >= criterios["min_species_with_new_images"]
+        cumple_total = total_nuevas >= 30  # min_images_total
+        cumple_especies = especies_con_nuevas >= 10  # min_species_with_new_images
         
         ultimo_entrenamiento = "N/A"
         if self.metadata:

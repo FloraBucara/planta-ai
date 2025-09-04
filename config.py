@@ -71,7 +71,7 @@ NGROK_CONFIG = {
 }
 
 STREAMLIT_CONFIG = {
-    "page_title": "🌱 BucaraFlora - Identificador de Plantas IA",
+    "page_title": "🌱 Plant.ai - Identificador de Plantas IA",
     "page_icon": "🌱",
     "layout": "centered",
     "initial_sidebar_state": "collapsed",

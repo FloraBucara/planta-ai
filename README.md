@@ -7,10 +7,10 @@
 
 ### ⚡ Características principales:
 - 🤖 **IA Ultra-rápida:** Predicciones en 20-50ms (100x más rápido que TensorFlow)
-- 🌿 **335 especies:** Base de datos completa de flora colombiana
+- 🌿 **335 especies:** Base de datos completa de flora de los parques de Bucaramanga
 - 🐍 **Python 3.13:** Compatible con las últimas versiones
 - 📱 **Web App:** Interfaz moderna y responsive
-- 🚀 **Deploy optimizado:** Listo para Streamlit Cloud
+- 🚀 **Deploy optimizado:** Listo para Streamlit
 
 ---
 
@@ -89,18 +89,6 @@ Este proyecto fue migrado exitosamente de TensorFlow a ONNX Runtime, logrando un
 
 ---
 
-## 🌿 Especies soportadas
-
-El modelo identifica **335 especies** de plantas colombianas, incluyendo:
-- 🌵 Suculentas (Agave, Aloe)
-- 🌴 Palmeras (Cocos, Attalea)
-- 🌸 Flores ornamentales (Heliconia, Anthurium)
-- 🌳 Árboles nativos (Ceiba, Guadua)
-- 🍃 Plantas medicinales
-- Y muchas más...
-
----
-
 ## 📊 Tecnologías utilizadas
 
 - **🤖 IA/ML:** ONNX Runtime, MobileNetV2
@@ -116,26 +104,20 @@ El modelo identifica **335 especies** de plantas colombianas, incluyendo:
 ## 🚀 Deployment
 
 ### Streamlit Cloud (Recomendado)
-1. Fork este repositorio
+1. Clonar repositorio
 2. Conecta en [share.streamlit.io](https://share.streamlit.io)
 3. ¡Listo! Deploy automático
-
-### Otras opciones
-- **Heroku:** Compatible
-- **Railway:** Compatible  
-- **Render:** Compatible
-- **Docker:** Incluye Dockerfile
 
 ---
 
 ## 📈 Performance
 
-### Rendimiento de velocidad
-- **Inicio en frío:** 30-60 segundos
-- **Inicio en caliente:** 3-5 segundos
-- **Carga del modelo:** 2-3 segundos
-- **Inferencia:** 20-50 milisegundos
-- **Experiencia total:** ~10 segundos hasta primera predicción
+### Benchmarks de velocidad
+- **Cold start:** 30-60 segundos
+- **Warm start:** 3-5 segundos
+- **Model loading:** 2-3 segundos
+- **Inference:** 20-50 milisegundos
+- **Total UX:** ~10 segundos hasta primera predicción
 
 ### Optimizaciones aplicadas
 ✅ Modelo convertido a ONNX (55% más pequeño)
@@ -143,16 +125,6 @@ El modelo identifica **335 especies** de plantas colombianas, incluyendo:
 ✅ Caché inteligente con `@st.cache_resource`
 ✅ Procesamiento optimizado de imágenes
 ✅ UI responsiva y moderna
-
----
-
-## 🤝 Contribuir
-
-1. Fork el proyecto
-2. Crea una rama (`git checkout -b feature/nueva-funcionalidad`)
-3. Commit tus cambios (`git commit -m 'Add: nueva funcionalidad'`)
-4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
-5. Abre un Pull Request
 
 ---
 
@@ -166,23 +138,6 @@ Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
 
 - **Proyecto de Grado** - Desarrollo principal
 - **Colaboradores** - Ver lista de [contribuidores](https://github.com/tu-usuario/planta_ai/contributors)
-
----
-
-## 🙏 Agradecimientos
-
-- Dataset de flora colombiana
-- Comunidad de Streamlit
-- Microsoft ONNX Runtime team
-- Contribuidores de código abierto
-
----
-
-## 📞 Contacto
-
-- 📧 Email: proyecto.plantaai@ejemplo.com
-- 🐱 GitHub: [@proyecto-plantaai](https://github.com/proyecto-plantaai)
-- 🌐 Demo: [PlantaAI Live](https://planta-ai-uts.streamlit.app)
 
 ---
 

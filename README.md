@@ -51,15 +51,20 @@ pip install -r requirements.txt
 # 5. Configurar llaves de Firebase
 # Coloca tu archivo proyecto-firebase-key.json en la raíz del proyecto
 
-# 6. Configurar Firebase (verificar archivo existe)
+# 6. Actualizar URL del servidor ngrok
+# Edita utils/api_client.py línea 12 con la nueva URL de ngrok:
+# SERVER_URL = "https://nueva-url-ngrok.ngrok-free.app"
+
+# 7. Configurar Firebase (verificar archivo existe)
 # Asegúrate que proyecto-firebase-key.json tenga las credenciales correctas
 
-# 7. Ejecutar aplicación
+# 8. Ejecutar aplicación
 streamlit run streamlit_app.py
 ```
 
 #### 📝 Configuraciones importantes:
-- **🔗 URL dinámica:** Streamlit genera automáticamente la URL (ej: `http://localhost:8501`)
+- **🔗 URL ngrok:** Se debe actualizar en `utils/api_client.py` línea 12 cada vez que se reinicia el servidor
+- **🌐 Streamlit local:** URL automática (ej: `http://localhost:8501`)
 - **🔥 Firebase:** Archivo `proyecto-firebase-key.json` en raíz del proyecto (línea 40 en `config.py`)
 - **🌐 Acceso remoto:** Usar `--server.address 0.0.0.0` para acceso desde otros dispositivos
 - **📱 Puerto personalizado:** Usar `--server.port XXXX` para cambiar puerto

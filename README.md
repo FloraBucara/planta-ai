@@ -1,9 +1,9 @@
-# 🌱 BucaraFlora - Identificador de Plantas con IA
+# 🌱 PlantaAI - Identificador de Plantas con IA
 
 ## 🚀 Proyecto Optimizado con ONNX Runtime
-*Última actualización del modelo: 2025-08-21*
+*Última actualización del modelo: 2025-09-04*
 
-**BucaraFlora** es un sistema de identificación de plantas usando Inteligencia Artificial, optimizado para máximo rendimiento con ONNX Runtime.
+**PlantaAI** es un sistema de identificación de plantas usando Inteligencia Artificial, optimizado para máximo rendimiento con ONNX Runtime.
 
 ### ⚡ Características principales:
 - 🤖 **IA Ultra-rápida:** Predicciones en 20-50ms (100x más rápido que TensorFlow)
@@ -29,13 +29,13 @@
 ## 🛠️ Instalación y uso
 
 ### Opción A: Usar la app web (Recomendado)
-👉 **[App en vivo en Streamlit Cloud](https://tu-app.streamlit.app)**
+👉 **[App en vivo en Streamlit Cloud](https://planta-ai-uts.streamlit.app)**
 
 ### Opción B: Ejecutar localmente
 ```bash
 # 1. Clonar repositorio
-git clone https://github.com/Brastelizcar/bucaraflora-onnx.git
-cd bucaraflora-onnx
+git clone https://github.com/tu-usuario/planta_ai.git
+cd planta_ai
 
 # 2. Crear entorno virtual
 python -m venv venv
@@ -54,19 +54,31 @@ streamlit run streamlit_app.py
 ## 📁 Estructura del proyecto
 
 ```
-bucaraflora-onnx/
+planta_ai/
 ├── streamlit_app.py              # 🎯 Aplicación principal
 ├── requirements.txt              # 📦 Dependencias optimizadas
-├── .streamlit/
-│   ├── config.toml              # ⚙️ Configuración Streamlit
-│   └── secrets_template.toml    # 🔒 Template para secretos
+├── config.py                     # ⚙️ Configuraciones generales
+├── assets/                       # 🎨 Recursos visuales
+│   ├── logo.png                 # 🌱 Logo de la aplicación
+│   ├── fondo.png                # 🖼️ Imagen de fondo
+│   └── *.png                    # 🎨 Botones y elementos UI
 ├── model/
 │   ├── plant_classifier.onnx    # 🤖 Modelo IA optimizado
 │   ├── species_list.json        # 🌿 335 especies
+│   ├── model_metadata.json      # 📊 Metadatos del modelo
 │   └── *.py                     # 🔧 Utilidades del modelo
+├── ui/                          # 🖥️ Interfaz de usuario
+│   ├── components.py            # 🧩 Componentes reutilizables
+│   ├── screens/                 # 📱 Pantallas de la app
+│   ├── sidebar.py               # 📋 Barra lateral
+│   └── styles.py                # 🎨 Estilos CSS
 ├── utils/                       # 🛠️ Herramientas
-├── migration_scripts/           # 🔄 Scripts de migración TF→ONNX
-└── backups/                     # 💾 Respaldos
+│   ├── image_processing.py      # 🖼️ Procesamiento de imágenes
+│   ├── firebase_*.py           # 🔥 Integración Firebase
+│   └── *.py                    # 🔧 Utilidades varias
+├── data/                        # 📂 Datos del proyecto
+├── logs/                        # 📝 Logs del sistema
+└── venv/                        # 🐍 Entorno virtual
 ```
 
 ---
@@ -115,8 +127,9 @@ El modelo identifica **335 especies** de plantas colombianas, incluyendo:
 - **🎨 Frontend:** Streamlit
 - **🐍 Backend:** Python 3.13
 - **📱 Deployment:** Streamlit Cloud
-- **🗄️ Base de datos:** Firebase Firestore (opcional)
+- **🗄️ Base de datos:** Firebase Firestore
 - **🖼️ Procesamiento:** OpenCV, Pillow
+- **🔧 Arquitectura:** Modular con separación UI/Lógica
 
 ---
 
@@ -171,8 +184,8 @@ Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
 
 ## 👨‍💻 Autores
 
-- **Tu Nombre** - Desarrollo principal
-- **Colaboradores** - Ver lista de [contribuidores](https://github.com/tu-usuario/bucaraflora-onnx/contributors)
+- **Proyecto de Grado** - Desarrollo principal
+- **Colaboradores** - Ver lista de [contribuidores](https://github.com/tu-usuario/planta_ai/contributors)
 
 ---
 
@@ -187,9 +200,9 @@ Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
 
 ## 📞 Contacto
 
-- 📧 Email: tu-email@ejemplo.com
-- 🐱 GitHub: [@tu-usuario](https://github.com/tu-usuario)
-- 🌐 Demo: [BucaraFlora Live](https://tu-app.streamlit.app)
+- 📧 Email: proyecto.plantaai@ejemplo.com
+- 🐱 GitHub: [@proyecto-plantaai](https://github.com/proyecto-plantaai)
+- 🌐 Demo: [PlantaAI Live](https://planta-ai-uts.streamlit.app)
 
 ---
 

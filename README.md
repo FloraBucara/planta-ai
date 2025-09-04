@@ -66,9 +66,6 @@ streamlit run streamlit_app.py
 - **🔗 URL ngrok:** Se debe actualizar en `utils/api_client.py` línea 12 cada vez que se reinicia el servidor
 - **🌐 Streamlit local:** URL automática (ej: `http://localhost:8501`)
 - **🔥 Firebase:** Archivo `proyecto-firebase-key.json` en raíz del proyecto (línea 40 en `config.py`)
-- **🌐 Acceso remoto:** Usar `--server.address 0.0.0.0` para acceso desde otros dispositivos
-- **📱 Puerto personalizado:** Usar `--server.port XXXX` para cambiar puerto
-
 ---
 
 ## 📁 Estructura del proyecto

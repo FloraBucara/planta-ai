@@ -110,14 +110,14 @@ def aplicar_estilos():
         
         .info-card {{
             background: rgba(232, 245, 233, 0.95);
-            padding: 100rem;
+            padding: 1rem;
             border-radius: 8px;
             margin: 0.5rem 0;
         }}
         
         .species-card {{
             background: rgba(240, 248, 255, 0.95);
-            padding: 1rem;
+            padding: 100rem;
             border-radius: 8px;
             border: 2px solid #e0e0e0;
             margin: 0.5rem 0;

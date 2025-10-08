@@ -11,7 +11,6 @@ def pantalla_prediccion_feedback():
     info_planta = resultado.get("info_planta", {})
     datos = info_planta.get('datos', {})
     
-    
     # Crear un contenedor tipo card
     with st.container():
         # Card con bordes redondeados
@@ -21,48 +20,69 @@ def pantalla_prediccion_feedback():
             border-radius: 20px;
             overflow: hidden;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin: 1rem 0;            
+            margin: 1rem 0;
+            border: 1px solid #e0e0e0;
+            padding: 0;
+        ">
         """, unsafe_allow_html=True)
         
         # PARTE SUPERIOR: Imagen de referencia del servidor
         nombre_cientifico = resultado.get("especie_predicha", '')
+        
+        # CSS para agrandar y centrar imagen en móviles
         st.markdown("""
         <style>
-        @media (max-width: 900px) {
+        @media (max-width: 768px) {
             .stColumns {
                 gap: 0 !important;
+            }
+            [data-testid="stImage"] {
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+            }
+            [data-testid="stImage"] > div {
+                display: flex !important;
+                justify-content: center !important;
             }
         }
         </style>
         """, unsafe_allow_html=True)
-
+        
         if nombre_cientifico and SERVER_URL:
             # Convertir nombre a formato de carpeta
             nombre_carpeta = nombre_cientifico.replace(' ', '_')
             especie_encoded = quote(nombre_carpeta)
             imagen_url = f"{SERVER_URL}/api/image-referencia/{especie_encoded}"
             
-            try:
-                st.image(
-                    imagen_url,
-                    use_container_width=True,
-                    caption=f"🌿 {datos.get('nombre_comun', nombre_cientifico)}"
-                )
-            except Exception as e:
-                # Si falla, usar imagen del usuario como fallback
-                print(f"⚠️ Error cargando imagen del servidor: {e}")
+            # Usar columnas para centrar - más grandes en móvil
+            col1, col2, col3 = st.columns([0.1, 4, 0.1])
+            
+            with col2:
+                try:
+                    st.image(
+                        imagen_url,
+                        use_container_width=True,
+                        caption=f"🌿 {datos.get('nombre_comun', nombre_cientifico)}"
+                    )
+                except Exception as e:
+                    # Si falla, usar imagen del usuario como fallback
+                    print(f"⚠️ Error cargando imagen del servidor: {e}")
+                    st.image(
+                        st.session_state.imagen_actual,
+                        use_container_width=True,
+                        caption=f"🌿 {datos.get('nombre_comun', nombre_cientifico)}"
+                    )
+        else:
+            # Fallback si no hay servidor configurado
+            col1, col2, col3 = st.columns([0.1, 4, 0.1])
+            
+            with col2:
                 st.image(
                     st.session_state.imagen_actual,
                     use_container_width=True,
                     caption=f"🌿 {datos.get('nombre_comun', nombre_cientifico)}"
                 )
-        else:
-            # Fallback si no hay servidor configurado
-            st.image(
-                st.session_state.imagen_actual,
-                use_container_width=True,
-                caption=f"🌿 {datos.get('nombre_comun', nombre_cientifico)}"
-            )
         
         # Mostrar imagen del usuario justo debajo de la imagen de referencia
         with st.expander("Ver tu foto original"):

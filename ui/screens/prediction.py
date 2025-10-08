@@ -17,7 +17,7 @@ def pantalla_prediccion_feedback():
         # Card con bordes redondeados
         st.markdown("""
         <div style="
-            background: white;
+            background: black;
             border-radius: 20px;
             overflow: hidden;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);

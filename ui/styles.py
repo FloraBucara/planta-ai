@@ -82,7 +82,7 @@ def aplicar_estilos():
         .stImage {{
             margin-top: -1rem !important;
             margin-bottom: 0rem !important;
-            max-width: 400px !important;
+            max-width: 1000px !important;
         }}
         
         .stMarkdown {{

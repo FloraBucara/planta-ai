@@ -30,17 +30,27 @@ def pantalla_prediccion_feedback():
         nombre_cientifico = resultado.get("especie_predicha", '')
         
         st.markdown("""
-        <style>
-        [data-testid="stImage"] {
-            display: flex;
-            justify-content: center;
-        }
-        [data-testid="stImage"] img {
-            max-width: 80%;
-            width: 80%;
-        }
-        </style>
-        """, unsafe_allow_html=True)
+            <style>
+            [data-testid="stImage"] {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            [data-testid="stImage"] img {
+                max-width: 80%;
+                width: 80%;
+                height: auto;
+            }
+
+            /* Ajustes para móvil */
+            @media (max-width: 768px) {
+                [data-testid="stImage"] img {
+                    max-width: 95%;
+                    width: 95%;
+                }
+            }
+            </style>
+            """, unsafe_allow_html=True)
 
 
         if nombre_cientifico and SERVER_URL:

@@ -28,7 +28,7 @@ def pantalla_prediccion_feedback():
         nombre_cientifico = resultado.get("especie_predicha", '')
         st.markdown("""
         <style>
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
             .stColumns {
                 gap: 0 !important;
             }

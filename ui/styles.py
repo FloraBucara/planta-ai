@@ -82,6 +82,7 @@ def aplicar_estilos():
         .stImage {{
             margin-top: -1rem !important;
             margin-bottom: 0rem !important;
+            max-width: 400px !important;
         }}
         
         .stMarkdown {{
@@ -117,7 +118,7 @@ def aplicar_estilos():
         
         .species-card {{
             background: rgba(240, 248, 255, 0.95);
-            padding: 100rem;
+            padding: 1rem;
             border-radius: 8px;
             border: 2px solid #e0e0e0;
             margin: 0.5rem 0;

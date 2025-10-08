@@ -260,14 +260,14 @@ def pantalla_prediccion_feedback():
                 <div style="text-align: center; background: white; padding: 20px; border-radius: 10px; border: 2px solid #4CAF50;">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                         <div>
-                            <p><strong>Reino:</strong> {taxonomia.get('reino', 'N/A')}</p>
-                            <p><strong>Filo:</strong> {taxonomia.get('filo', 'N/A')}</p>
-                            <p><strong>Clase:</strong> {taxonomia.get('clase', 'N/A')}</p>
+                            <p><strong>Reino:</strong><br> {taxonomia.get('reino', 'N/A')}</p>
+                            <p><strong>Filo:</strong><br> {taxonomia.get('filo', 'N/A')}</p>
+                            <p><strong>Clase:</strong><br> {taxonomia.get('clase', 'N/A')}</p>
                         </div>
                         <div>
-                            <p><strong>Orden:</strong> {taxonomia.get('orden', 'N/A')}</p>
-                            <p><strong>Familia:</strong> {taxonomia.get('familia', 'N/A')}</p>
-                            <p><strong>Género:</strong> {taxonomia.get('genero', 'N/A')}</p>
+                            <p><strong>Orden:</strong><br> {taxonomia.get('orden', 'N/A')}</p>
+                            <p><strong>Familia:</strong><br> {taxonomia.get('familia', 'N/A')}</p>
+                            <p><strong>Género:</strong><br> {taxonomia.get('genero', 'N/A')}</p>
                         </div>
                     </div>
                 </div>

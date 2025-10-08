@@ -21,9 +21,7 @@ def pantalla_prediccion_feedback():
             overflow: hidden;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             margin: 1rem 0;
-            border: 1px solid #e0e0e0;
-            padding: 0;
-        ">
+            
         """, unsafe_allow_html=True)
         
         # PARTE SUPERIOR: Imagen de referencia del servidor

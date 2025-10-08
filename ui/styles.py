@@ -70,7 +70,7 @@ def aplicar_estilos():
         {css_fondo}
         
         .main .block-container {{
-            padding-top: 100rem !important;
+            padding-top: 0rem !important;
             padding-bottom: 1rem !important;
         }}
         

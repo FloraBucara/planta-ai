@@ -102,7 +102,7 @@ def aplicar_estilos():
         
         .prediction-card {{
             background: rgba(248, 249, 250, 0.95);
-            padding: 1.5rem;
+            padding: 10rem;
             border-radius: 10px;
             border-left: 4px solid #28a745;
             margin: 1rem 0;

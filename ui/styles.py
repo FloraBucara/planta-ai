@@ -80,7 +80,7 @@ def aplicar_estilos():
         }}
         
         .stImage {{
-            margin-top: -1rem !important;
+            margin-top: 0rem !important;
             margin-bottom: 0rem !important;
         }}
         

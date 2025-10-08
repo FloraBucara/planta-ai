@@ -29,6 +29,20 @@ def pantalla_prediccion_feedback():
         # PARTE SUPERIOR: Imagen de referencia del servidor
         nombre_cientifico = resultado.get("especie_predicha", '')
         
+        st.markdown("""
+        <style>
+        [data-testid="stImage"] {
+            display: flex;
+            justify-content: center;
+        }
+        [data-testid="stImage"] img {
+            max-width: 80%;
+            width: 80%;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
+
         if nombre_cientifico and SERVER_URL:
             # Convertir nombre a formato de carpeta
             nombre_carpeta = nombre_cientifico.replace(' ', '_')

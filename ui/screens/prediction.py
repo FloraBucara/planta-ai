@@ -21,36 +21,11 @@ def pantalla_prediccion_feedback():
             border-radius: 20px;
             overflow: hidden;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin: 1rem 0;
-            
+            margin: 1rem 0;            
         """, unsafe_allow_html=True)
         
         # PARTE SUPERIOR: Imagen de referencia del servidor
         nombre_cientifico = resultado.get("especie_predicha", '')
-        
-        st.markdown("""
-            <style>
-            [data-testid="stImage"] {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
-            [data-testid="stImage"] img {
-                max-width: 80%;
-                width: 80%;
-                height: auto;
-            }
-
-            /* Ajustes para móvil */
-            @media (max-width: 768px) {
-                [data-testid="stImage"] img {
-                    max-width: 95%;
-                    width: 95%;
-                }
-            }
-            </style>
-            """, unsafe_allow_html=True)
-
 
         if nombre_cientifico and SERVER_URL:
             # Convertir nombre a formato de carpeta

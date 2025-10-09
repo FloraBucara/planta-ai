@@ -222,7 +222,7 @@ class DatasetManager:
             
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             status = "correct" if correcto else "corrected"
-            nombre_archivo = f"user_{session_id}_{timestamp}_{status}.jpg"
+            nombre_archivo = f"USUARIO_{session_id}_{timestamp}_{status}.jpg"
             
             ruta_archivo = carpeta_especie / nombre_archivo
             

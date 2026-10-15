@@ -157,8 +157,8 @@ Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
 
 - **Proyecto de Grado** - Desarrollo principal
 - **Colaboradores** - Ver lista de [contribuidores](https://github.com/tu-usuario/planta_ai/contributors)
-Brandon Steven Lizarralde Carvajal
-Angie Padilla
+-Brandon Steven Lizarralde Carvajal
+-Angie Padilla
 ---
 
 **⭐ Si este proyecto te fue útil, no olvides darle una estrella en GitHub ⭐**
